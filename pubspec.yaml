@@ -31,6 +31,7 @@ dependencies:
   font_awesome_flutter:
   shared_preferences:
   gesture_zoom_box:
+  syncfusion_flutter_charts: ^17.4.40
     
 dev_dependencies:
   flutter_test:
