@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 
 class Theme {
 
-  /**
+  /*
    * 登录界面，定义渐变的颜色
    */
   static const Color loginGradientStart = const Color(0xFFfbab66);

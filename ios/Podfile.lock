@@ -8,20 +8,23 @@ PODS:
     - Flutter
   - shared_preferences (0.0.1):
     - Flutter
+  - url_launcher (0.0.1):
+    - Flutter
   - webview_flutter (0.0.1):
     - Flutter
 
 DEPENDENCIES:
-  - Flutter (from `.symlinks/flutter/ios-release`)
+  - Flutter (from `.symlinks/flutter/ios`)
   - flutter_audio_recorder (from `.symlinks/plugins/flutter_audio_recorder/ios`)
   - flutter_sound (from `.symlinks/plugins/flutter_sound/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
+  - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
   - webview_flutter (from `.symlinks/plugins/webview_flutter/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
-    :path: ".symlinks/flutter/ios-release"
+    :path: ".symlinks/flutter/ios"
   flutter_audio_recorder:
     :path: ".symlinks/plugins/flutter_audio_recorder/ios"
   flutter_sound:
@@ -30,6 +33,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/path_provider/ios"
   shared_preferences:
     :path: ".symlinks/plugins/shared_preferences/ios"
+  url_launcher:
+    :path: ".symlinks/plugins/url_launcher/ios"
   webview_flutter:
     :path: ".symlinks/plugins/webview_flutter/ios"
 
@@ -39,6 +44,7 @@ SPEC CHECKSUMS:
   flutter_sound: 0e8163ceac1e00eb6d894e2ae4641ba726a2c479
   path_provider: fb74bd0465e96b594bb3b5088ee4a4e7bb1f2a9d
   shared_preferences: 430726339841afefe5142b9c1f50cb6bd7793e01
+  url_launcher: a1c0cc845906122c4784c542523d8cacbded5626
   webview_flutter: db3aba222b23e4dc432e0c5882834123dc50ff9f
 
 PODFILE CHECKSUM: 10ae9c18d12c9ffc2275c9a159a3b1e281990db0

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../model/user.dart';
+import '../../model/user.dart';
 
 /* 利用InheritedWidget用于子节点向祖先节点获取数据
     当依赖的InheritedWidget rebuild,会触发子控件的didChangeDependencies()接口

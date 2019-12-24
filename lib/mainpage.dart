@@ -13,7 +13,7 @@ class _MainPageState extends State<MainPage>{
   Widget build(BuildContext context) {
     return Container(
         child: WebView(
-      initialUrl: 'http://180.76.128.198:8000/h5/my-box/list',
+      initialUrl: 'http://106.13.105.43:8888/h5/my-box/list',
       javascriptMode: JavascriptMode.unrestricted,
     ));
   }

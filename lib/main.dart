@@ -3,10 +3,11 @@ import 'package:sirilike_flutter/login/ui/home_page.dart';
 import 'mainpage.dart';
 import 'voiceArs.dart';
 import 'login/ui/user_provider.dart';
-import 'login/model/user.dart';
+import 'model/user.dart';
 import 'imageList.dart';
+import 'package:provider/provider.dart';
 
-const List barList = ["首页", "功能", "商城", "我的"];
+const List barList = ["提醒", "冰箱", "统计", "我的"];
 const List iconListUnselect = [
   Icon(Icons.home),
   Icon(Icons.record_voice_over),

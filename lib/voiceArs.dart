@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'package:flutter_sound/flutter_sound.dart';
+import 'model/network.dart';
 
 const String app_id = '17933442';
 const String api_key = 'WrG2dAP89ivVyr0LMGOKkliS';
@@ -121,8 +122,8 @@ class _AsrTTSModelState extends State<AsrTTSModel>
     }
     this.setState(() {});
 
-    Response resNew = await dio.get(
-        'http://180.76.128.198:8000/api/voice-result/analyze?words=${resp.data['result'][0]}');
+    Response resNew = await NetManager.instance.dio.get(
+        '/api/voice-result/analyze?words=${resp.data['result'][0]}');
     result = result + '\n你：${resNew.data['data']['words']}';
 
     log = log + '\n上传...\n${resNew.data}';

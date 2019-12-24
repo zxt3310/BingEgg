@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../style/theme.dart' as theme;
 import 'package:dio/dio.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../model/user.dart';
+import '../../model/network.dart';
+import '../../model/user.dart';
 /*
  注册界面
  */
@@ -299,9 +299,9 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Future _startLogin() async {
-    Dio req = Dio();
+    Dio req = NetManager.instance.dio;
     String url =
-        'http://180.76.128.198:8000/api/login?mobile=$account&password=$pswd';
+        '/api/login?mobile=$account&password=$pswd';
     Response res = await req.get(url);
     int err = res.data['err'];
     if (err != 0) {
