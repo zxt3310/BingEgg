@@ -6,6 +6,7 @@ import 'login/ui/user_provider.dart';
 import 'model/user.dart';
 import 'imageList.dart';
 import 'package:provider/provider.dart';
+import 'Views/myFridge.dart';
 
 const List barList = ["提醒", "冰箱", "统计", "我的"];
 const List iconListUnselect = [
@@ -89,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: PageView(
         physics: NeverScrollableScrollPhysics(),
-        children: <Widget>[MainPage(), AsrTTSModel(), ImageListView()],
+        children: <Widget>[MainPage(), MyFridgeWidget(), ImageListView()],
         controller: controller,
       ),
       bottomNavigationBar: BottomNavigationBar(

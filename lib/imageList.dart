@@ -70,7 +70,8 @@ class _ImgShowViewState extends State<ImgShowView> {
   Widget build(BuildContext context) {
     return Container(
       child: PageView.builder(
-        controller: PageController(initialPage: widget.curIdx),
+        controller:
+            PageController(initialPage: widget.curIdx, viewportFraction: 1),
         itemCount: widget.pics.length,
         itemBuilder: (context, idx) {
           return GestureDetector(

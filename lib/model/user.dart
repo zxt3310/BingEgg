@@ -40,7 +40,7 @@ class User {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('id', account);
     prefs.setString('pwd', pswd);
-    prefs.setString('token', token);
+    prefs.setString('token', author);
 
     _instance.username = account;
     _instance.password = pswd;
