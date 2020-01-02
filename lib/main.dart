@@ -7,6 +7,7 @@ import 'model/user.dart';
 import 'imageList.dart';
 import 'package:provider/provider.dart';
 import 'Views/myFridge/myFridge.dart';
+import 'Views/statistics/foodAnalyze.dart';
 
 const List barList = ["提醒", "冰箱", "统计", "我的"];
 const List iconListUnselect = [
@@ -90,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: PageView(
         physics: NeverScrollableScrollPhysics(),
-        children: <Widget>[MainPage(), MyFridgeWidget(), ImageListView()],
+        children: <Widget>[MainPage(), MyFridgeWidget(),FoodAnalyzeWidgit(), ImageListView()],
         controller: controller,
       ),
       bottomNavigationBar: BottomNavigationBar(
