@@ -55,6 +55,7 @@ class __FridgeWidgetState extends State<_FridgeWidget>
                 TabBar(
                   indicator: const BoxDecoration(),
                   controller: tabcontroller,
+                  isScrollable: true,
                   tabs: _getBtns(namelist),
                   onTap: _onChangeTab,
                 ),
@@ -81,6 +82,7 @@ class __FridgeWidgetState extends State<_FridgeWidget>
       (idx) {
         return Consumer<CurrentIndexProvider>(builder: (context, cur, child) {
           return Container(
+              padding: EdgeInsets.fromLTRB(5, 5, 0, 0),
               child: Column(
             children: <Widget>[
               Icon(Icons.camera,

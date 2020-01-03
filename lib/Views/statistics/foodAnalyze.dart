@@ -9,7 +9,7 @@ class FoodAnalyzeWidgit extends StatelessWidget {
         children: <Widget>[
           SizedBox(
             height: 50,
-            child: Container(color: Colors.grey),
+            
           ),
           Expanded(
             child: AnalyzeChartsWidget(),
@@ -38,6 +38,7 @@ class _AnalyzeChartsWidgetState extends State<AnalyzeChartsWidget> {
                 _makeLineChart(),
                 _makePieChart(),
               ],
+              
             ),
           ),
         )
@@ -61,6 +62,10 @@ class _AnalyzeChartsWidgetState extends State<AnalyzeChartsWidget> {
             alignment: ChartAlignment.far,
             orientation: LegendItemOrientation.vertical),
         tooltipBehavior: TooltipBehavior(enable: true),
+        trackballBehavior: TrackballBehavior(
+          enable: true,
+          lineDashArray: [10,10]
+        ),
         series: <LineSeries<SalesData, String>>[
           LineSeries<SalesData, String>(
               // Bind data source
@@ -73,6 +78,7 @@ class _AnalyzeChartsWidgetState extends State<AnalyzeChartsWidget> {
                 SalesData('Apr', 32),
                 SalesData('May', 40)
               ],
+              markerSettings: MarkerSettings(isVisible: true,shape: DataMarkerType.diamond),
               xValueMapper: (SalesData sales, _) => sales.month,
               yValueMapper: (SalesData sales, _) => sales.sales,
               dataLabelSettings: DataLabelSettings(isVisible: true)),
@@ -89,34 +95,42 @@ class _AnalyzeChartsWidgetState extends State<AnalyzeChartsWidget> {
               ],
               xValueMapper: (SalesData sales, _) => sales.month,
               yValueMapper: (SalesData sales, _) => sales.sales,
+              markerSettings: MarkerSettings(isVisible: true),
               dataLabelSettings: DataLabelSettings(isVisible: true))
         ]);
   }
 
   Widget _makePieChart() {
     return Container(
-        height: 300,
-        width: 300,
+        height: 350,
         child: SfCircularChart(
+          title: ChartTitle(text: '占比分析'),
           tooltipBehavior: TooltipBehavior(enable: true),
-          legend: Legend(isVisible: true),
+          legend: Legend(isVisible: true, toggleSeriesVisibility: false),
           series: <DoughnutSeries<PieData, String>>[
             DoughnutSeries<PieData, String>(
                 dataSource: <PieData>[
-                  PieData('水果', 5,'0.3'),
-                  PieData('蔬菜', 11,'0.5'),
-                  PieData('肉', 15,'0.2'),
-                  PieData('主食', 9,'0.1'),
-                  PieData('饮品', 3,'0.3')
+                  PieData('水果', 30, '30%'),
+                  PieData('蔬菜', 10, '10%'),
+                  PieData('肉', 20, '20%'),
+                  PieData('主食', 30, '30%'),
+                  PieData('饮品', 10, '10%'),
+                  PieData('牛奶',3,'3%')
                 ],
                 opacity: 1,
-              
+                radius: '65%',
+                innerRadius: '40%',
                 xValueMapper: (PieData data, _) => data.name,
                 yValueMapper: (PieData data, _) => data.count,
-                //pointRadiusMapper: (PieData data, _) => data.point,
-                sortFieldValueMapper: (PieData data, _) => data.point,
-                dataLabelMapper: (PieData data, _) => data.name,
-                dataLabelSettings: DataLabelSettings(isVisible: true))
+                dataLabelMapper: (PieData data, _) => data.point,
+                dataLabelSettings: DataLabelSettings(
+                    isVisible: true,
+                    showCumulativeValues: true,
+                    textStyle: ChartTextStyle(fontSize: 13),
+                    labelIntersectAction: LabelIntersectAction.none,
+                    connectorLineSettings:
+                        ConnectorLineSettings(width: 2, length: '15'),
+                    labelPosition: ChartDataLabelPosition.outside))
           ],
         ));
   }
@@ -132,5 +146,5 @@ class PieData {
   final String name;
   final int count;
   final String point;
-  PieData(this.name, this.count,this.point);
+  PieData(this.name, this.count, this.point);
 }
