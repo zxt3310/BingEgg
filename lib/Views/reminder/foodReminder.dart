@@ -13,44 +13,60 @@ class FoodReminderWidget extends StatefulWidget {
 class _FoodReminderWidgetState extends State<FoodReminderWidget> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: CustomScrollView(slivers: <Widget>[
-      SliverPadding(
-          padding: const EdgeInsets.all(20.0),
-          sliver: SliverList(
-              delegate: SliverChildListDelegate(<Widget>[
-            SliverGrid(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.6,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                ),
-                delegate: SliverChildListDelegate(_source()))
-          ])))
-    ]));
-  }
-
-  List<Widget> _source() {
     List datas = json.decode(jsonStr);
     List<FoodMaterial> foods = List<FoodMaterial>.generate(datas.length, (idx) {
       return FoodMaterial.fromJson(datas[idx]);
     });
-    return List.generate(datas.length, (idx) {
-      FoodMaterial obj = foods.elementAt(idx);
-      return Container(
-            decoration: BoxDecoration(
-                border: Border.all(width: 1, color: Colors.grey),
-                borderRadius: BorderRadius.circular(10)),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                Text('${obj.itemName}'),
-                Text('数量：${obj.quantity}'),
-                Text('放入时间：${obj.createdAt}', textAlign: TextAlign.center)
-              ],
-            ),
-          );
-    });
+    return Container(
+      child: CustomScrollView(
+        slivers: <Widget>[
+          SliverPadding(
+              padding: const EdgeInsets.all(20.0),
+              sliver: SliverGrid(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.8,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                      (BuildContext context, int index) {
+                    FoodMaterial obj = foods.elementAt(index);
+                    return Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(width: 1, color: Colors.grey),
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          Text('${obj.itemName}'),
+                          Text('数量：${obj.quantity}'),
+                          Text('放入时间：${obj.createdAt}',
+                              textAlign: TextAlign.center)
+                        ],
+                      ),
+                    );
+                  }, childCount: foods.length))),
+          SliverList(
+            delegate: SliverChildListDelegate([
+              Container(
+                  height: 100,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 10,
+                    itemBuilder: (context, idx) {
+                      return Container(
+                        width: 70,
+                        height: 70,
+                        margin: EdgeInsets.all(10),
+                        color: Colors.redAccent,
+                      );
+                    },
+                  ))
+            ]),
+          ),
+        ],
+      ),
+    );
   }
 }

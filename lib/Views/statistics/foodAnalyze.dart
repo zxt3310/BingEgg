@@ -9,7 +9,6 @@ class FoodAnalyzeWidgit extends StatelessWidget {
         children: <Widget>[
           SizedBox(
             height: 50,
-            
           ),
           Expanded(
             child: AnalyzeChartsWidget(),
