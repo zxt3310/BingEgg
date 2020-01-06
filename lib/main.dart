@@ -108,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
           showUnselectedLabels: true,
           showSelectedLabels: true,
           type: BottomNavigationBarType.fixed,
-          onTap: (idx) {
+          onTap: (idx) { 
             curidx = idx;
             setState(() {
               controller.jumpToPage(idx);
