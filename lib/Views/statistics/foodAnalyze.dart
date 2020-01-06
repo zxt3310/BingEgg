@@ -4,18 +4,20 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 class FoodAnalyzeWidgit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          SizedBox(
-            height: 50,
+    return Scaffold(
+        appBar: AppBar(title: Text('统计')),
+        body: Container(
+          child: Column(
+            children: <Widget>[
+              SizedBox(
+                height: 50,
+              ),
+              Expanded(
+                child: AnalyzeChartsWidget(),
+              )
+            ],
           ),
-          Expanded(
-            child: AnalyzeChartsWidget(),
-          )
-        ],
-      ),
-    );
+        ));
   }
 }
 
@@ -37,7 +39,6 @@ class _AnalyzeChartsWidgetState extends State<AnalyzeChartsWidget> {
                 _makeLineChart(),
                 _makePieChart(),
               ],
-              
             ),
           ),
         )
@@ -61,10 +62,8 @@ class _AnalyzeChartsWidgetState extends State<AnalyzeChartsWidget> {
             alignment: ChartAlignment.far,
             orientation: LegendItemOrientation.vertical),
         tooltipBehavior: TooltipBehavior(enable: true),
-        trackballBehavior: TrackballBehavior(
-          enable: true,
-          lineDashArray: [10,10]
-        ),
+        trackballBehavior:
+            TrackballBehavior(enable: true, lineDashArray: [10, 10]),
         series: <LineSeries<SalesData, String>>[
           LineSeries<SalesData, String>(
               // Bind data source
@@ -77,7 +76,8 @@ class _AnalyzeChartsWidgetState extends State<AnalyzeChartsWidget> {
                 SalesData('Apr', 32),
                 SalesData('May', 40)
               ],
-              markerSettings: MarkerSettings(isVisible: true,shape: DataMarkerType.diamond),
+              markerSettings: MarkerSettings(
+                  isVisible: true, shape: DataMarkerType.diamond),
               xValueMapper: (SalesData sales, _) => sales.month,
               yValueMapper: (SalesData sales, _) => sales.sales,
               dataLabelSettings: DataLabelSettings(isVisible: true)),
@@ -114,7 +114,7 @@ class _AnalyzeChartsWidgetState extends State<AnalyzeChartsWidget> {
                   PieData('肉', 20, '20%'),
                   PieData('主食', 30, '30%'),
                   PieData('饮品', 10, '10%'),
-                  PieData('牛奶',3,'3%')
+                  PieData('牛奶', 3, '3%')
                 ],
                 opacity: 1,
                 radius: '65%',

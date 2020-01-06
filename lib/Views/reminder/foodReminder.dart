@@ -17,7 +17,11 @@ class _FoodReminderWidgetState extends State<FoodReminderWidget> {
     List<FoodMaterial> foods = List<FoodMaterial>.generate(datas.length, (idx) {
       return FoodMaterial.fromJson(datas[idx]);
     });
-    return Container(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('提醒'),
+      ),
+        body: Container(
       child: CustomScrollView(
         slivers: <Widget>[
           SliverPadding(
@@ -49,17 +53,23 @@ class _FoodReminderWidgetState extends State<FoodReminderWidget> {
                   }, childCount: foods.length))),
           SliverList(
             delegate: SliverChildListDelegate([
+              Padding(
+                padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                child: Text('特别提醒', style: TextStyle(fontSize: 16)),
+              ),
               Container(
-                  height: 100,
+                  height: 160,
                   child: ListView.builder(
+                    padding: EdgeInsets.all(10),
                     scrollDirection: Axis.horizontal,
                     itemCount: 10,
                     itemBuilder: (context, idx) {
                       return Container(
-                        width: 70,
-                        height: 70,
+                        width: 120,
                         margin: EdgeInsets.all(10),
-                        color: Colors.redAccent,
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 1),
+                            borderRadius: BorderRadius.circular(15)),
                       );
                     },
                   ))
@@ -67,6 +77,6 @@ class _FoodReminderWidgetState extends State<FoodReminderWidget> {
           ),
         ],
       ),
-    );
+    ));
   }
 }

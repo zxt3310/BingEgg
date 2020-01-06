@@ -11,6 +11,9 @@ class MyFridgeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('我的冰箱'),
+      ),
       body: _FridgeWidget(),
     );
   }

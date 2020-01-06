@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sirilike_flutter/login/ui/home_page.dart';
-import 'mainpage.dart';
-import 'voiceArs.dart';
 import 'login/ui/user_provider.dart';
 import 'model/user.dart';
-import 'imageList.dart';
-import 'package:provider/provider.dart';
 import 'Views/myFridge/myFridge.dart';
 import 'Views/statistics/foodAnalyze.dart';
 import 'Views/reminder/foodReminder.dart';
+import 'Views/userAndSetting/mine.dart';
 
 const List barList = ["提醒", "冰箱", "统计", "我的"];
 const List iconListUnselect = [
@@ -28,6 +26,11 @@ const List iconListSelect = [
 void main() {
   //在加载app前 载入所有插件
   WidgetsFlutterBinding.ensureInitialized();
+
+  SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(
+        statusBarColor: Colors.green,
+    );
+    SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   realRunApp();
 }
 
@@ -42,7 +45,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'Voice Demo',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.lightGreen,
+          splashColor: Colors.transparent
         ),
         home: MyHomePage());
   }
@@ -74,31 +78,31 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Demo'),
-        actions: <Widget>[
-          FlatButton(
-            child: Text(user.isLogin ? user.username : '登录',
-                style: TextStyle(color: Colors.white)),
-            textTheme: ButtonTextTheme.primary,
-            onPressed: user.isLogin?(){}:() {
-              Navigator.of(context).push(CustomRoute(UserContainer(
-                user: null,
-                child: AuthorPage(),
-              )));
-            },
-          )
-        ],
-      ),
+      // appBar: AppBar(
+      //   title: Text('Demo'),
+      //   actions: <Widget>[
+      //     FlatButton(
+      //       child: Text(user.isLogin ? user.username : '登录',
+      //           style: TextStyle(color: Colors.white)),
+      //       textTheme: ButtonTextTheme.primary,
+      //       onPressed: user.isLogin?(){}:() {
+      //         Navigator.of(context).push(CustomRoute(UserContainer(
+      //           user: null,
+      //           child: AuthorPage(),
+      //         )));
+      //       },
+      //     )
+      //   ],
+      // ),
       body: PageView(
         physics: NeverScrollableScrollPhysics(),
-        children: <Widget>[FoodReminderWidget(), MyFridgeWidget(),FoodAnalyzeWidgit()],
+        children: <Widget>[FoodReminderWidget(), MyFridgeWidget(),FoodAnalyzeWidgit(),UserCenterWidget()],
         controller: controller,
       ),
       bottomNavigationBar: BottomNavigationBar(
           items: items,
           unselectedItemColor: Colors.black,
-          selectedItemColor: Colors.blue,
+          //selectedItemColor: Colors.blue,
           iconSize: 20,
           currentIndex: curidx,
           showUnselectedLabels: true,

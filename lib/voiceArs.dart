@@ -169,6 +169,7 @@ class _AsrTTSModelState extends State<AsrTTSModel>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Container(
       child: Column(
         children: <Widget>[
