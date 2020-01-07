@@ -26,7 +26,7 @@ class FoodListWidget extends StatelessWidget {
               children: <Widget>[
                 Text('${obj.itemName}'),
                 Text('数量：${obj.quantity}'),
-                Text('放入时间：${obj.createdAt}', textAlign: TextAlign.center)
+                Text(obj.getRemindDate(), textAlign: TextAlign.center)
               ],
             ),
           );

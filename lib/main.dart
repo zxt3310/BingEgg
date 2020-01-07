@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sirilike_flutter/login/ui/home_page.dart';
-import 'login/ui/user_provider.dart';
 import 'model/user.dart';
 import 'Views/myFridge/myFridge.dart';
 import 'Views/statistics/foodAnalyze.dart';
@@ -78,22 +76,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('Demo'),
-      //   actions: <Widget>[
-      //     FlatButton(
-      //       child: Text(user.isLogin ? user.username : '登录',
-      //           style: TextStyle(color: Colors.white)),
-      //       textTheme: ButtonTextTheme.primary,
-      //       onPressed: user.isLogin?(){}:() {
-      //         Navigator.of(context).push(CustomRoute(UserContainer(
-      //           user: null,
-      //           child: AuthorPage(),
-      //         )));
-      //       },
-      //     )
-      //   ],
-      // ),
       body: PageView(
         physics: NeverScrollableScrollPhysics(),
         children: <Widget>[FoodReminderWidget(), MyFridgeWidget(),FoodAnalyzeWidgit(),UserCenterWidget()],
@@ -126,29 +108,4 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class CustomRoute extends PageRouteBuilder {
-  final Widget widget;
-  CustomRoute(this.widget)
-      : super(
-            transitionDuration: Duration(milliseconds: 500),
-            pageBuilder: (
-              BuildContext context,
-              Animation<double> animation1,
-              Animation<double> animation2,
-            ) {
-              return widget;
-            },
-            transitionsBuilder: (BuildContext context,
-                Animation<double> animation1,
-                Animation<double> animation2,
-                Widget child) {
-              return SlideTransition(
-                position:
-                    Tween<Offset>(begin: Offset(0.0, 1.0), end: Offset(0, 0))
-                        .animate(CurvedAnimation(
-                            parent: animation1,
-                            curve: Curves.fastLinearToSlowEaseIn)),
-                child: child,
-              );
-            });
-}
+

@@ -1,10 +1,11 @@
-
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:dio/adapter.dart';
 import 'user.dart';
 
-const baseurl = 'http://106.13.105.43:8888';
+export 'package:dio/dio.dart';
+
+const baseurl = 'http://106.13.105.43:8889';
 
 class NetManager {
   Dio dio;
@@ -15,15 +16,25 @@ class NetManager {
   NetManager._internal() {
     dio = Dio();
     dio.options.baseUrl = baseurl;
-    
-    // (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (HttpClient client){
-    //   client.findProxy = (uri){
-    //     return "PROXY 192.168.1.148:8888";
-    //   };
-    // };
+
+    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+        (HttpClient client) {
+      client.findProxy = (uri) {
+        return "PROXY 192.168.1.126:8888";
+      };
+    };
     dio.interceptors
         .add(InterceptorsWrapper(onRequest: (RequestOptions options) {
       options.headers.addAll({'Authorization': User.instance.token});
+      
+    }, onResponse: (Response res) {
+      int err = res.data['err'];
+      if (err != 0) {
+        dio.reject('faild');
+      }
+    },onError: (err){
+      print(err);
+      return dio.resolve(Response(data: {'err':999,'errmsg':'网络连接失败'}));
     }));
   }
   static NetManager _getInstance() {

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sirilike_flutter/login/ui/home_page.dart';
+import '../../model/user.dart';
+import '../../login/ui/user_provider.dart';
 
 class UserCenterWidget extends StatelessWidget {
+  User user = User.instance;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,41 +18,20 @@ class UserCenterWidget extends StatelessWidget {
             onPressed: () => {}),
         actions: <Widget>[
           IconButton(
-              icon: Icon(Icons.share, color: Colors.black), onPressed: () => {})
+              icon: Icon(Icons.share, color: Colors.black),
+              onPressed: user.isLogin
+                  ? () {}
+                  : () {
+                      Navigator.of(context).push(CustomRoute(
+                          UserContainer(user: null, child: AuthorPage())));
+                    })
         ],
       ),
       body: Container(
         color: Colors.grey[300],
         child: Column(
           children: <Widget>[
-            Container(
-              height: 130,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Padding(
-                      padding: EdgeInsets.all(15),
-                      child: Container(
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                  width: 4, color: Colors.orangeAccent)),
-                          child: ClipOval(
-                              child: Image.network(
-                                  'https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=612723378,2699755568&fm=11&gp=0.jpg')))),
-                  Container(
-                      child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text('小冰箱的箱', style: TextStyle(fontSize: 18)),
-                      SizedBox(height: 15),
-                      Text('微信登录', style: TextStyle(color: Colors.grey[500]))
-                    ],
-                  )),
-                ],
-              ),
-            ),
+            UserHeaderWidget(),
             Expanded(
               child: Container(
                 color: Colors.white,
@@ -88,4 +71,71 @@ class UserCenterWidget extends StatelessWidget {
       ),
     );
   }
+}
+
+class UserHeaderWidget extends StatefulWidget {
+  @override
+  _UserHeaderWidgetState createState() => _UserHeaderWidgetState();
+}
+
+class _UserHeaderWidgetState extends State<UserHeaderWidget> {
+  User user = User.instance;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 130,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Padding(
+              padding: EdgeInsets.all(15),
+              child: Container(
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(width: 4, color: Colors.orangeAccent)),
+                  child: ClipOval(
+                      child: Image.network(
+                          'https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=612723378,2699755568&fm=11&gp=0.jpg')))),
+          Container(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text('${user.username == null ? '小冰的箱' : user.username}',
+                  style: TextStyle(fontSize: 18)),
+              SizedBox(height: 15),
+              Text('手机登录', style: TextStyle(color: Colors.grey[500]))
+            ],
+          )),
+        ],
+      ),
+    );
+  }
+}
+
+class CustomRoute extends PageRouteBuilder {
+  final Widget widget;
+  CustomRoute(this.widget)
+      : super(
+            transitionDuration: Duration(milliseconds: 500),
+            pageBuilder: (
+              BuildContext context,
+              Animation<double> animation1,
+              Animation<double> animation2,
+            ) {
+              return widget;
+            },
+            transitionsBuilder: (BuildContext context,
+                Animation<double> animation1,
+                Animation<double> animation2,
+                Widget child) {
+              return SlideTransition(
+                position:
+                    Tween<Offset>(begin: Offset(0.0, 1.0), end: Offset(0, 0))
+                        .animate(CurvedAnimation(
+                            parent: animation1,
+                            curve: Curves.fastLinearToSlowEaseIn)),
+                child: child,
+              );
+            });
 }
