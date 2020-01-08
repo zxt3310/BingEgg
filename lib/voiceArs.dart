@@ -122,8 +122,8 @@ class _AsrTTSModelState extends State<AsrTTSModel>
     }
     this.setState(() {});
 
-    Response resNew = await NetManager.instance.dio.get(
-        '/api/voice-result/analyze?words=${resp.data['result'][0]}');
+    Response resNew = await NetManager.instance.dio
+        .get('/api/voice-result/analyze?words=${resp.data['result'][0]}');
     result = result + '\n你：${resNew.data['data']['words']}';
 
     log = log + '\n上传...\n${resNew.data}';
@@ -170,7 +170,9 @@ class _AsrTTSModelState extends State<AsrTTSModel>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Container(
+    return Scaffold(
+        appBar: AppBar(title: Text('添加')),
+        body: Container(
       child: Column(
         children: <Widget>[
           Container(
@@ -205,6 +207,6 @@ class _AsrTTSModelState extends State<AsrTTSModel>
               ))
         ],
       ),
-    );
+    ));
   }
 }

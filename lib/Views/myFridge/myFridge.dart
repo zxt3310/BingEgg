@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'foodItemList.dart';
-import 'dart:convert';
 import '../../model/network.dart';
 
 List<String> namelist = ['全部', '水果', '蔬菜', '肉类', '饮品'];
-String jsonStr =
-    '[{"id": 1, "item_id": null, "item_name": "\u9e21\u86cb", "quantity": 24, "created_at": "2019-12-08 06:23:49"}, {"id": 2, "item_id": null, "item_name": "\u652f\u4e0b", "quantity": 20, "created_at": "2019-12-08 07:36:28"}, {"id": 3, "item_id": null, "item_name": "\u852c\u83dc", "quantity": 20, "created_at": "2019-12-08 07:37:27"}, {"id": 5, "item_id": null, "item_name": "\u9e21", "quantity": 1, "created_at": "2019-12-08 13:36:15"}, {"id": 6, "item_id": null, "item_name": "\u8304\u5b50", "quantity": 4, "created_at": "2019-12-08 13:36:24"}, {"id": 7, "item_id": null, "item_name": "\u72d7", "quantity": 3, "created_at": "2019-12-08 13:49:16"}, {"id": 9, "item_id": null, "item_name": "\u80e1\u841d\u535c", "quantity": 1, "created_at": "2019-12-10 02:15:37"}, {"id": 10, "item_id": null, "item_name": "\u9999\u8549", "quantity": 1, "created_at": "2019-12-11 11:08:18"}]';
 
 class MyFridgeWidget extends StatelessWidget {
   @override

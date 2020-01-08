@@ -5,6 +5,7 @@ import 'Views/myFridge/myFridge.dart';
 import 'Views/statistics/foodAnalyze.dart';
 import 'Views/reminder/foodReminder.dart';
 import 'Views/userAndSetting/mine.dart';
+import 'voiceArs.dart';
 
 const List barList = ["提醒", "冰箱", "统计", "我的"];
 const List iconListUnselect = [
@@ -84,7 +85,6 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: BottomNavigationBar(
           items: items,
           unselectedItemColor: Colors.black,
-          //selectedItemColor: Colors.blue,
           iconSize: 20,
           currentIndex: curidx,
           showUnselectedLabels: true,
@@ -97,11 +97,10 @@ class _MyHomePageState extends State<MyHomePage> {
             });
           }),
       floatingActionButton: IconButton(
-          icon: Icon(Icons.cancel),
+          icon: Icon(Icons.add_circle_outline),
           iconSize: 60,
-          onPressed: () async {
-            await user.clear();
-            setState(() {});
+          onPressed: (){
+            Navigator.of(context).push(MaterialPageRoute(builder:(context) => AsrTTSModel()));
           }),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );

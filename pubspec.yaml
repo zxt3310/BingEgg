@@ -34,6 +34,7 @@ dependencies:
   syncfusion_flutter_charts: ^17.4.40
   flutter_screenutil:
   provider:
+  gzx_dropdown_menu : ^1.0.3
     
 dev_dependencies:
   flutter_test:

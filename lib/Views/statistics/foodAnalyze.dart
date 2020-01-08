@@ -1,23 +1,76 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:gzx_dropdown_menu/gzx_dropdown_menu.dart';
 
-class FoodAnalyzeWidgit extends StatelessWidget {
+class FoodAnalyzeWidgit extends StatefulWidget {
+  @override
+  _FoodAnalyzeWidgitState createState() => _FoodAnalyzeWidgitState();
+}
+
+class _FoodAnalyzeWidgitState extends State<FoodAnalyzeWidgit> {
+  GlobalKey _stackKey = GlobalKey();
+  GZXDropdownMenuController _dropdownMenuController =
+      GZXDropdownMenuController();
   @override
   Widget build(BuildContext context) {
+    int days = DateTime.now().day;
+    DateTime lastMonth = DateTime.now().subtract(Duration(days: days + 1));
     return Scaffold(
-        appBar: AppBar(title: Text('统计')),
-        body: Container(
-          child: Column(
-            children: <Widget>[
-              SizedBox(
-                height: 50,
-              ),
-              Expanded(
-                child: AnalyzeChartsWidget(),
-              )
+      appBar: AppBar(title: Text('统计')),
+      body: Stack(
+        key: _stackKey,
+        children: <Widget>[
+          Column(children: <Widget>[
+            GZXDropDownHeader(
+              items: [
+                GZXDropDownHeaderItem('${lastMonth.year}年'),
+                GZXDropDownHeaderItem('${lastMonth.month}月')
+              ],
+              controller: _dropdownMenuController,
+              stackKey: _stackKey,
+              onItemTap: (index) {},
+            ),
+            Expanded(child: AnalyzeChartsWidget())
+          ]),
+          GZXDropDownMenu(
+            controller: _dropdownMenuController,
+            animationMilliseconds: 100,
+            menus: [
+              GZXDropdownMenuBuilder(
+                  dropDownHeight: 200,
+                  dropDownWidget: Container(
+                    height: 100,
+                    width: 100,
+                    color: Colors.blue,
+                    child: GestureDetector(
+                      onTap: () {
+                        _dropdownMenuController.hide();
+                        setState(() {
+                          
+                        });
+                      },
+                    ),
+                  )),
+              GZXDropdownMenuBuilder(
+                  dropDownHeight: 200,
+                  dropDownWidget: Container(
+                    height: 100,
+                    color: Colors.blue,
+                    child: GestureDetector(
+                      onTap: () {
+                        _dropdownMenuController.hide();
+                      },
+                    ),
+                  )),
             ],
           ),
-        ));
+        ],
+      ),
+    );
+  }
+
+  Widget _getYearList(void itemOnTap(value)){
+
   }
 }
 
@@ -105,7 +158,7 @@ class _AnalyzeChartsWidgetState extends State<AnalyzeChartsWidget> {
         child: SfCircularChart(
           title: ChartTitle(text: '占比分析'),
           tooltipBehavior: TooltipBehavior(enable: true),
-          legend: Legend(isVisible: true, toggleSeriesVisibility: false),
+          legend: Legend(isVisible: true),
           series: <DoughnutSeries<PieData, String>>[
             DoughnutSeries<PieData, String>(
                 dataSource: <PieData>[
@@ -119,6 +172,7 @@ class _AnalyzeChartsWidgetState extends State<AnalyzeChartsWidget> {
                 opacity: 1,
                 radius: '65%',
                 innerRadius: '40%',
+                explode: true,
                 xValueMapper: (PieData data, _) => data.name,
                 yValueMapper: (PieData data, _) => data.count,
                 dataLabelMapper: (PieData data, _) => data.point,
