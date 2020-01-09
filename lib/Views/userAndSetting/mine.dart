@@ -5,7 +5,7 @@ import '../../model/user.dart';
 import '../../login/ui/user_provider.dart';
 
 class UserCenterWidget extends StatelessWidget {
-  User user = User.instance;
+  final User user = User.instance;
   @override
   Widget build(BuildContext context) {
     return Scaffold(

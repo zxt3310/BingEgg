@@ -11,10 +11,21 @@ class _FoodAnalyzeWidgitState extends State<FoodAnalyzeWidgit> {
   GlobalKey _stackKey = GlobalKey();
   GZXDropdownMenuController _dropdownMenuController =
       GZXDropdownMenuController();
+
+  int curSelYear;
+  int curSelMonth;
+
   @override
-  Widget build(BuildContext context) {
+  void initState() { 
+    super.initState();
     int days = DateTime.now().day;
     DateTime lastMonth = DateTime.now().subtract(Duration(days: days + 1));
+    curSelMonth = lastMonth.month;
+    curSelYear = lastMonth.year;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('统计')),
       body: Stack(
@@ -23,8 +34,8 @@ class _FoodAnalyzeWidgitState extends State<FoodAnalyzeWidgit> {
           Column(children: <Widget>[
             GZXDropDownHeader(
               items: [
-                GZXDropDownHeaderItem('${lastMonth.year}年'),
-                GZXDropDownHeaderItem('${lastMonth.month}月')
+                GZXDropDownHeaderItem('$curSelYear年'),
+                GZXDropDownHeaderItem('$curSelMonth月')
               ],
               controller: _dropdownMenuController,
               stackKey: _stackKey,
@@ -37,30 +48,22 @@ class _FoodAnalyzeWidgitState extends State<FoodAnalyzeWidgit> {
             animationMilliseconds: 100,
             menus: [
               GZXDropdownMenuBuilder(
-                  dropDownHeight: 200,
-                  dropDownWidget: Container(
-                    height: 100,
-                    width: 100,
-                    color: Colors.blue,
-                    child: GestureDetector(
-                      onTap: () {
-                        _dropdownMenuController.hide();
-                        setState(() {
-                          
-                        });
-                      },
-                    ),
-                  )),
+                  dropDownHeight: 100,
+                  dropDownWidget: Container(child: _getYearList((value) {
+                    curSelYear = value;
+                    _dropdownMenuController.hide();
+                    setState(() {});
+                  }))),
               GZXDropdownMenuBuilder(
                   dropDownHeight: 200,
                   dropDownWidget: Container(
-                    height: 100,
-                    color: Colors.blue,
-                    child: GestureDetector(
-                      onTap: () {
-                        _dropdownMenuController.hide();
-                      },
-                    ),
+                    child: _getMonthList((value){
+                      curSelMonth = value;
+                      _dropdownMenuController.hide();
+                      setState(() {
+                        
+                      });
+                    })
                   )),
             ],
           ),
@@ -69,8 +72,56 @@ class _FoodAnalyzeWidgitState extends State<FoodAnalyzeWidgit> {
     );
   }
 
-  Widget _getYearList(void itemOnTap(value)){
+  Widget _getYearList(void itemOnTap(value)) {
+    int year = DateTime.now().year;
+    return Container(
+        child: ListView.separated(
+      itemCount: year - 2019 + 1,
+      itemBuilder: (context, idx) {
+        return GestureDetector(
+            onTap: () {
+              itemOnTap(idx + 2019);
+            },
+            child: Container(
+              height: 30,
+              color: Colors.grey[100],
+              child: Center(child: Text('${idx + 2019}年')),
+            ));
+      },
+      separatorBuilder: (context, idx) {
+        return Container(
+          height: 1,
+          color: Colors.grey[300],
+        );
+      },
+    ));
+  }
 
+  Widget _getMonthList(void itemOnTap(value)) {
+    int year = DateTime.now().year;
+    int days = DateTime.now().day;
+    DateTime lastMonth = DateTime.now().subtract(Duration(days: days + 1));
+    return Container(
+        child: ListView.separated(
+      itemCount: lastMonth.year == year ? lastMonth.month : 12,
+      itemBuilder: (context, idx) {
+        return GestureDetector(
+            onTap: () {
+              itemOnTap(idx+1);
+            },
+            child: Container(
+              color: Colors.grey[100],
+              height: 30,
+              child: Center(child: Text('${idx+1}月')),
+            ));
+      },
+      separatorBuilder: (context, idx) {
+        return Container(
+          height: 1,
+          color: Colors.grey[300],
+        );
+      },
+    ));
   }
 }
 
