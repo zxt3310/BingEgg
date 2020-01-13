@@ -53,7 +53,9 @@ class _TitleHeaderWidgetState extends State<TitleHeaderWidget> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _getFridgeList();
+    if (context != this.context){
+      _getFridgeList();
+    }
   }
 
   _getFridgeList() async {
@@ -71,6 +73,8 @@ class _TitleHeaderWidgetState extends State<TitleHeaderWidget> {
     CurrentFridgeListProvider curProvider =
         Provider.of<CurrentFridgeListProvider>(context);
     curProvider.changeList(fridges);
+
+    print(curProvider.curList);
   }
 }
 
