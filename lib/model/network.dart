@@ -29,12 +29,12 @@ class NetManager {
       
     }, onResponse: (Response res) {
       int err = res.data['err'];
-      if (err != 0) {
-        dio.reject('faild');
+      if (err == 999) {
+        return dio.reject(DioError(error: 'need relogin'));
       }
     },onError: (err){
       print(err);
-      return dio.resolve(Response(data: {'err':999,'errmsg':'网络连接失败'}));
+      return dio.resolve(Response(data: {'err':990,'errmsg':'网络连接失败'}));
     }));
   }
   static NetManager _getInstance() {

@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
         title: 'Voice Demo',
         theme: ThemeData(
           primarySwatch: Colors.lightGreen,
-          splashColor: Colors.transparent
+          splashColor: Colors.transparent,
         ),
         home: MyHomePage());
   }

@@ -6,14 +6,71 @@ import '../../model/network.dart';
 List<String> namelist = ['全部', '水果', '蔬菜', '肉类', '饮品'];
 
 class MyFridgeWidget extends StatelessWidget {
+  final CurrentFridgeListProvider curFridgeState = CurrentFridgeListProvider();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('我的冰箱'),
-      ),
-      body: _FridgeWidget(),
-    );
+    return ChangeNotifierProvider<CurrentFridgeListProvider>(
+        create: (context) => curFridgeState,
+        child: Scaffold(
+          appBar: AppBar(
+            title: TitleHeaderWidget(),
+          ),
+          body: _FridgeWidget(),
+        ));
+  }
+}
+
+class TitleHeaderWidget extends StatefulWidget {
+  @override
+  _TitleHeaderWidgetState createState() => _TitleHeaderWidgetState();
+}
+
+class _TitleHeaderWidgetState extends State<TitleHeaderWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<CurrentFridgeListProvider>(
+        builder: (BuildContext context, value, Widget child) {
+      return Container(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(width: 30),
+            Text('我的冰箱'),
+            PopupMenuButton(
+              icon: Icon(Icons.arrow_drop_down),
+              itemBuilder: (context) {
+                return List.generate(2, (idx) {
+                  return PopupMenuItem(child: Text('选项卡'));
+                });
+              },
+            )
+          ],
+        ),
+      );
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _getFridgeList();
+  }
+
+  _getFridgeList() async {
+    NetManager manager = NetManager.instance;
+    Response res = await manager.dio.get('/api/user-box/list');
+    if (res.data['err'] != 0) {
+      Scaffold.of(context)
+          .showSnackBar(SnackBar(content: Text(res.data['errmsg'])));
+      return;
+    }
+    List sources = res.data['data']['boxes'];
+    List<Fridge> fridges = List<Fridge>.generate(sources.length, (idx) {
+      return Fridge.fromJson(sources[idx]);
+    });
+    CurrentFridgeListProvider curProvider =
+        Provider.of<CurrentFridgeListProvider>(context);
+    curProvider.changeList(fridges);
   }
 }
 
@@ -97,12 +154,13 @@ class __FridgeWidgetState extends State<_FridgeWidget>
     );
   }
 
-  _getDataSource() async{
+  _getDataSource() async {
     NetManager ntMgr = NetManager.instance;
-    Response res =await ntMgr.dio.get('/api/user-inventory/list');
-    
-    if(res.data['err'] != 0){
-      Scaffold.of(context).showSnackBar(SnackBar(content:Text(res.data['errmsg'])));
+    Response res = await ntMgr.dio.get('/api/user-inventory/list');
+
+    if (res.data['err'] != 0) {
+      Scaffold.of(context)
+          .showSnackBar(SnackBar(content: Text(res.data['errmsg'])));
       return;
     }
     List datas = res.data['data']['inventories'];
@@ -112,6 +170,7 @@ class __FridgeWidgetState extends State<_FridgeWidget>
     });
     curState.changeSource(foods);
   }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -186,5 +245,32 @@ class FoodMaterial {
     } else {
       return '放入时间:$lastDateAdd';
     }
+  }
+}
+
+class Fridge {
+  final int id;
+  final String boxname;
+  final bool isdefault;
+  Fridge(this.id, this.boxname, this.isdefault);
+
+  Fridge.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        boxname = json['box_name'],
+        isdefault = json['isdefault'] == 0 ? false : true;
+}
+
+class CurrentFridgeListProvider with ChangeNotifier {
+  List<Fridge> curList;
+  int curIndex = 0;
+
+  changeList(List<Fridge> list) {
+    curList = list;
+    notifyListeners();
+  }
+
+  changeIndex(int idx) {
+    curIndex = idx;
+    notifyListeners();
   }
 }
