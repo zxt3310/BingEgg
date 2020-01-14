@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'foodItemList.dart';
@@ -29,19 +30,52 @@ class _TitleHeaderWidgetState extends State<TitleHeaderWidget> {
   @override
   Widget build(BuildContext context) {
     return Consumer<CurrentFridgeListProvider>(
-        builder: (BuildContext context, value, Widget child) {
+        builder: (BuildContext context, curFridges, Widget child) {
+      if (curFridges.curList == null) {
+        return Container();
+      }
       return Container(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             SizedBox(width: 30),
-            Text('我的冰箱'),
+            Text('${curFridges.curList[curFridges.curIndex].boxname}'),
             PopupMenuButton(
               icon: Icon(Icons.arrow_drop_down),
               itemBuilder: (context) {
                 return List.generate(2, (idx) {
-                  return PopupMenuItem(child: Text('选项卡'));
-                });
+                  return PopupMenuItem(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text('${curFridges.curList[idx].boxname}'),
+                          curFridges.curList[idx].id == curFridges.defaultId
+                              ? Text('当前默认',
+                                  style: TextStyle(
+                                      color: Colors.grey[500], fontSize: 12))
+                              : GestureDetector(
+                                  child: Text('设为默认',
+                                      style: TextStyle(fontSize: 12)),
+                                  onTap: () {
+                                    _setDefaultFridge(
+                                        curFridges.curList[idx].id);
+                                  })
+                        ],
+                      ),
+                      value: idx);
+                }, growable: true)
+                  ..add(PopupMenuItem(
+                    child: Center(
+                        child: Text('+ 新增冰箱', textAlign: TextAlign.center)),
+                    value: 999,
+                  ));
+              },
+              onSelected: (e) {
+                if (e == 999) {
+                  _showDialoge();
+                  return;
+                }
+                curFridges.changeIndex(e);
               },
             )
           ],
@@ -51,11 +85,15 @@ class _TitleHeaderWidgetState extends State<TitleHeaderWidget> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (context != this.context){
-      _getFridgeList();
-    }
+  void dispose() {
+    super.dispose();
+    print('dealloc');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getFridgeList();
   }
 
   _getFridgeList() async {
@@ -74,7 +112,48 @@ class _TitleHeaderWidgetState extends State<TitleHeaderWidget> {
         Provider.of<CurrentFridgeListProvider>(context);
     curProvider.changeList(fridges);
 
+    for (int i = 0; i < fridges.length; i++) {
+      Fridge fridge = fridges.elementAt(i);
+      if (fridge.isdefault) {
+        curProvider.changeIndex(i);
+        curProvider.changeDefaultFridge(fridge.id);
+      }
+    }
+
     print(curProvider.curList);
+  }
+
+  _setDefaultFridge(int boxid) async {
+    NetManager manager = NetManager.instance;
+    Response res = await manager.dio.get('/api/user-box/default?boxid=$boxid');
+    if (res.data['err'] != 0) {
+      print('set default Error');
+      return;
+    }
+    CurrentFridgeListProvider curProvider =
+        Provider.of<CurrentFridgeListProvider>(context);
+    curProvider.changeDefaultFridge(boxid);
+  }
+
+  _showDialoge() {
+    showGeneralDialog(
+      context: context,
+      barrierLabel: '',
+      barrierDismissible: true,
+      barrierColor: const Color(0x77000000),
+      transitionDuration: Duration(milliseconds: 200),
+      pageBuilder: (ctx, anim1, anim2) {
+        return Column(
+            children:<Widget>[SizedBox(height: 100) ,CupertinoAlertDialog(title: Text('Alert'))]);
+      },
+      transitionBuilder: (ctx,animation,_,child){
+        return ScaleTransition(
+          alignment: Alignment.topLeft,
+          scale: animation,
+          child: child,
+        );
+      }
+    );
   }
 }
 
@@ -128,9 +207,20 @@ class __FridgeWidgetState extends State<_FridgeWidget>
                   controller: pageController,
                   onPageChanged: _onChangePage,
                   itemBuilder: (BuildContext context, int index) {
-                    return Consumer<CurrentIndexProvider>(
-                        builder: (context, cur, child) {
-                      return FoodListWidget(cur.foods);
+                    return Consumer<CurrentFridgeListProvider>(
+                        builder: (context, curFri, child) {
+                      return Consumer<CurrentIndexProvider>(
+                          builder: (context, cur, child) {
+                        if (cur.filterOfBoxid(curFri.curBoxid).isEmpty) {
+                          return Container(
+                            child: Center(
+                              child: Text('冰箱是空的哦'),
+                            ),
+                          );
+                        }
+                        return FoodListWidget(
+                            cur.filterOfBoxid(curFri.curBoxid));
+                      });
                     });
                   },
                 )),
@@ -197,6 +287,16 @@ class CurrentIndexProvider with ChangeNotifier {
     foods = source;
     notifyListeners();
   }
+
+  List<FoodMaterial> filterOfBoxid(int boxid) {
+    List<FoodMaterial> result = [];
+    for (FoodMaterial food in foods) {
+      if (food.boxId == boxid) {
+        result.add(food);
+      }
+    }
+    return result;
+  }
 }
 
 class FoodMaterial {
@@ -233,21 +333,24 @@ class FoodMaterial {
       };
 
   String getRemindDate() {
+    DateTime create = DateTime.parse(lastDateAdd);
     if (expiryDate.isNotEmpty) {
       int days = 0;
       int hours = 0;
       DateTime expire = DateTime.parse(expiryDate);
-      DateTime create = DateTime.parse(lastDateAdd);
       Duration duration = expire.difference(create);
       hours = duration.inHours;
       days = hours ~/ 24;
       if (days > 0) {
-        return '$days天 ${hours % 24}小时后过期';
+        return '$days天后过期';
       } else {
         return '$hours小时后过期';
       }
     } else {
-      return '放入时间:$lastDateAdd';
+      Duration duration = DateTime.now().difference(create);
+      int days = duration.inDays;
+      int hours = duration.inHours;
+      return hours > 0 ? days > 0 ? '已放入$days天' : '已放入$hours小时' : '刚刚放入';
     }
   }
 }
@@ -261,12 +364,14 @@ class Fridge {
   Fridge.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         boxname = json['box_name'],
-        isdefault = json['isdefault'] == 0 ? false : true;
+        isdefault = json['is_default'] == 0 ? false : true;
 }
 
 class CurrentFridgeListProvider with ChangeNotifier {
   List<Fridge> curList;
   int curIndex = 0;
+  int curBoxid = 0;
+  int defaultId = 0;
 
   changeList(List<Fridge> list) {
     curList = list;
@@ -275,6 +380,11 @@ class CurrentFridgeListProvider with ChangeNotifier {
 
   changeIndex(int idx) {
     curIndex = idx;
+    curBoxid = curList[idx].id;
     notifyListeners();
+  }
+
+  changeDefaultFridge(int boxid) {
+    defaultId = boxid;
   }
 }
