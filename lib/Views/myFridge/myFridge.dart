@@ -1,27 +1,56 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'foodItemList.dart';
 import '../../model/network.dart';
 
+import 'package:sirilike_flutter/voiceArs.dart';
+import 'package:sirilike_flutter/Views/userAndSetting/mine.dart'
+    show CustomRoute;
+
+export 'package:provider/provider.dart';
+
 List<String> namelist = ['全部', '水果', '蔬菜', '肉类', '饮品'];
 
-class MyFridgeWidget extends StatelessWidget {
+class MyFridgeWidget extends StatefulWidget {
+  @override
+  _MyFridgeWidgetState createState() => _MyFridgeWidgetState();
+}
+
+class _MyFridgeWidgetState extends State<MyFridgeWidget> with AutomaticKeepAliveClientMixin {
   final CurrentFridgeListProvider curFridgeState = CurrentFridgeListProvider();
+
+  
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<CurrentFridgeListProvider>(
         create: (context) => curFridgeState,
         child: Scaffold(
           appBar: AppBar(
+            leading: Text(''),
+            actions: <Widget>[
+              FlatButton.icon(
+                icon: Icon(Icons.add_shopping_cart),
+                onPressed: () {
+                  Navigator.of(context)
+                      .push(CustomRoute(AsrTTSModel(provider: curFridgeState)));
+                },
+                label: Text(''),
+              )
+            ],
             title: TitleHeaderWidget(),
           ),
           body: _FridgeWidget(),
         ));
   }
+
+  @override
+
+  bool get wantKeepAlive => true;
 }
+
 
 class TitleHeaderWidget extends StatefulWidget {
   @override

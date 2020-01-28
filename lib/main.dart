@@ -27,9 +27,9 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(
-        statusBarColor: Colors.green,
-    );
-    SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+    statusBarColor: Colors.green,
+  );
+  SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   realRunApp();
 }
 
@@ -79,7 +79,12 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: PageView(
         physics: NeverScrollableScrollPhysics(),
-        children: <Widget>[FoodReminderWidget(), MyFridgeWidget(),FoodAnalyzeWidgit(),UserCenterWidget()],
+        children: <Widget>[
+          FoodReminderWidget(),
+          MyFridgeWidget(),
+          FoodAnalyzeWidgit(),
+          UserCenterWidget()
+        ],
         controller: controller,
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -90,21 +95,15 @@ class _MyHomePageState extends State<MyHomePage> {
           showUnselectedLabels: true,
           showSelectedLabels: true,
           type: BottomNavigationBarType.fixed,
-          onTap: (idx) { 
+          onTap: (idx) {
             curidx = idx;
             setState(() {
               controller.jumpToPage(idx);
             });
           }),
       floatingActionButton: IconButton(
-          icon: Icon(Icons.add_circle_outline),
-          iconSize: 60,
-          onPressed: (){
-            Navigator.of(context).push(MaterialPageRoute(builder:(context) => AsrTTSModel()));
-          }),
+          icon: Icon(Icons.add_circle_outline), iconSize: 60, onPressed: () {}),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
-
-

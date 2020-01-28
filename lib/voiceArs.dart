@@ -5,24 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'package:flutter_sound/flutter_sound.dart';
+import 'package:sirilike_flutter/Views/myFridge/myFridge.dart';
 import 'model/network.dart';
+//import 'package:sirilike_flutter/Views/myFridge/myFridge.dart' show CurrentIndexProvider;
 
 const String app_id = '17933442';
 const String api_key = 'WrG2dAP89ivVyr0LMGOKkliS';
 const String secret_key = 'Zakea9N9mRYRTOxxit2DuqpuW1ta3lQl';
 
 class AsrTTSModel extends StatefulWidget {
-  AsrTTSModel({Key key}) : super(key: key);
-
+  AsrTTSModel({Key key, this.provider}) : super(key: key);
+  final CurrentFridgeListProvider provider;
   @override
   _AsrTTSModelState createState() => _AsrTTSModelState();
 }
 
-class _AsrTTSModelState extends State<AsrTTSModel>
-    with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
-
+class _AsrTTSModelState extends State<AsrTTSModel> {
   bool isRecording = false;
   String result = '';
   String log = '';
@@ -33,7 +31,8 @@ class _AsrTTSModelState extends State<AsrTTSModel>
   //秒
   int during = 0;
   Timer timer;
-
+  int curId = 0;
+  
   @override
   void initState() {
     super.initState();
@@ -115,14 +114,19 @@ class _AsrTTSModelState extends State<AsrTTSModel>
     if (resp.data['err_no'] != 0) {
       log = log + '\n无法识别\n$resp';
       result = '无法识别';
+      this.setState((){});
+      return;
     } else {
       log = log + '\n识别成功\n$resp';
       result = '我：${resp.data['result'][0]}';
+      this.setState(() {});
     }
-    this.setState(() {});
-
     Response resNew = await NetManager.instance.dio
-        .get('/api/voice-result/analyze?words=${resp.data['result'][0]}');
+        .get('/api/voice-result/analyze?words=${resp.data['result'][0]}&boxid=${widget.provider.curBoxid}');
+    if(resNew.data['err'] != 0){
+      log = log + '\n${resNew.data['errmsg']}';
+      return;
+    }
     result = result + '\n你：${resNew.data['data']['words']}';
 
     log = log + '\n上传...\n${resNew.data}';
@@ -168,44 +172,53 @@ class _AsrTTSModelState extends State<AsrTTSModel>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
+    //super.build(context);
     return Scaffold(
-        appBar: AppBar(title: Text('添加')),
+        appBar: AppBar(
+            title: Text('添加'),
+            leading: IconButton(
+                icon: Icon(Icons.arrow_back_ios),
+                color: Colors.black,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                })),
         body: Container(
-      child: Column(
-        children: <Widget>[
-          Container(
-              height: 80,
-              child: Center(
-                  child: FlatButton.icon(
-                      shape: Border.all(width: 1),
-                      onPressed: () {
-                        isRecording ? stop() : start();
-                        this.setState(() {});
-                      },
-                      label: Text('${isRecording ? '停止识别' : '开始识别'}'),
-                      icon: Icon(isRecording ? Icons.pause : Icons.arrow_right,
-                          size: 30, color: Colors.black)))),
-          Container(
-            child: Text('时长$during'),
+          child: Column(
+            children: <Widget>[
+              Container(
+                  height: 80,
+                  child: Center(
+                      child: FlatButton.icon(
+                          shape: Border.all(width: 1),
+                          onPressed: () {
+                            isRecording ? stop() : start();
+                            this.setState(() {});
+                          },
+                          label: Text('${isRecording ? '停止识别' : '开始识别'}'),
+                          icon: Icon(
+                              isRecording ? Icons.pause : Icons.arrow_right,
+                              size: 30,
+                              color: Colors.black)))),
+              Container(
+                child: Text('时长$during'),
+              ),
+              Container(
+                  height: 100,
+                  width: 300,
+                  child: Container(
+                    decoration: BoxDecoration(border: Border.all(width: 1)),
+                    child: Text(result),
+                  )),
+              SizedBox(height: 30),
+              Container(
+                  height: 350,
+                  width: 300,
+                  child: Container(
+                    decoration: BoxDecoration(border: Border.all(width: 1)),
+                    child: Text(log),
+                  ))
+            ],
           ),
-          Container(
-              height: 100,
-              width: 300,
-              child: Container(
-                decoration: BoxDecoration(border: Border.all(width: 1)),
-                child: Text(result),
-              )),
-          SizedBox(height: 30),
-          Container(
-              height: 350,
-              width: 300,
-              child: Container(
-                decoration: BoxDecoration(border: Border.all(width: 1)),
-                child: Text(log),
-              ))
-        ],
-      ),
-    ));
+        ));
   }
 }
