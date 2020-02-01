@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'foodItemList.dart';
@@ -18,10 +19,9 @@ class MyFridgeWidget extends StatefulWidget {
   _MyFridgeWidgetState createState() => _MyFridgeWidgetState();
 }
 
-class _MyFridgeWidgetState extends State<MyFridgeWidget> with AutomaticKeepAliveClientMixin {
+class _MyFridgeWidgetState extends State<MyFridgeWidget>
+    with AutomaticKeepAliveClientMixin {
   final CurrentFridgeListProvider curFridgeState = CurrentFridgeListProvider();
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -47,10 +47,8 @@ class _MyFridgeWidgetState extends State<MyFridgeWidget> with AutomaticKeepAlive
   }
 
   @override
-
   bool get wantKeepAlive => true;
 }
-
 
 class TitleHeaderWidget extends StatefulWidget {
   @override
@@ -354,7 +352,7 @@ class __FridgeWidgetState extends State<_FridgeWidget>
                         builder: (context, curFri, child) {
                       return Consumer<CurrentIndexProvider>(
                           builder: (context, cur, child) {
-                        if (cur.filterOfBoxid(curFri.curBoxid).isEmpty) {
+                        if (cur.filterOfBoxid(curFri.curBoxid,index).isEmpty) {
                           return Container(
                             child: Center(
                               child: Text('冰箱是空的哦'),
@@ -362,7 +360,7 @@ class __FridgeWidgetState extends State<_FridgeWidget>
                           );
                         }
                         return FoodListWidget(
-                            cur.filterOfBoxid(curFri.curBoxid));
+                            cur.filterOfBoxid(curFri.curBoxid,index));
                       });
                     });
                   },
@@ -431,11 +429,13 @@ class CurrentIndexProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  List<FoodMaterial> filterOfBoxid(int boxid) {
+  List<FoodMaterial> filterOfBoxid(int boxid, int catagory) {
     List<FoodMaterial> result = [];
     for (FoodMaterial food in foods) {
       if (food.boxId == boxid) {
-        result.add(food);
+        if (catagory == 0 || catagory == food.category) {
+          result.add(food);
+        }
       }
     }
     return result;
@@ -451,9 +451,10 @@ class FoodMaterial {
   final String createdAt;
   final String expiryDate;
   final String lastDateAdd;
+  final int category;
 
   FoodMaterial(this.id, this.itemId, this.boxId, this.itemName, this.quantity,
-      this.createdAt, this.expiryDate, this.lastDateAdd);
+      this.createdAt, this.expiryDate, this.lastDateAdd,this.category);
   FoodMaterial.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         itemId = json['item_id'],
@@ -462,7 +463,8 @@ class FoodMaterial {
         quantity = json['quantity'],
         createdAt = json['created_at'],
         expiryDate = json['expiry_date'],
-        lastDateAdd = json['last_dateadd'];
+        lastDateAdd = json['last_dateadd'],
+        category = json['category_id'];
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -472,7 +474,8 @@ class FoodMaterial {
         'quantity': quantity,
         'create_at': createdAt,
         'expiry_date': expiryDate,
-        'last_dateadd': lastDateAdd
+        'last_dateadd': lastDateAdd,
+        'category_id' : category
       };
 
   String getRemindDate() {

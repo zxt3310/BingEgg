@@ -31,7 +31,7 @@ class _AsrTTSModelState extends State<AsrTTSModel> {
   //秒
   int during = 0;
   Timer timer;
-  int curId = 0;
+  int chatId;
   
   @override
   void initState() {
@@ -121,8 +121,11 @@ class _AsrTTSModelState extends State<AsrTTSModel> {
       result = '我：${resp.data['result'][0]}';
       this.setState(() {});
     }
+    
+    String chatStr = chatId==null?'':'&chat_id=$chatId';
+
     Response resNew = await NetManager.instance.dio
-        .get('/api/voice-result/analyze?words=${resp.data['result'][0]}&boxid=${widget.provider.curBoxid}');
+        .get('/api/voice-result/analyze?words=${resp.data['result'][0]}&boxid=${widget.provider.curBoxid}$chatStr');
     if(resNew.data['err'] != 0){
       log = log + '\n${resNew.data['errmsg']}';
       return;
@@ -135,6 +138,8 @@ class _AsrTTSModelState extends State<AsrTTSModel> {
     if (resNew.data['data'] == null) {
       return;
     }
+
+    chatId = resNew.data['data']['chat_id'];
 
     await dio
         .download('http://tsn.baidu.com/text2audio', path, queryParameters: {
