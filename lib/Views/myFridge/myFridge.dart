@@ -12,16 +12,21 @@ import 'package:sirilike_flutter/Views/userAndSetting/mine.dart'
 
 export 'package:provider/provider.dart';
 
-List<String> namelist = ['全部', '水果', '蔬菜', '肉类', '饮品'];
+//List<String> namelist = ['全部', '水果', '蔬菜', '肉类', '饮品'];
 
 class MyFridgeWidget extends StatefulWidget {
   @override
   _MyFridgeWidgetState createState() => _MyFridgeWidgetState();
 }
 
-class _MyFridgeWidgetState extends State<MyFridgeWidget>
-    with AutomaticKeepAliveClientMixin {
+class _MyFridgeWidgetState extends State<MyFridgeWidget> {
   final CurrentFridgeListProvider curFridgeState = CurrentFridgeListProvider();
+  Future requestFuture;
+  @override
+  void initState() {
+    requestFuture = requestCategory();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,20 +41,46 @@ class _MyFridgeWidgetState extends State<MyFridgeWidget>
                 onPressed: () {
                   Navigator.of(context)
                       .push(CustomRoute(AsrTTSModel(provider: curFridgeState)));
+                  // Navigator.of(context).push(MaterialPageRoute(
+                  //     fullscreenDialog: true,
+                  //     builder: (ctx) => AsrTTSModel(provider: curFridgeState)));
                 },
                 label: Text(''),
               )
             ],
             title: TitleHeaderWidget(),
           ),
-          body: _FridgeWidget(),
+          body: FutureBuilder(
+            future: requestFuture,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                Response res = snapshot.data;
+                if (res.data['err'] != 0) {
+                  return Container(
+                    child: Center(child: Text('loading...')),
+                  );
+                } else {
+                  List category = res.data['data']['categories'];
+                  if (category[0]['id'] != 0) {
+                    category.insert(0, {'name': '全部', 'id': 0});
+                  }
+                  return _FridgeWidget(category);
+                }
+              } else {
+                return Container();
+              }
+            },
+          ),
         ));
   }
 
-  @override
-  bool get wantKeepAlive => true;
+  Future requestCategory() async {
+    NetManager manager = NetManager.instance;
+    return manager.dio.get('/api/basic-data/fetch');
+  }
 }
 
+//冰箱页主体
 class TitleHeaderWidget extends StatefulWidget {
   @override
   _TitleHeaderWidgetState createState() => _TitleHeaderWidgetState();
@@ -301,18 +332,21 @@ class _TitleHeaderWidgetState extends State<TitleHeaderWidget> {
 class _FridgeWidget extends StatefulWidget {
   @override
   __FridgeWidgetState createState() => __FridgeWidgetState();
+
+  final List nameList;
+
+  _FridgeWidget(this.nameList);
 }
 
 class __FridgeWidgetState extends State<_FridgeWidget>
     with SingleTickerProviderStateMixin {
   CurrentIndexProvider curState = CurrentIndexProvider();
-
   TabController tabcontroller;
   PageController pageController;
   @override
   void initState() {
     pageController = PageController();
-    tabcontroller = TabController(vsync: this, length: namelist.length);
+    tabcontroller = TabController(vsync: this, length: widget.nameList.length);
     super.initState();
   }
 
@@ -339,12 +373,12 @@ class __FridgeWidgetState extends State<_FridgeWidget>
                   indicator: const BoxDecoration(),
                   controller: tabcontroller,
                   isScrollable: true,
-                  tabs: _getBtns(namelist),
+                  tabs: _getBtns(widget.nameList),
                   onTap: _onChangeTab,
                 ),
                 Expanded(
                     child: PageView.builder(
-                  itemCount: namelist.length,
+                  itemCount: widget.nameList.length,
                   controller: pageController,
                   onPageChanged: _onChangePage,
                   itemBuilder: (BuildContext context, int index) {
@@ -352,15 +386,15 @@ class __FridgeWidgetState extends State<_FridgeWidget>
                         builder: (context, curFri, child) {
                       return Consumer<CurrentIndexProvider>(
                           builder: (context, cur, child) {
-                        if (cur.filterOfBoxid(curFri.curBoxid,index).isEmpty) {
+                        if (cur.filterOfBoxid(curFri.curBoxid, index).isEmpty) {
                           return Container(
                             child: Center(
-                              child: Text('冰箱是空的哦'),
+                              child: Text('未放入此类食品'),
                             ),
                           );
                         }
                         return FoodListWidget(
-                            cur.filterOfBoxid(curFri.curBoxid,index));
+                            cur.filterOfBoxid(curFri.curBoxid, index));
                       });
                     });
                   },
@@ -369,7 +403,7 @@ class __FridgeWidgetState extends State<_FridgeWidget>
         ));
   }
 
-  List<Widget> _getBtns(List<String> names) {
+  List<Widget> _getBtns(List names) {
     return List<Widget>.generate(
       names.length,
       (idx) {
@@ -381,7 +415,8 @@ class __FridgeWidgetState extends State<_FridgeWidget>
                   Icon(Icons.camera,
                       color:
                           idx == cur.curIdx ? Colors.greenAccent : Colors.grey),
-                  Text('${names[idx]}', style: TextStyle(color: Colors.black)),
+                  Text('${names[idx]['name']}',
+                      style: TextStyle(color: Colors.black)),
                 ],
               ));
         });
@@ -454,7 +489,7 @@ class FoodMaterial {
   final int category;
 
   FoodMaterial(this.id, this.itemId, this.boxId, this.itemName, this.quantity,
-      this.createdAt, this.expiryDate, this.lastDateAdd,this.category);
+      this.createdAt, this.expiryDate, this.lastDateAdd, this.category);
   FoodMaterial.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         itemId = json['item_id'],
@@ -475,7 +510,7 @@ class FoodMaterial {
         'create_at': createdAt,
         'expiry_date': expiryDate,
         'last_dateadd': lastDateAdd,
-        'category_id' : category
+        'category_id': category
       };
 
   String getRemindDate() {

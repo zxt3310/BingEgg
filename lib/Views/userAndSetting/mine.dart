@@ -117,6 +117,9 @@ class CustomRoute extends PageRouteBuilder {
   final Widget widget;
   CustomRoute(this.widget)
       : super(
+            opaque: false,
+            barrierColor: Color(0x7F000000),
+            maintainState: true,
             transitionDuration: Duration(milliseconds: 500),
             pageBuilder: (
               BuildContext context,
@@ -131,7 +134,7 @@ class CustomRoute extends PageRouteBuilder {
                 Widget child) {
               return SlideTransition(
                 position:
-                    Tween<Offset>(begin: Offset(0.0, 1.0), end: Offset(0, 0))
+                    Tween<Offset>(begin: Offset(0.0, 1.0), end: Offset(0, 0.1))
                         .animate(CurvedAnimation(
                             parent: animation1,
                             curve: Curves.fastLinearToSlowEaseIn)),

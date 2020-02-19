@@ -5,6 +5,7 @@ import 'Views/myFridge/myFridge.dart';
 import 'Views/statistics/foodAnalyze.dart';
 import 'Views/reminder/foodReminder.dart';
 import 'Views/userAndSetting/mine.dart';
+import 'Views/dongtai/dongtai.dart';
 import 'voiceArs.dart';
 
 const List barList = ["提醒", "冰箱", "统计", "我的"];
@@ -77,20 +78,19 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-        physics: NeverScrollableScrollPhysics(),
+      body: IndexedStack(
+        index: curidx,
         children: <Widget>[
-          FoodReminderWidget(),
+          DontaiWidget(),
           MyFridgeWidget(),
           FoodAnalyzeWidgit(),
           UserCenterWidget()
         ],
-        controller: controller,
       ),
       bottomNavigationBar: BottomNavigationBar(
           items: items,
           unselectedItemColor: Colors.black,
-          iconSize: 20,
+          selectedItemColor: Colors.green,
           currentIndex: curidx,
           showUnselectedLabels: true,
           showSelectedLabels: true,
@@ -98,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
           onTap: (idx) {
             curidx = idx;
             setState(() {
-              controller.jumpToPage(idx);
+              
             });
           }),
       floatingActionButton: IconButton(
