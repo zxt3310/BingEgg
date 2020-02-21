@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:sirilike_flutter/model/network.dart';
+import 'package:sirilike_flutter/webpage.dart';
 
 class DontaiWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('动态')),
+      appBar: AppBar(title: Center(child: Text('动态'))),
       body: DontaiBody(),
     );
   }
@@ -124,7 +125,10 @@ Widget getUI(DynamicData data) {
                           minWidth: 70,
                           height: 25,
                           child: Text('查看做法'),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => MainPage(url: ads.url)));
+                          },
                         )
                       ],
                     ),
@@ -171,7 +175,7 @@ Widget getUI(DynamicData data) {
                   Text('冰箱：${action.boxname}'),
                   Text('食物：${action.itemname}'),
                   Text('数量：${action.quantity}'),
-                  Container(height: 1,color: Colors.grey)
+                  Container(height: 1, color: Colors.grey)
                 ],
               ),
             );

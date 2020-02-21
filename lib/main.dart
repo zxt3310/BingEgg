@@ -1,12 +1,16 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:flutter/services.dart';
+
+import 'package:flutter/material.dart';
 import 'model/user.dart';
 import 'Views/myFridge/myFridge.dart';
 import 'Views/statistics/foodAnalyze.dart';
-import 'Views/reminder/foodReminder.dart';
 import 'Views/userAndSetting/mine.dart';
 import 'Views/dongtai/dongtai.dart';
 import 'voiceArs.dart';
+import 'Views/chat/chat.dart';
+
+import 'package:bot_toast/bot_toast.dart';
 
 const List barList = ["提醒", "冰箱", "统计", "我的"];
 const List iconListUnselect = [
@@ -27,10 +31,13 @@ void main() {
   //在加载app前 载入所有插件
   WidgetsFlutterBinding.ensureInitialized();
 
-  SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(
-    statusBarColor: Colors.green,
-  );
-  SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+  if (Platform.isAndroid) {
+    // 以下两行 设置android状态栏为透明的沉浸。写在组件渲染之后，是为了在渲染后进行set赋值，覆盖状态栏，写在渲染之前MaterialApp组件会覆盖掉这个值。
+    SystemUiOverlayStyle systemUiOverlayStyle =
+        SystemUiOverlayStyle(statusBarColor: Colors.transparent);
+    SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+  }
+
   realRunApp();
 }
 
@@ -42,13 +49,15 @@ void realRunApp() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Voice Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.lightGreen,
-          splashColor: Colors.transparent,
-        ),
-        home: MyHomePage());
+    return BotToastInit(
+        child: MaterialApp(
+            title: 'Voice Demo',
+            navigatorObservers: [BotToastNavigatorObserver()],
+            theme: ThemeData(
+              primarySwatch: Colors.lightGreen,
+              splashColor: Colors.transparent,
+            ),
+            home: MyHomePage()));
   }
 }
 
@@ -97,12 +106,15 @@ class _MyHomePageState extends State<MyHomePage> {
           type: BottomNavigationBarType.fixed,
           onTap: (idx) {
             curidx = idx;
-            setState(() {
-              
-            });
+            setState(() {});
           }),
       floatingActionButton: IconButton(
-          icon: Icon(Icons.add_circle_outline), iconSize: 60, onPressed: () {}),
+          icon: Icon(Icons.add_circle_outline),
+          iconSize: 60,
+          onPressed: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => ChatWidget(), fullscreenDialog: true));
+          }),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }

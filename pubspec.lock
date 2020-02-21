@@ -29,6 +29,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.5"
+  bot_toast:
+    dependency: "direct main"
+    description:
+      name: bot_toast
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.1"
   charcode:
     dependency: transitive
     description:
@@ -71,6 +78,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.7"
+  english_words:
+    dependency: "direct main"
+    description:
+      name: english_words
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.1.5"
+  event_bus:
+    dependency: "direct main"
+    description:
+      name: event_bus
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.1"
   file:
     dependency: transitive
     description:
