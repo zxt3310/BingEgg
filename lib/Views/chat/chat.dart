@@ -152,7 +152,7 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
           timestamp: DateTime.now().toLocal().toString(),
           content: str);
       ChatStateProvider state = Provider.of<ChatStateProvider>(context);
-      state.add(data);
+      addChat(state, data);
       _hideToast();
     }
 
@@ -173,7 +173,7 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
         timestamp: DateTime.now().toLocal().toString(),
         content: str);
     ChatStateProvider state = Provider.of<ChatStateProvider>(context);
-    state.add(data);
+    addChat(state, data);
 
     await dio
         .download('http://tsn.baidu.com/text2audio', path, queryParameters: {
@@ -317,13 +317,8 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
     );
   }
 
-  addChat(ChatStateProvider state) {
-    ChateData once = ChateData(
-        type: i % 2,
-        content: WordPair.random().asString,
-        timestamp: DateTime.now().toLocal().toString());
-    state.add(once);
-    i++;
+  addChat(ChatStateProvider state, ChateData data) {
+    state.add(data);
     Future.delayed(Duration(milliseconds: 100), () {
       controller.jumpTo(controller.position.maxScrollExtent);
     });
