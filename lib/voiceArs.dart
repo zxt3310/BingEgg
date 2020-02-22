@@ -170,8 +170,6 @@ class _AsrTTSModelState extends State<AsrTTSModel> {
 
   @override
   void dispose() {
-    // File file = File(path);
-    // file.deleteSync();
     super.dispose();
   }
 

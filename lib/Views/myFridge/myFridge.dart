@@ -482,7 +482,7 @@ class FoodMaterial {
   final int itemId;
   final int boxId;
   final String itemName;
-  final int quantity;
+  final double quantity;
   final String createdAt;
   final String expiryDate;
   final String lastDateAdd;
