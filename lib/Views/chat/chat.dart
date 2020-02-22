@@ -27,7 +27,7 @@ class _ChatWidgetState extends State<ChatWidget> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => state,
-      child: Scaffold(appBar: AppBar(), body: ChatBodyWidget()),
+      child: Scaffold(appBar: AppBar(title: Text('增加食物')), body: ChatBodyWidget()),
     );
   }
 
@@ -148,7 +148,7 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
       String str = resp.data['result'][0];
       ChateData data = ChateData(
           chatId: chatId,
-          type: 0,
+          type: 1,
           timestamp: DateTime.now().toLocal().toString(),
           content: str);
       ChatStateProvider state = Provider.of<ChatStateProvider>(context);
@@ -158,7 +158,7 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
 
     String chatStr = chatId == null ? '' : '&chat_id=$chatId';
     Response resNew = await NetManager.instance.dio.get(
-        '/api/voice-result/analyze?words=${resp.data['result'][0]}&boxid=$curBoxId$chatStr');
+        '/api/voice-result/analyze?words=${resp.data['result'][0]}&boxid=1$chatStr');
     if (resNew.data['err'] != 0 || resNew.data['data'] == null) {
       BotToast.showText(text: '请求失败,请重试');
       return;
@@ -169,7 +169,7 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
     String str = resNew.data['data']['words'];
     ChateData data = ChateData(
         chatId: chatId,
-        type: 1,
+        type: 0,
         timestamp: DateTime.now().toLocal().toString(),
         content: str);
     ChatStateProvider state = Provider.of<ChatStateProvider>(context);
@@ -191,9 +191,9 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
 
   //移除toast
   _hideToast() {
-    Future.delayed(Duration(seconds: 1), () {
-      BotToast.remove(toastKey);
-    });
+    //Future.delayed(Duration(seconds: 1), () {
+      BotToast.removeAll();
+   // });
   }
 
   @override
@@ -252,6 +252,8 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
             },
           )),
           Column(children: [
+            Text('请这样说：放入一个鸡蛋'),
+            SizedBox(height: 5),
             GestureDetector(
               onLongPressStart: (e) {
                 toastKey = UniqueKey();
@@ -294,7 +296,9 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
                 start();
               },
               onLongPressEnd: (e) {
-                stop();
+                Future.delayed(Duration(milliseconds: 300),(){
+                  stop();
+                });
               },
               // onTap: () {
               //   addChat(state);
