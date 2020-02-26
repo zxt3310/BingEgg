@@ -103,7 +103,7 @@ class _FoodAnalyzeWidgitState extends State<FoodAnalyzeWidgit> {
     DateTime lastMonth = DateTime.now().subtract(Duration(days: days + 1));
     return Container(
         child: ListView.separated(
-      itemCount: lastMonth.year == year ? lastMonth.month : 12,
+      itemCount: curSelYear == year ? lastMonth.month : 12,
       itemBuilder: (context, idx) {
         return GestureDetector(
             onTap: () {

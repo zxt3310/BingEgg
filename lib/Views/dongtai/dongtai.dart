@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:sirilike_flutter/Views/myFridge/myFridge.dart';
 import 'package:sirilike_flutter/model/network.dart';
 import 'package:sirilike_flutter/webpage.dart';
+import 'package:sirilike_flutter/main.dart' show AppSharedState;
 
 class DontaiWidget extends StatelessWidget {
   @override
@@ -34,7 +36,7 @@ class _DontaiBodyState extends State<DontaiBody> {
           if (snapshot.connectionState == ConnectionState.done) {
             Response res = snapshot.data;
             DynamicData data = DynamicData.fromJson(res.data['data']);
-            return getUI(data);
+            return getUI(data,context);
           } else {
             return Center(child: Text('loading...'));
           }
@@ -49,7 +51,7 @@ class _DontaiBodyState extends State<DontaiBody> {
   }
 }
 
-Widget getUI(DynamicData data) {
+Widget getUI(DynamicData data,BuildContext ctx) {
   FriHealth healthState = data.frigeHealth;
   List<Dailyads> dailyAds = data.dailyMealAdvice;
   List<FriendAction> actions = data.actions;
@@ -69,7 +71,10 @@ Widget getUI(DynamicData data) {
                   MaterialButton(
                     minWidth: 50,
                     height: 25,
-                    onPressed: () {},
+                    onPressed: () {
+                      AppSharedState state = Provider.of<AppSharedState>(ctx);
+                      state.tabSwitch(1);
+                    },
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     child: Text('去看看'),
                     shape: RoundedRectangleBorder(side: BorderSide(width: 1)),

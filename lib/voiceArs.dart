@@ -117,7 +117,7 @@ class _AsrTTSModelState extends State<AsrTTSModel> {
       this.setState((){});
       return;
     } else {
-      log = log + '\n识别成功\n$resp';
+      log = log + '\n识别成功\n $resp';
       result = '我：${resp.data['result'][0]}';
       this.setState(() {});
     }

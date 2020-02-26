@@ -9,7 +9,7 @@ import 'Views/userAndSetting/mine.dart';
 import 'Views/dongtai/dongtai.dart';
 import 'voiceArs.dart';
 import 'Views/chat/chat.dart';
-
+import 'package:provider/provider.dart';
 import 'package:bot_toast/bot_toast.dart';
 
 const List barList = ["提醒", "冰箱", "统计", "我的"];
@@ -70,12 +70,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<BottomNavigationBarItem> items;
-  int curidx = 0;
   PageController controller;
   User user = User.instance;
+  AppSharedState appSharedState;
 
   @override
   void initState() {
+    appSharedState = AppSharedState();
     controller = PageController();
     items = List.generate(barList.length, (idx) {
       return BottomNavigationBarItem(
@@ -86,36 +87,57 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: curidx,
-        children: <Widget>[
-          DontaiWidget(),
-          MyFridgeWidget(),
-          FoodAnalyzeWidgit(),
-          UserCenterWidget()
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-          items: items,
-          unselectedItemColor: Colors.black,
-          selectedItemColor: Colors.green,
-          currentIndex: curidx,
-          showUnselectedLabels: true,
-          showSelectedLabels: true,
-          type: BottomNavigationBarType.fixed,
-          onTap: (idx) {
-            curidx = idx;
-            setState(() {});
-          }),
-      floatingActionButton: IconButton(
-          icon: Icon(Icons.add_circle_outline),
-          iconSize: 60,
-          onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => ChatWidget(), fullscreenDialog: true));
-          }),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-    );
+    return ChangeNotifierProvider<AppSharedState>(
+        create: (ctx) => appSharedState,
+        child: Consumer<AppSharedState>(builder: (ctx, state, child) {
+          return Scaffold(
+            body: IndexedStack(
+              index: state.curTabIndex,
+              children: <Widget>[
+                DontaiWidget(),
+                MyFridgeWidget(),
+                FoodAnalyzeWidgit(),
+                UserCenterWidget()
+              ],
+            ),
+            bottomNavigationBar: BottomNavigationBar(
+                items: items,
+                unselectedItemColor: Colors.black,
+                selectedItemColor: Colors.green,
+                currentIndex: state.curTabIndex,
+                showUnselectedLabels: true,
+                showSelectedLabels: true,
+                type: BottomNavigationBarType.fixed,
+                onTap: (idx) {
+                  state.tabSwitch(idx);
+                }),
+            floatingActionButton: IconButton(
+                icon: Icon(Icons.add_circle_outline),
+                iconSize: 60,
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => ChatWidget(state.curBoxId),
+                      fullscreenDialog: true)).then((value){
+                        myEvent.fire(null);
+                      });
+                }),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerDocked,
+          );
+        }));
+  }
+}
+
+class AppSharedState with ChangeNotifier {
+  int curTabIndex = 0;
+  int curBoxId = 0;
+
+  tabSwitch(int index) {
+    curTabIndex = index;
+    notifyListeners();
+  }
+
+  freshBox(int boxId) {
+    curBoxId = boxId;
   }
 }

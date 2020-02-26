@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:english_words/english_words.dart';
 import 'package:bot_toast/bot_toast.dart';
 
 import 'dart:async';
@@ -17,6 +16,9 @@ const String api_key = 'WrG2dAP89ivVyr0LMGOKkliS';
 const String secret_key = 'Zakea9N9mRYRTOxxit2DuqpuW1ta3lQl';
 
 class ChatWidget extends StatefulWidget {
+  final int curBoxId;
+  
+  ChatWidget(this.curBoxId);
   @override
   _ChatWidgetState createState() => _ChatWidgetState();
 }
@@ -27,7 +29,7 @@ class _ChatWidgetState extends State<ChatWidget> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => state,
-      child: Scaffold(appBar: AppBar(title: Text('增加食物')), body: ChatBodyWidget()),
+      child: Scaffold(appBar: AppBar(title: Text('增加食物')), body: ChatBodyWidget(widget.curBoxId)),
     );
   }
 
@@ -38,13 +40,15 @@ class _ChatWidgetState extends State<ChatWidget> {
 }
 
 class ChatBodyWidget extends StatefulWidget {
+  final int curBoxId;
+
+  ChatBodyWidget(this.curBoxId);
   @override
   _ChatBodyWidgetState createState() => _ChatBodyWidgetState();
 }
 
 class _ChatBodyWidgetState extends State<ChatBodyWidget> {
   ScrollController controller = ScrollController();
-  int i = 0;
   int curBoxId = 3;
   //录音机
   FlutterAudioRecorder recorder;
@@ -158,7 +162,7 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
 
     String chatStr = chatId == null ? '' : '&chat_id=$chatId';
     Response resNew = await NetManager.instance.dio.get(
-        '/api/voice-result/analyze?words=${resp.data['result'][0]}&boxid=1$chatStr');
+        '/api/voice-result/analyze?words=${resp.data['result'][0]}&boxid=${widget.curBoxId}$chatStr');
     if (resNew.data['err'] != 0 || resNew.data['data'] == null) {
       BotToast.showText(text: '请求失败,请重试');
       return;

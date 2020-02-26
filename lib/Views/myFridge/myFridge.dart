@@ -1,16 +1,16 @@
-import 'dart:io';
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sirilike_flutter/main.dart';
 import 'foodItemList.dart';
 import '../../model/network.dart';
-
-import 'package:sirilike_flutter/voiceArs.dart';
-import 'package:sirilike_flutter/Views/userAndSetting/mine.dart'
-    show CustomRoute;
-
+import 'package:event_bus/event_bus.dart';
 export 'package:provider/provider.dart';
+
+EventBus myEvent = EventBus();
 
 //List<String> namelist = ['全部', '水果', '蔬菜', '肉类', '饮品'];
 
@@ -34,20 +34,6 @@ class _MyFridgeWidgetState extends State<MyFridgeWidget> {
         create: (context) => curFridgeState,
         child: Scaffold(
           appBar: AppBar(
-            leading: Text(''),
-            actions: <Widget>[
-              FlatButton.icon(
-                icon: Icon(Icons.add_shopping_cart),
-                onPressed: () {
-                  Navigator.of(context)
-                      .push(CustomRoute(AsrTTSModel(provider: curFridgeState)));
-                  // Navigator.of(context).push(MaterialPageRoute(
-                  //     fullscreenDialog: true,
-                  //     builder: (ctx) => AsrTTSModel(provider: curFridgeState)));
-                },
-                label: Text(''),
-              )
-            ],
             title: TitleHeaderWidget(),
           ),
           body: FutureBuilder(
@@ -136,6 +122,10 @@ class _TitleHeaderWidgetState extends State<TitleHeaderWidget> {
                   return;
                 }
                 curFridges.changeIndex(e);
+
+                AppSharedState appSharedState =
+                    Provider.of<AppSharedState>(context);
+                appSharedState.freshBox(curFridges.curBoxid);
               },
             )
           ],
@@ -177,6 +167,9 @@ class _TitleHeaderWidgetState extends State<TitleHeaderWidget> {
       if (fridge.isdefault) {
         curProvider.changeIndex(i);
         curProvider.changeDefaultFridge(fridge.id);
+
+        AppSharedState appSharedState = Provider.of<AppSharedState>(context);
+        appSharedState.freshBox(curProvider.curBoxid);
       }
     }
 
@@ -343,11 +336,24 @@ class __FridgeWidgetState extends State<_FridgeWidget>
   CurrentIndexProvider curState = CurrentIndexProvider();
   TabController tabcontroller;
   PageController pageController;
+
+  StreamSubscription subscription;
   @override
   void initState() {
     pageController = PageController();
     tabcontroller = TabController(vsync: this, length: widget.nameList.length);
     super.initState();
+    _getDataSource();
+
+    subscription = myEvent.on().listen((event) {
+      _getDataSource();
+    });
+  }
+
+  @override
+  void dispose() {
+    subscription.cancel();
+    super.dispose();
   }
 
   _onChangeTab(e) {
@@ -439,14 +445,6 @@ class __FridgeWidgetState extends State<_FridgeWidget>
       return FoodMaterial.fromJson(datas[idx]);
     });
     curState.changeSource(foods);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (context == this.context) {
-      _getDataSource();
-    }
   }
 }
 
@@ -569,3 +567,5 @@ class CurrentFridgeListProvider with ChangeNotifier {
     defaultId = boxid;
   }
 }
+
+class BoxDataFreshEvent {}
