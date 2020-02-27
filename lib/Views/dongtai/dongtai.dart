@@ -35,6 +35,9 @@ class _DontaiBodyState extends State<DontaiBody> {
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             Response res = snapshot.data;
+            if (res.data['err'] != 0) {
+              return Center(child: Text('请先登录'));
+            }
             DynamicData data = DynamicData.fromJson(res.data['data']);
             return getUI(data,context);
           } else {

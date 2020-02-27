@@ -259,7 +259,7 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
             Text('请这样说：放入一个鸡蛋'),
             SizedBox(height: 5),
             GestureDetector(
-              onLongPressStart: (e) {
+              onTapDown: (e) {
                 toastKey = UniqueKey();
                 BotToast.showEnhancedWidget(
                     key: toastKey,
@@ -299,7 +299,7 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
                     });
                 start();
               },
-              onLongPressEnd: (e) {
+              onTapUp: (e) {
                 Future.delayed(Duration(milliseconds: 300),(){
                   stop();
                 });

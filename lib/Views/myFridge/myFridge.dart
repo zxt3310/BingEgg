@@ -348,7 +348,7 @@ class __FridgeWidgetState extends State<_FridgeWidget>
     subscription = myEvent.on().listen((event) {
       _getDataSource();
     });
-  }
+  } 
 
   @override
   void dispose() {
@@ -512,6 +512,9 @@ class FoodMaterial {
       };
 
   String getRemindDate() {
+    if (lastDateAdd == null) {
+      return "";
+    }
     DateTime create = DateTime.parse(lastDateAdd);
     if (expiryDate.isNotEmpty) {
       int days = 0;
