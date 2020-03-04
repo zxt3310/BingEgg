@@ -8,6 +8,7 @@ import 'foodItemList.dart';
 import '../../model/network.dart';
 import 'package:event_bus/event_bus.dart';
 import 'package:sirilike_flutter/model/mainModel.dart';
+import 'package:sirilike_flutter/main.dart' show AppSharedState;
 export 'package:provider/provider.dart';
 
 EventBus myEvent = EventBus();
@@ -20,7 +21,6 @@ class MyFridgeWidget extends StatefulWidget {
 }
 
 class _MyFridgeWidgetState extends State<MyFridgeWidget> {
-  final CurrentFridgeListProvider curFridgeState = CurrentFridgeListProvider();
   Future requestFuture;
   @override
   void initState() {
@@ -30,39 +30,37 @@ class _MyFridgeWidgetState extends State<MyFridgeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<CurrentFridgeListProvider>(
-        create: (context) => curFridgeState,
-        child: Scaffold(
-          appBar: AppBar(
-            title: TitleHeaderWidget(),
-            centerTitle: true,
-            leading: Text(''),
-            actions: <Widget>[
-              FlatButton(onPressed: _showActionSheet, child: Text('分享'))
-            ],
-          ),
-          body: FutureBuilder(
-            future: requestFuture,
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                Response res = snapshot.data;
-                if (res.data['err'] != 0) {
-                  return Container(
-                    child: Center(child: Text('loading...')),
-                  );
-                } else {
-                  List category = res.data['data']['categories'];
-                  if (category[0]['id'] != 0) {
-                    category.insert(0, {'name': '全部', 'id': 0});
-                  }
-                  return _FridgeWidget(category);
-                }
-              } else {
-                return Container();
+    return Scaffold(
+      appBar: AppBar(
+        title: TitleHeaderWidget(),
+        centerTitle: true,
+        leading: Text(''),
+        actions: <Widget>[
+          FlatButton(onPressed: _showActionSheet, child: Text('分享'))
+        ],
+      ),
+      body: FutureBuilder(
+        future: requestFuture,
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            Response res = snapshot.data;
+            if (res.data['err'] != 0) {
+              return Container(
+                child: Center(child: Text('loading...')),
+              );
+            } else {
+              List category = res.data['data']['categories'];
+              if (category[0]['id'] != 0) {
+                category.insert(0, {'name': '全部', 'id': 0});
               }
-            },
-          ),
-        ));
+              return _FridgeWidget(category);
+            }
+          } else {
+            return Container();
+          }
+        },
+      ),
+    );
   }
 
   Future requestCategory() async {
@@ -78,9 +76,7 @@ class _MyFridgeWidgetState extends State<MyFridgeWidget> {
               height: 400,
               width: double.infinity,
               color: Colors.white,
-              child: Column(
-                
-              ));
+              child: Column());
         });
   }
 }
@@ -94,9 +90,9 @@ class TitleHeaderWidget extends StatefulWidget {
 class _TitleHeaderWidgetState extends State<TitleHeaderWidget> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<CurrentFridgeListProvider>(
+    return Consumer<AppSharedState>(
         builder: (BuildContext context, curFridges, Widget child) {
-      if (curFridges.curList == null) {
+      if (curFridges.curList.isEmpty) {
         return Container();
       }
       return Container(
@@ -104,7 +100,7 @@ class _TitleHeaderWidgetState extends State<TitleHeaderWidget> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             SizedBox(width: 30),
-            Text('${curFridges.curList[curFridges.curIndex].boxname}'),
+            Text('${curFridges.curList[curFridges.curBoxIndex].boxname}'),
             PopupMenuButton(
               icon: Icon(Icons.arrow_drop_down),
               itemBuilder: (context) {
@@ -114,37 +110,14 @@ class _TitleHeaderWidgetState extends State<TitleHeaderWidget> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Text('${curFridges.curList[idx].boxname}'),
-                          curFridges.curList[idx].id == curFridges.defaultId
-                              ? Text('当前默认',
-                                  style: TextStyle(
-                                      color: Colors.grey[500], fontSize: 12))
-                              : GestureDetector(
-                                  child: Text('设为默认',
-                                      style: TextStyle(fontSize: 12)),
-                                  onTap: () {
-                                    _setDefaultFridge(
-                                        curFridges.curList[idx].id);
-                                  })
                         ],
                       ),
                       value: idx);
-                }, growable: true)
-                  ..add(PopupMenuItem(
-                    child: Center(
-                        child: Text('+ 新增冰箱', textAlign: TextAlign.center)),
-                    value: 999,
-                  ));
+                }, growable: true);
               },
               onSelected: (e) {
-                if (e == 999) {
-                  _showDialoge();
-                  return;
-                }
-                curFridges.changeIndex(e);
-
-                AppSharedState appSharedState =
-                    Provider.of<AppSharedState>(context);
-                appSharedState.freshBox(curFridges.curBoxid);
+                curFridges.changeCurIndex(e);
+                curFridges.freshBox(curFridges.curList[e].id);
               },
             )
           ],
@@ -177,35 +150,31 @@ class _TitleHeaderWidgetState extends State<TitleHeaderWidget> {
     List<Fridge> fridges = List<Fridge>.generate(sources.length, (idx) {
       return Fridge.fromJson(sources[idx]);
     });
-    CurrentFridgeListProvider curProvider =
-        Provider.of<CurrentFridgeListProvider>(context);
-    curProvider.changeList(fridges);
+    AppSharedState curProvider = Provider.of<AppSharedState>(context);
+    curProvider.changeBoxList(fridges);
 
     for (int i = 0; i < fridges.length; i++) {
       Fridge fridge = fridges.elementAt(i);
       if (fridge.isdefault) {
-        curProvider.changeIndex(i);
-        curProvider.changeDefaultFridge(fridge.id);
-
-        AppSharedState appSharedState = Provider.of<AppSharedState>(context);
-        appSharedState.freshBox(curProvider.curBoxid);
+        curProvider.changeCurIndex(i);
+        curProvider.freshBox(fridge.id);
       }
     }
 
     print(curProvider.curList);
   }
 
-  _setDefaultFridge(int boxid) async {
-    NetManager manager = NetManager.instance;
-    Response res = await manager.dio.get('/api/user-box/default?boxid=$boxid');
-    if (res.data['err'] != 0) {
-      print('set default Error');
-      return;
-    }
-    CurrentFridgeListProvider curProvider =
-        Provider.of<CurrentFridgeListProvider>(context);
-    curProvider.changeDefaultFridge(boxid);
-  }
+  // _setDefaultFridge(int boxid) async {
+  //   NetManager manager = NetManager.instance;
+  //   Response res = await manager.dio.get('/api/user-box/default?boxid=$boxid');
+  //   if (res.data['err'] != 0) {
+  //     print('set default Error');
+  //     return;
+  //   }
+  //   CurrentFridgeListProvider curProvider =
+  //       Provider.of<CurrentFridgeListProvider>(context);
+  //   curProvider.changeDefaultFridge(boxid);
+  // }
 
   String newFridgeName = '';
   _showDialoge() {
@@ -281,7 +250,7 @@ class _TitleHeaderWidgetState extends State<TitleHeaderWidget> {
                                   child: Text('+ 添加'),
                                   onPressed: () {
                                     if (newFridgeName.isNotEmpty) {
-                                      _addFridge(newFridgeName, context);
+                                      //_addFridge(newFridgeName, context);
                                     }
                                   },
                                 )),
@@ -323,21 +292,6 @@ class _TitleHeaderWidgetState extends State<TitleHeaderWidget> {
             child: child,
           );
         });
-  }
-
-  _addFridge(String name, BuildContext ctx) async {
-    NetManager manager = NetManager.instance;
-    Response res = await manager.dio.post('/api/user-box/add',
-        data: {"name": name},
-        options: Options(contentType: "application/x-www-form-urlencoded"));
-    if (res.data['err'] != 0) {
-      Navigator.of(ctx).pop();
-      Scaffold.of(context)
-          .showSnackBar(SnackBar(content: Text('${res.data['errmsg']}')));
-      return;
-    }
-    Navigator.of(ctx).pop();
-    _getFridgeList();
   }
 }
 
@@ -407,11 +361,11 @@ class __FridgeWidgetState extends State<_FridgeWidget>
                   controller: pageController,
                   onPageChanged: _onChangePage,
                   itemBuilder: (BuildContext context, int index) {
-                    return Consumer<CurrentFridgeListProvider>(
+                    return Consumer<AppSharedState>(
                         builder: (context, curFri, child) {
                       return Consumer<CurrentIndexProvider>(
                           builder: (context, cur, child) {
-                        if (cur.filterOfBoxid(curFri.curBoxid, index).isEmpty) {
+                        if (cur.filterOfBoxid(curFri.curBoxId, index).isEmpty) {
                           return Container(
                             child: Center(
                               child: Text('未放入此类食品'),
@@ -419,7 +373,7 @@ class __FridgeWidgetState extends State<_FridgeWidget>
                           );
                         }
                         return FoodListWidget(
-                            cur.filterOfBoxid(curFri.curBoxid, index));
+                            cur.filterOfBoxid(curFri.curBoxId, index));
                       });
                     });
                   },
@@ -494,26 +448,24 @@ class CurrentIndexProvider with ChangeNotifier {
   }
 }
 
-class CurrentFridgeListProvider with ChangeNotifier {
-  List<Fridge> curList;
-  int curIndex = 0;
-  int curBoxid = 0;
-  int defaultId = 0;
+// class CurrentFridgeListProvider with ChangeNotifier {
+//   List<Fridge> curList;
+//   int curIndex = 0;
+//   int curBoxid = 0;
+//   int defaultId = 0;
 
-  changeList(List<Fridge> list) {
-    curList = list;
-    notifyListeners();
-  }
+//   changeList(List<Fridge> list) {
+//     curList = list;
+//     notifyListeners();
+//   }
 
-  changeIndex(int idx) {
-    curIndex = idx;
-    curBoxid = curList[idx].id;
-    notifyListeners();
-  }
+//   changeIndex(int idx) {
+//     curIndex = idx;
+//     curBoxid = curList[idx].id;
+//     notifyListeners();
+//   }
 
-  changeDefaultFridge(int boxid) {
-    defaultId = boxid;
-  }
-}
-
-class BoxDataFreshEvent {}
+//   changeDefaultFridge(int boxid) {
+//     defaultId = boxid;
+//   }
+// }

@@ -2,12 +2,12 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 
 import 'package:flutter/material.dart';
+import 'package:sirilike_flutter/model/mainModel.dart';
 import 'model/user.dart';
 import 'Views/myFridge/myFridge.dart';
 import 'Views/statistics/foodAnalyze.dart';
 import 'Views/userAndSetting/mine.dart';
 import 'Views/dongtai/dongtai.dart';
-import 'voiceArs.dart';
 import 'Views/chat/chat.dart';
 import 'package:provider/provider.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -131,6 +131,8 @@ class _MyHomePageState extends State<MyHomePage> {
 class AppSharedState with ChangeNotifier {
   int curTabIndex = 0;
   int curBoxId = 0;
+  int curBoxIndex = 0; //当前选中冰箱
+  List<Fridge> curList = List();
 
   tabSwitch(int index) {
     curTabIndex = index;
@@ -139,5 +141,15 @@ class AppSharedState with ChangeNotifier {
 
   freshBox(int boxId) {
     curBoxId = boxId;
+  }
+
+  changeBoxList(List<Fridge> list){
+    curList = list;
+    notifyListeners();
+  }
+
+  changeCurIndex(int idx){
+    curBoxIndex = idx;
+    notifyListeners();
   }
 }
