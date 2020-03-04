@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'myFridge.dart' show FoodMaterial;
+import 'package:sirilike_flutter/model/mainModel.dart';
 
 class FoodListWidget extends StatelessWidget {
   final List<FoodMaterial> foods;

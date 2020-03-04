@@ -3,6 +3,7 @@ import 'package:sirilike_flutter/Views/myFridge/myFridge.dart';
 import 'package:sirilike_flutter/model/network.dart';
 import 'package:sirilike_flutter/webpage.dart';
 import 'package:sirilike_flutter/main.dart' show AppSharedState;
+import 'activaties.dart';
 
 class DontaiWidget extends StatelessWidget {
   @override
@@ -39,7 +40,7 @@ class _DontaiBodyState extends State<DontaiBody> {
               return Center(child: Text('请先登录'));
             }
             DynamicData data = DynamicData.fromJson(res.data['data']);
-            return getUI(data,context);
+            return getUI(data, context);
           } else {
             return Center(child: Text('loading...'));
           }
@@ -54,7 +55,7 @@ class _DontaiBodyState extends State<DontaiBody> {
   }
 }
 
-Widget getUI(DynamicData data,BuildContext ctx) {
+Widget getUI(DynamicData data, BuildContext ctx) {
   FriHealth healthState = data.frigeHealth;
   List<Dailyads> dailyAds = data.dailyMealAdvice;
   List<FriendAction> actions = data.actions;
@@ -101,6 +102,7 @@ Widget getUI(DynamicData data,BuildContext ctx) {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Text('为你推荐一日三餐', style: TextStyle(fontSize: 18)),
+            SizedBox(height: 10),
             Container(
               height: 180,
               child: ListView.separated(
@@ -165,7 +167,10 @@ Widget getUI(DynamicData data,BuildContext ctx) {
                   child: Row(
                     children: <Widget>[Text('查看更多'), Icon(Icons.chevron_right)],
                   ),
-                  onPressed: null,
+                  onPressed: () {
+                    Navigator.of(ctx).push(MaterialPageRoute(
+                        builder: (context) => FriendActWidget(actions)));
+                  },
                 )
               ],
             )),
@@ -177,17 +182,34 @@ Widget getUI(DynamicData data,BuildContext ctx) {
             return Container(
               padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
-                  Text('好友：${action.nickname}'),
-                  Text('冰箱：${action.boxname}'),
-                  Text('食物：${action.itemname}'),
-                  Text('数量：${action.quantity}'),
-                  Container(height: 1, color: Colors.grey)
+                  Expanded(
+                    child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                              margin: EdgeInsets.all(10),
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                  border: Border.all(width: 1),
+                                  borderRadius: BorderRadius.circular(25))),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: <Widget>[
+                              Text(action.name),
+                              Text(action.message),
+                            ],
+                          )
+                        ]),
+                  ),
+                  Container(height: 1, color: Colors.grey[400])
                 ],
               ),
             );
-          }, childCount: actions.length))
+          }, childCount: data.actions.length > 5 ? 5 : data.actions.length))
     ],
   );
 }
@@ -206,7 +228,7 @@ class DynamicData {
   DynamicData.fromJson(Map<String, dynamic> json)
       : frigeHealth = FriHealth.fromJson(json['health_status']),
         dailyMealAdvice = Dailyads.fromListJson(json['daily_meal_advise']),
-        actions = FriendAction.fromListJson(json['friend_action']);
+        actions = FriendAction.fromListJson(json['activaties']);
 }
 
 class FriHealth {
@@ -238,22 +260,14 @@ class Dailyads {
 }
 
 class FriendAction {
-  String nickname;
-  String boxname;
-  int action;
-  int quantity;
-  String itemname;
-  int itemid;
-  String time;
+  String name;
+  String message;
+  String lastUpdate;
 
   FriendAction.fromJson(Map<String, dynamic> json)
-      : nickname = json['friend_nickname'],
-        boxname = json['box_name'],
-        action = json['action'],
-        quantity = json['quantity'],
-        itemname = json['item_name'],
-        itemid = json['item_id'],
-        time = json['time'];
+      : name = json['name'],
+        message = json['message'],
+        lastUpdate = json['last_update'];
 
   static List<FriendAction> fromListJson(List list) {
     return List<FriendAction>.generate(list.length, (idx) {

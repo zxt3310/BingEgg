@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:sirilike_flutter/login/ui/home_page.dart';
 import '../../model/user.dart';
 import '../../login/ui/user_provider.dart';
+import 'boxlist.dart';
+
+List optionList = ['我的冰箱', '个人信息', '选项卡'];
 
 class UserCenterWidget extends StatelessWidget {
   final User user = User.instance;
@@ -38,10 +41,15 @@ class UserCenterWidget extends StatelessWidget {
                 padding: EdgeInsets.all(20),
                 child: ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: 4,
+                    itemCount: optionList.length,
                     itemBuilder: (context, idx) {
                       return GestureDetector(
-                          onTap: () => print('option Taped'),
+                          onTap: () {
+                            if (idx == 0) {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) => BoxListWidget()));
+                            }
+                          },
                           child: Container(
                             color: Colors.white,
                             child: Column(children: <Widget>[
@@ -53,7 +61,7 @@ class UserCenterWidget extends StatelessWidget {
                                     children: <Widget>[
                                       FlatButton.icon(
                                           icon: Icon(Icons.android),
-                                          label: Text('选项卡'),
+                                          label: Text(optionList[idx]),
                                           splashColor: Colors.transparent,
                                           onPressed: () {}),
                                       Icon(Icons.chevron_right,

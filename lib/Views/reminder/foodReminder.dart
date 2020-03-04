@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../myFridge/myFridge.dart' show FoodMaterial;
+import 'package:sirilike_flutter/model/mainModel.dart';
 import '../../model/network.dart';
 import 'dart:convert';
 
