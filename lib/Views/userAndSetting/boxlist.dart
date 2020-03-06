@@ -36,7 +36,7 @@ class _BoxListBodyState extends State<BoxListBody> {
         padding: EdgeInsets.all(20),
         itemBuilder: (context, idx) {
           return Container(
-            height: 40,
+            height: 40, 
             child: Center(
                 child: idx < state.curList.length
                     ? Row(

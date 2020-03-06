@@ -4,6 +4,7 @@ import 'package:sirilike_flutter/login/ui/home_page.dart';
 import '../../model/user.dart';
 import '../../login/ui/user_provider.dart';
 import 'boxlist.dart';
+import 'userinfo.dart';
 import 'package:sirilike_flutter/main.dart' show AppSharedState;
 export 'package:sirilike_flutter/main.dart' show AppSharedState;
 
@@ -47,9 +48,17 @@ class UserCenterWidget extends StatelessWidget {
                     itemBuilder: (ctx, idx) {
                       return GestureDetector(
                           onTap: () {
-                            if (idx == 0) {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (ctx) => BoxListWidget(providerContext: context)));
+                            switch (idx) {
+                              case 0:
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (ctx) => BoxListWidget(
+                                        providerContext: context)));
+                                break;
+                              case 1:
+                                 Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (ctx) => UserInfoWidget()));
+                                break;
+                              default:
                             }
                           },
                           child: Container(
