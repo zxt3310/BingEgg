@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 class UserInfoWidget extends StatefulWidget {
   @override
@@ -7,6 +8,7 @@ class UserInfoWidget extends StatefulWidget {
 }
 
 class _UserInfoWidgetState extends State<UserInfoWidget> {
+  String path = 'srouce/草莓.png';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,10 +26,9 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                         children: <Widget>[
                           Text('头像'),
                           ClipOval(
-                            child: GestureDetector(
-                                child: Container(
-                                    height: 40, width: 40, color: Colors.grey),
-                                onTap: getImage,
+                              child: GestureDetector(
+                            child: Image.asset(path,width: 60,height: 60),
+                            onTap: getImage,
                           ))
                         ],
                       ),
@@ -43,8 +44,52 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
     );
   }
 
-  Future getImage() async{
-    var image = await ImagePicker.pickImage(source: ImageSource.camera);
-    
+  Future getImage() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    if (image == null){
+      return;
+    }
+    var croppedFile = await ImageCropper.cropImage(
+        sourcePath: image.path,
+        aspectRatioPresets: [
+          CropAspectRatioPreset.square,
+          CropAspectRatioPreset.ratio3x2,
+          CropAspectRatioPreset.original,
+          CropAspectRatioPreset.ratio4x3,
+          CropAspectRatioPreset.ratio16x9
+        ],
+        androidUiSettings: AndroidUiSettings(
+            toolbarTitle: 'Cropper',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        iosUiSettings: IOSUiSettings(
+          minimumAspectRatio: 1.0,
+        ));
+    if (croppedFile != null) {
+      // Navigator.of(context)
+      //     .push(MaterialPageRoute(builder: (ctx) => ImagePage(croppedFile.path)));
+      setState(() {
+        path = croppedFile.path;
+      });
+    }
+  }
+}
+
+class ImagePage extends StatefulWidget {
+  final String file;
+  ImagePage(this.file);
+  @override
+  _ImagePageState createState() => _ImagePageState();
+}
+
+class _ImagePageState extends State<ImagePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('相片')),
+      body: Container(child: Center(child: Image.asset(widget.file))),
+    );
   }
 }

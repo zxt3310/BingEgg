@@ -40,8 +40,8 @@ dependencies:
   #toast
   bot_toast: ^2.2.1
   #图像采集器
-  image_picker : 0.6.3+4
-  #image_cropper: 1.1.2
+  image_picker : 0.6.2+2
+  image_cropper: 1.1.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
