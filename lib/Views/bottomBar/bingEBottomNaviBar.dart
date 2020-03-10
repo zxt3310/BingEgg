@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class BingEBottomBaviBar extends StatefulWidget {
   final List<BingEBarItemModel> items;
   final bool existCenterDock;
+  final Widget centerDock;
   final int curSelectIndex;
   final double height;
   final double itemSize;
@@ -13,6 +14,7 @@ class BingEBottomBaviBar extends StatefulWidget {
   BingEBottomBaviBar(
       {this.items,
       this.existCenterDock,
+      this.centerDock,
       this.curSelectIndex,
       this.height = 60,
       this.backgroundImg,
@@ -20,6 +22,7 @@ class BingEBottomBaviBar extends StatefulWidget {
       this.onTap})
       : assert(items != null),
         assert(items.length <= 5),
+        assert(!(existCenterDock && centerDock == null)),
         assert(!(existCenterDock && items.length % 2 != 0)),
         assert(curSelectIndex != null);
 
@@ -32,35 +35,52 @@ class _BingEBottomBaviBarState extends State<BingEBottomBaviBar> {
   Widget build(BuildContext context) {
     return Container(
       height: widget.height,
-      padding: EdgeInsets.fromLTRB(20, 10, 20, 0),
       decoration: BoxDecoration(
           image:
               DecorationImage(image: widget.backgroundImg, fit: BoxFit.fill)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: drawItems(),
-      ),
+      child: Stack(children: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: drawItems(),
+        ),
+        Align(
+          alignment: AlignmentDirectional.topCenter,
+          child: widget.centerDock,
+        )
+      ]),
     );
   }
 
   List<Widget> drawItems() {
     List<Widget> items = List.generate(widget.items.length, (idx) {
       BingEBarItemModel itemModel = widget.items[idx];
-      return BingEBarItem(
-        size: widget.itemSize,
-        title: itemModel.title,
-        selectWid: itemModel.selectWid,
-        unselectWid: itemModel.unselectWid,
-        selectColor: itemModel.selectColor,
-        unselectColor: itemModel.unselectColor,
-        selfIndex: idx,
-        callback: widget.onTap,
-        currentIndex: widget.curSelectIndex,
-      );
+      return Flexible(
+          flex: 1,
+          fit: FlexFit.tight,
+          child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                widget.onTap(idx);
+              },
+              child: BingEBarItem(
+                size: widget.itemSize,
+                title: itemModel.title,
+                selectWid: itemModel.selectWid,
+                unselectWid: itemModel.unselectWid,
+                selectColor: itemModel.selectColor,
+                unselectColor: itemModel.unselectColor,
+                selfIndex: idx,
+                callback: widget.onTap,
+                currentIndex: widget.curSelectIndex,
+              )));
     });
     if (widget.existCenterDock) {
       items.insert(
-          widget.items.length ~/ 2, SizedBox(width: widget.itemSize));
+          widget.items.length ~/ 2,
+          Flexible(
+              flex: 1,
+              fit: FlexFit.tight,
+              child: SizedBox(width: widget.itemSize)));
     }
     return items;
   }
@@ -112,24 +132,22 @@ class _BingEBarItemState extends State<BingEBarItem> {
   Widget build(BuildContext context) {
     return AspectRatio(
         aspectRatio: 1,
-        child: GestureDetector(
-            onTap: () {
-              widget.callback(widget.selfIndex);
-            },
-            child: Container(
-                child: Column(children: [
-              Container(
-                  width: widget.size,
-                  height: widget.size,
-                  child: widget.selfIndex == widget.currentIndex
-                      ? widget.selectWid
-                      : widget.unselectWid),
-              Text(widget.title,
-                  style: TextStyle(
-                      fontSize: 12,
-                      color: widget.selfIndex == widget.currentIndex
-                          ? widget.selectColor
-                          : widget.unselectColor))
-            ]))));
+        child: Container(
+          padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+            //color: Colors.green,
+            child: Column(children: [
+          Container(
+              width: widget.size,
+              height: widget.size,
+              child: widget.selfIndex == widget.currentIndex
+                  ? widget.selectWid
+                  : widget.unselectWid),
+          Text(widget.title,
+              style: TextStyle(
+                  fontSize: 12,
+                  color: widget.selfIndex == widget.currentIndex
+                      ? widget.selectColor
+                      : widget.unselectColor))
+        ])));
   }
 }

@@ -75,8 +75,6 @@ class _MyHomePageState extends State<MyHomePage> {
     appSharedState = AppSharedState();
     controller = PageController();
     items = List.generate(barList.length, (idx) {
-      // return BottomNavigationBarItem(
-      //     title: Text('${barList[idx]}'), icon: iconListUnselect[idx]);
       return BingEBarItemModel(
           title: barList[idx],
           selectWid: Image.asset('srouce/bottom/nav${idx + 1}_p.png',
@@ -112,21 +110,30 @@ class _MyHomePageState extends State<MyHomePage> {
                 existCenterDock: true,
                 curSelectIndex: state.curTabIndex,
                 backgroundImg: const AssetImage('srouce/bottom/nva_bg.png'),
-                itemSize: 30,
+                itemSize: 25,
                 onTap: (idx) {
                   state.tabSwitch(idx);
                 },
-              )),
-            ),
-            Align(
-                alignment: Alignment(0, 0.99),
-                child: GestureDetector(
-                    child: Image.asset('srouce/bottom/nva_add.png',width: 55,height: 55),
+                centerDock: GestureDetector(
+                    child: Image.asset('srouce/bottom/nva_add.png',
+                        width: 60, height: 60,fit: BoxFit.fitHeight),
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => ChatWidget(state.curBoxId),
                           fullscreenDialog: true));
-                    }))
+                    }),
+              )),
+            ),
+            // Align(
+            //     alignment: Alignment(0, 0.99),
+            //     child: GestureDetector(
+            //         child: Image.asset('srouce/bottom/nva_add.png',
+            //             width: 55, height: 55),
+            //         onTap: () {
+            //           Navigator.of(context).push(MaterialPageRoute(
+            //               builder: (context) => ChatWidget(state.curBoxId),
+            //               fullscreenDialog: true));
+            //         }))
           ]);
         }));
   }
