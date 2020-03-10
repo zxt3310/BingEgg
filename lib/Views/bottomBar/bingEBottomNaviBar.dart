@@ -133,21 +133,21 @@ class _BingEBarItemState extends State<BingEBarItem> {
     return AspectRatio(
         aspectRatio: 1,
         child: Container(
-          padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+            padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
             //color: Colors.green,
             child: Column(children: [
-          Container(
-              width: widget.size,
-              height: widget.size,
-              child: widget.selfIndex == widget.currentIndex
-                  ? widget.selectWid
-                  : widget.unselectWid),
-          Text(widget.title,
-              style: TextStyle(
-                  fontSize: 12,
-                  color: widget.selfIndex == widget.currentIndex
-                      ? widget.selectColor
-                      : widget.unselectColor))
-        ])));
+              Container(
+                  width: widget.size,
+                  height: widget.size,
+                  child: widget.selfIndex == widget.currentIndex
+                      ? widget.selectWid
+                      : widget.unselectWid),
+              Text(widget.title,
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: widget.selfIndex == widget.currentIndex
+                          ? widget.selectColor
+                          : widget.unselectColor))
+            ])));
   }
 }

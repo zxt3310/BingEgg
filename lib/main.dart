@@ -13,15 +13,6 @@ import 'package:bot_toast/bot_toast.dart';
 import 'Views/bottomBar/bingEBottomNaviBar.dart';
 
 const List barList = ["提醒", "冰箱", "统计", "我的"];
-const List itemUnselectImgs = [];
-const List itemSelectImgs = [];
-
-const List iconListUnselect = [
-  Icon(Icons.home),
-  Icon(Icons.record_voice_over),
-  Icon(Icons.shop),
-  Icon(Icons.assignment_ind)
-];
 
 void main() {
   //在加载app前 载入所有插件
@@ -92,49 +83,38 @@ class _MyHomePageState extends State<MyHomePage> {
     return ChangeNotifierProvider<AppSharedState>(
         create: (ctx) => appSharedState,
         child: Consumer<AppSharedState>(builder: (ctx, state, child) {
-          return Stack(children: [
-            Scaffold(
-              body: IndexedStack(
-                index: state.curTabIndex,
-                children: <Widget>[
-                  DontaiWidget(),
-                  MyFridgeWidget(),
-                  FoodAnalyzeWidgit(),
-                  UserCenterWidget()
-                ],
-              ),
-              bottomNavigationBar: SafeArea(
-                  child: BingEBottomBaviBar(
-                height: 60,
-                items: items,
-                existCenterDock: true,
-                curSelectIndex: state.curTabIndex,
-                backgroundImg: const AssetImage('srouce/bottom/nva_bg.png'),
-                itemSize: 25,
-                onTap: (idx) {
-                  state.tabSwitch(idx);
-                },
-                centerDock: GestureDetector(
-                    child: Image.asset('srouce/bottom/nva_add.png',
-                        width: 60, height: 60,fit: BoxFit.fitHeight),
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => ChatWidget(state.curBoxId),
-                          fullscreenDialog: true));
-                    }),
-              )),
+          return Scaffold(
+            body: IndexedStack(
+              index: state.curTabIndex,
+              children: <Widget>[
+                DontaiWidget(),
+                MyFridgeWidget(),
+                FoodAnalyzeWidgit(),
+                UserCenterWidget()
+              ],
             ),
-            // Align(
-            //     alignment: Alignment(0, 0.99),
-            //     child: GestureDetector(
-            //         child: Image.asset('srouce/bottom/nva_add.png',
-            //             width: 55, height: 55),
-            //         onTap: () {
-            //           Navigator.of(context).push(MaterialPageRoute(
-            //               builder: (context) => ChatWidget(state.curBoxId),
-            //               fullscreenDialog: true));
-            //         }))
-          ]);
+            extendBody: true,
+            bottomNavigationBar: SafeArea(
+                child: BingEBottomBaviBar(
+              height: 60,
+              items: items,
+              existCenterDock: true,
+              curSelectIndex: state.curTabIndex,
+              backgroundImg: const AssetImage('srouce/bottom/nva_bg.png'),
+              itemSize: 25,
+              onTap: (idx) {
+                state.tabSwitch(idx);
+              },
+              centerDock: GestureDetector(
+                  child: Image.asset('srouce/bottom/nva_add.png',
+                      width: 60, height: 60, fit: BoxFit.fitHeight),
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ChatWidget(state.curBoxId),
+                        fullscreenDialog: true));
+                  }),
+            )),
+          );
         }));
   }
 }
