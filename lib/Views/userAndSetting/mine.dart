@@ -5,7 +5,6 @@ import '../../model/user.dart';
 import '../../login/ui/user_provider.dart';
 import 'boxlist.dart';
 import 'userinfo.dart';
-import 'package:sirilike_flutter/main.dart' show AppSharedState;
 export 'package:sirilike_flutter/main.dart' show AppSharedState;
 
 List optionList = ['我的冰箱', '个人信息', '选项卡'];

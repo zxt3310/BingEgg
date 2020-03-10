@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/services.dart';
-
 import 'package:flutter/material.dart';
 import 'package:sirilike_flutter/model/mainModel.dart';
 import 'model/user.dart';
@@ -11,20 +10,17 @@ import 'Views/dongtai/dongtai.dart';
 import 'Views/chat/chat.dart';
 import 'package:provider/provider.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'Views/bottomBar/bingEBottomNaviBar.dart';
 
 const List barList = ["提醒", "冰箱", "统计", "我的"];
+const List itemUnselectImgs = [];
+const List itemSelectImgs = [];
+
 const List iconListUnselect = [
   Icon(Icons.home),
   Icon(Icons.record_voice_over),
   Icon(Icons.shop),
   Icon(Icons.assignment_ind)
-];
-
-const List iconListSelect = [
-  Icon(Icons.bluetooth),
-  Icon(Icons.blur_linear),
-  Icon(Icons.bookmark),
-  Icon(Icons.call_missed_outgoing)
 ];
 
 void main() {
@@ -69,7 +65,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<BottomNavigationBarItem> items;
+  List<BingEBarItemModel> items;
   PageController controller;
   User user = User.instance;
   AppSharedState appSharedState;
@@ -79,8 +75,16 @@ class _MyHomePageState extends State<MyHomePage> {
     appSharedState = AppSharedState();
     controller = PageController();
     items = List.generate(barList.length, (idx) {
-      return BottomNavigationBarItem(
-          title: Text('${barList[idx]}'), icon: iconListUnselect[idx]);
+      // return BottomNavigationBarItem(
+      //     title: Text('${barList[idx]}'), icon: iconListUnselect[idx]);
+      return BingEBarItemModel(
+          title: barList[idx],
+          selectWid: Image.asset('srouce/bottom/nav${idx + 1}_p.png',
+              width: 20, height: 20),
+          unselectWid: Image.asset('srouce/bottom/nav${idx + 1}_n.png',
+              width: 20, height: 20),
+          selectColor: Colors.green,
+          unselectColor: Colors.black);
     });
     super.initState();
   }
@@ -90,40 +94,40 @@ class _MyHomePageState extends State<MyHomePage> {
     return ChangeNotifierProvider<AppSharedState>(
         create: (ctx) => appSharedState,
         child: Consumer<AppSharedState>(builder: (ctx, state, child) {
-          return Scaffold(
-            body: IndexedStack(
-              index: state.curTabIndex,
-              children: <Widget>[
-                DontaiWidget(),
-                MyFridgeWidget(),
-                FoodAnalyzeWidgit(),
-                UserCenterWidget()
-              ],
-            ),
-            bottomNavigationBar: BottomNavigationBar(
+          return Stack(children: [
+            Scaffold(
+              body: IndexedStack(
+                index: state.curTabIndex,
+                children: <Widget>[
+                  DontaiWidget(),
+                  MyFridgeWidget(),
+                  FoodAnalyzeWidgit(),
+                  UserCenterWidget()
+                ],
+              ),
+              bottomNavigationBar: SafeArea(
+                  child: BingEBottomBaviBar(
+                height: 60,
                 items: items,
-                unselectedItemColor: Colors.black,
-                selectedItemColor: Colors.green,
-                currentIndex: state.curTabIndex,
-                showUnselectedLabels: true,
-                showSelectedLabels: true,
-                type: BottomNavigationBarType.fixed,
+                existCenterDock: true,
+                curSelectIndex: state.curTabIndex,
+                backgroundImg: const AssetImage('srouce/bottom/nva_bg.png'),
+                itemSize: 30,
                 onTap: (idx) {
                   state.tabSwitch(idx);
-                }),
-            floatingActionButton: IconButton(
-                icon: Icon(Icons.add_circle_outline),
-                iconSize: 60,
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => ChatWidget(state.curBoxId),
-                      fullscreenDialog: true)).then((value){
-                        myEvent.fire(null);
-                      });
-                }),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerDocked,
-          );
+                },
+              )),
+            ),
+            Align(
+                alignment: Alignment(0, 0.99),
+                child: GestureDetector(
+                    child: Image.asset('srouce/bottom/nva_add.png',width: 55,height: 55),
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => ChatWidget(state.curBoxId),
+                          fullscreenDialog: true));
+                    }))
+          ]);
         }));
   }
 }
@@ -143,12 +147,12 @@ class AppSharedState with ChangeNotifier {
     curBoxId = boxId;
   }
 
-  changeBoxList(List<Fridge> list){
+  changeBoxList(List<Fridge> list) {
     curList = list;
     notifyListeners();
   }
 
-  changeCurIndex(int idx){
+  changeCurIndex(int idx) {
     curBoxIndex = idx;
     notifyListeners();
   }
