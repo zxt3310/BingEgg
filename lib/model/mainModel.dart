@@ -34,6 +34,12 @@ class FoodMaterial {
         'category_id': category
       };
 
+  static List<FoodMaterial> getList(List list){
+    return List<FoodMaterial>.generate(list.length, (idx){
+      return FoodMaterial.fromJson(list[idx]);
+    });
+  }
+
   String getRemindDate() {
     if (lastDateAdd == null) {
       return "";
@@ -70,4 +76,40 @@ class Fridge {
       : id = json['id'],
         boxname = json['box_name'],
         isdefault = json['is_default'] == 0 ? false : true;
+}
+
+class Cookbooks {
+  final int id;
+  final String title;
+  final String imgUrl;
+  final String webUrl;
+  final int tags;
+
+  Cookbooks({this.id, this.title, this.imgUrl, this.webUrl, this.tags});
+
+  Cookbooks.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        title = json['title'],
+        imgUrl = json['img_url'],
+        webUrl = json['web_url'],
+        tags = json['tags'];
+        
+  static List<Cookbooks> getBooks(List list){
+    return List.generate(list.length, (idx){
+      return Cookbooks.fromJson(list[idx]);
+    });
+  }
+}
+
+class FoodPageStruct{
+  final List <FoodMaterial> batches;
+  final FoodMaterial inventory;
+  final List <Cookbooks> cookbooks;
+
+  FoodPageStruct({this.batches,this.inventory,this.cookbooks});
+
+  FoodPageStruct.fromJson(Map<String ,dynamic> json):
+  batches = FoodMaterial.getList(json['batches']),
+  inventory = FoodMaterial.fromJson(json['inventory']),
+  cookbooks = Cookbooks.getBooks(json['cookbooks']);
 }

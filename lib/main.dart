@@ -23,6 +23,16 @@ void main() {
     SystemUiOverlayStyle systemUiOverlayStyle =
         SystemUiOverlayStyle(statusBarColor: Colors.transparent);
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+  } else {
+    SystemUiOverlayStyle light = SystemUiOverlayStyle(
+      systemNavigationBarColor: Color(0xFF000000),
+      systemNavigationBarDividerColor: null,
+      statusBarColor: null,
+      systemNavigationBarIconBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
+    );
+    SystemChrome.setSystemUIOverlayStyle(light);
   }
 
   realRunApp();
@@ -42,7 +52,8 @@ class MyApp extends StatelessWidget {
             navigatorObservers: [BotToastNavigatorObserver()],
             theme: ThemeData(
               primarySwatch: Colors.lightGreen,
-              splashColor: Colors.transparent,
+              scaffoldBackgroundColor: Colors.white
+              //splashColor: Colors.transparent,
             ),
             home: MyHomePage()));
   }
@@ -84,15 +95,17 @@ class _MyHomePageState extends State<MyHomePage> {
         create: (ctx) => appSharedState,
         child: Consumer<AppSharedState>(builder: (ctx, state, child) {
           return Scaffold(
-            body: IndexedStack(
-              index: state.curTabIndex,
-              children: <Widget>[
-                DontaiWidget(),
-                MyFridgeWidget(),
-                FoodAnalyzeWidgit(),
-                UserCenterWidget()
-              ],
-            ),
+            body: Padding(
+                padding: EdgeInsets.fromLTRB(0, 0, 0, 34),
+                child: IndexedStack(
+                  index: state.curTabIndex,
+                  children: <Widget>[
+                    DontaiWidget(),
+                    MyFridgeWidget(),
+                    FoodAnalyzeWidgit(),
+                    UserCenterWidget()
+                  ],
+                )),
             extendBody: true,
             bottomNavigationBar: SafeArea(
                 child: BingEBottomBaviBar(
@@ -109,9 +122,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Image.asset('srouce/bottom/nva_add.png',
                       width: 60, height: 60, fit: BoxFit.fitHeight),
                   onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => ChatWidget(state.curBoxId),
-                        fullscreenDialog: true));
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(
+                            builder: (context) => ChatWidget(state.curBoxId),
+                            fullscreenDialog: true))
+                        .then((e) {
+                      myEvent.fire(null);
+                    });
                   }),
             )),
           );

@@ -42,6 +42,10 @@ dependencies:
   #图像采集器
   image_picker : 0.6.2+2
   image_cropper: 1.1.2
+  #esptouch
+  esptouch_plugin: ^0.0.2
+  #小红点
+  badges: 1.1.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

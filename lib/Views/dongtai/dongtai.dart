@@ -9,7 +9,11 @@ class DontaiWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Center(child: Text('动态'))),
+      appBar: AppBar(
+          elevation: 0,
+          title:
+              Center(child: Text('动态', style: TextStyle(color: Colors.white))),
+          brightness: Brightness.dark),
       body: DontaiBody(),
     );
   }
@@ -31,6 +35,7 @@ class _DontaiBodyState extends State<DontaiBody> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: const Color(0xFFF9F9F9),
       child: FutureBuilder(
         future: requestFuture,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -63,45 +68,96 @@ Widget getUI(DynamicData data, BuildContext ctx) {
     slivers: <Widget>[
       SliverToBoxAdapter(
         child: Container(
-          padding: EdgeInsets.fromLTRB(20, 30, 20, 30),
+          color: Colors.lightGreen,
+          padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text('冰箱状态'),
+              Text('冰箱状态', style: TextStyle(color: Colors.white)),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(healthState.title, style: TextStyle(fontSize: 25)),
-                  MaterialButton(
-                    minWidth: 50,
-                    height: 25,
-                    onPressed: () {
-                      AppSharedState state = Provider.of<AppSharedState>(ctx);
-                      state.tabSwitch(1);
-                    },
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    child: Text('去看看'),
-                    shape: RoundedRectangleBorder(side: BorderSide(width: 1)),
-                  )
+                  Text(healthState.title,
+                      style: TextStyle(
+                          fontSize: 34,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white)),
+                  // MaterialButton(
+                  //   minWidth: 50,
+                  //   height: 25,
+                  //   onPressed: () {
+                  //     AppSharedState state =
+                  //         Provider.of<AppSharedState>(ctx, listen: false);
+                  //     state.tabSwitch(1);
+                  //   },
+                  //   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  //   child: Text('去看看'),
+                  //   shape: RoundedRectangleBorder(side: BorderSide(width: 1)),
+                  // )
                 ],
-              )
+              ),
             ],
           ),
         ),
       ),
       SliverToBoxAdapter(
-        child: Container(
-          height: 10,
-          color: Colors.grey[300],
-        ),
-      ),
+          child: Container(
+              color: Colors.lightGreen,
+              height: 150,
+              child: ListView.builder(
+                  padding: EdgeInsets.all(13),
+                  itemExtent: (MediaQuery.of(ctx).size.width - 26) / 5,
+                  itemCount: 5,
+                  itemBuilder: (ctx, idx) {
+                    double width =
+                        (MediaQuery.of(ctx).size.width - 26) / 5 - 10;
+                    return Container(
+                      padding: EdgeInsets.all(5),
+                      child: Container(
+                        padding: EdgeInsets.fromLTRB(6, 6, 6, 12),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(width / 2)),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Container(
+                                width: width - 12,
+                                height: width - 12,
+                                decoration: BoxDecoration(
+                                    color: Colors.lightGreen,
+                                    borderRadius: BorderRadius.circular(
+                                        (width - 12) / 2))),
+                            Text('水果', style: TextStyle(fontSize: 13)),
+                            Text('2', style: TextStyle(fontSize: 13))
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  scrollDirection: Axis.horizontal))),
       SliverToBoxAdapter(
           child: Container(
-        padding: EdgeInsets.all(20),
+        color: const Color(0xFFF9F9F9),
+        padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Text('为你推荐一日三餐', style: TextStyle(fontSize: 18)),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text('推荐菜单',
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                  FlatButton(
+                      onPressed: () {},
+                      child: Row(
+                        children: <Widget>[
+                          Text('换一批', style: TextStyle(fontSize: 12)),
+                          Icon(Icons.refresh, size: 13)
+                        ],
+                      )),
+                ]),
             SizedBox(height: 10),
             Container(
               height: 180,
@@ -151,21 +207,21 @@ Widget getUI(DynamicData data, BuildContext ctx) {
       )),
       SliverToBoxAdapter(
         child: Container(
-          height: 10,
-          color: Colors.grey[300],
-        ),
-      ),
-      SliverToBoxAdapter(
-        child: Padding(
-            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+            color: const Color(0xFFF9F9F9),
+            padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text('好友动态', style: TextStyle(fontSize: 18)),
+                Text('动态',
+                    style:
+                        TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
                 MaterialButton(
                   padding: EdgeInsets.all(0),
                   child: Row(
-                    children: <Widget>[Text('查看更多'), Icon(Icons.chevron_right)],
+                    children: <Widget>[
+                      Text('查看更多', style: TextStyle(fontSize: 12)),
+                      Icon(Icons.chevron_right)
+                    ],
                   ),
                   onPressed: () {
                     Navigator.of(ctx).push(MaterialPageRoute(
@@ -176,11 +232,12 @@ Widget getUI(DynamicData data, BuildContext ctx) {
             )),
       ),
       SliverFixedExtentList(
-          itemExtent: 100,
+          itemExtent: 111,
           delegate: SliverChildBuilderDelegate((ctx, idx) {
             FriendAction action = actions[idx];
             return Container(
-              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+              margin: EdgeInsets.fromLTRB(20, 5, 20, 5),
+              decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(12)),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
@@ -205,11 +262,11 @@ Widget getUI(DynamicData data, BuildContext ctx) {
                           )
                         ]),
                   ),
-                  Container(height: 1, color: Colors.grey[400])
                 ],
               ),
             );
-          }, childCount: data.actions.length > 5 ? 5 : data.actions.length))
+          }, childCount: data.actions.length > 5 ? 5 : data.actions.length)),
+      SliverToBoxAdapter(child: SizedBox(height: 60))
     ],
   );
 }

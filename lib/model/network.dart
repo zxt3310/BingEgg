@@ -25,7 +25,7 @@ class NetManager {
     // };
     dio.interceptors
         .add(InterceptorsWrapper(onRequest: (RequestOptions options) {
-      options.headers.addAll({'Authorization': User.instance.token});
+     // options.headers.addAll({'Authorization': User.instance.token});
       
     }, onResponse: (res) {
       int err = res.data['err'];

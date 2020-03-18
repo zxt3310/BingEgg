@@ -155,7 +155,7 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
           type: 1,
           timestamp: DateTime.now().toLocal().toString(),
           content: str);
-      ChatStateProvider state = Provider.of<ChatStateProvider>(context);
+      ChatStateProvider state = Provider.of<ChatStateProvider>(context,listen: false);
       addChat(state, data);
       _hideToast();
     }
@@ -176,7 +176,7 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
         type: 0,
         timestamp: DateTime.now().toLocal().toString(),
         content: str);
-    ChatStateProvider state = Provider.of<ChatStateProvider>(context);
+    ChatStateProvider state = Provider.of<ChatStateProvider>(context,listen: false);
     addChat(state, data);
 
     await dio

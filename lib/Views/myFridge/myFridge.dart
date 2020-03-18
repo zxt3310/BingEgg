@@ -33,10 +33,11 @@ class _MyFridgeWidgetState extends State<MyFridgeWidget> {
     return Scaffold(
       appBar: AppBar(
         title: TitleHeaderWidget(),
+        brightness: Brightness.dark,
         centerTitle: true,
-        leading: Text(''),
+        //leading: Text(''),
         actions: <Widget>[
-          FlatButton(onPressed: _showActionSheet, child: Text('分享'))
+          //FlatButton(onPressed: _showActionSheet, child: Text('分享'))
         ],
       ),
       body: FutureBuilder(
@@ -100,9 +101,10 @@ class _TitleHeaderWidgetState extends State<TitleHeaderWidget> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             SizedBox(width: 30),
-            Text('${curFridges.curList[curFridges.curBoxIndex].boxname}'),
+            Text('${curFridges.curList[curFridges.curBoxIndex].boxname}',
+                style: TextStyle(color: Colors.white)),
             PopupMenuButton(
-              icon: Icon(Icons.arrow_drop_down),
+              icon: Icon(Icons.arrow_drop_down,color: Colors.white),
               itemBuilder: (context) {
                 return List.generate(curFridges.curList.length, (idx) {
                   return PopupMenuItem(
@@ -150,7 +152,8 @@ class _TitleHeaderWidgetState extends State<TitleHeaderWidget> {
     List<Fridge> fridges = List<Fridge>.generate(sources.length, (idx) {
       return Fridge.fromJson(sources[idx]);
     });
-    AppSharedState curProvider = Provider.of<AppSharedState>(context);
+    AppSharedState curProvider =
+        Provider.of<AppSharedState>(context, listen: false);
     curProvider.changeBoxList(fridges);
 
     for (int i = 0; i < fridges.length; i++) {
@@ -163,136 +166,6 @@ class _TitleHeaderWidgetState extends State<TitleHeaderWidget> {
 
     print(curProvider.curList);
   }
-
-  // _setDefaultFridge(int boxid) async {
-  //   NetManager manager = NetManager.instance;
-  //   Response res = await manager.dio.get('/api/user-box/default?boxid=$boxid');
-  //   if (res.data['err'] != 0) {
-  //     print('set default Error');
-  //     return;
-  //   }
-  //   CurrentFridgeListProvider curProvider =
-  //       Provider.of<CurrentFridgeListProvider>(context);
-  //   curProvider.changeDefaultFridge(boxid);
-  // }
-
-//   String newFridgeName = '';
-//   _showDialoge() {
-//     showGeneralDialog(
-//         context: context,
-//         barrierLabel: '',
-//         barrierDismissible: true,
-//         barrierColor: const Color(0x77000000),
-//         transitionDuration: Duration(milliseconds: 200),
-//         pageBuilder: (ctx, anim1, anim2) {
-//           return Scaffold(
-//             backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
-//             resizeToAvoidBottomInset: false,
-//             body: Stack(children: <Widget>[
-//               Align(
-//                   alignment: Alignment(0, -0.65),
-//                   child: Container(
-//                       decoration: BoxDecoration(
-//                           borderRadius: BorderRadius.circular(15),
-//                           color: Colors.white),
-//                       width: 300,
-//                       height: 200,
-//                       child: Stack(
-//                         alignment: Alignment.bottomCenter,
-//                         children: <Widget>[
-//                           Align(
-//                             alignment: Alignment(0, 0),
-//                             child: Container(
-//                               decoration: BoxDecoration(
-//                                   borderRadius: BorderRadius.circular(10),
-//                                   color: Colors.grey[300]),
-//                               padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-//                               margin: EdgeInsets.all(20),
-//                               child: Row(
-//                                 children: <Widget>[
-//                                   Text('冰箱名称',
-//                                       style: TextStyle(
-//                                           fontSize: 14,
-//                                           color: Colors.black,
-//                                           decoration: TextDecoration.none)),
-//                                   Expanded(
-//                                     child: TextField(
-//                                       decoration: InputDecoration(
-//                                           prefix: SizedBox(width: 10),
-//                                           hintText: "请输入",
-//                                           border: InputBorder.none),
-//                                       style: new TextStyle(
-//                                           fontSize: 16, color: Colors.black),
-//                                       onChanged: (str) {
-//                                         newFridgeName = str;
-//                                       },
-//                                     ),
-//                                   )
-//                                 ],
-//                               ),
-//                             ),
-//                           ),
-//                           Container(
-//                             width: 300,
-//                             height: 50,
-//                             child: Column(
-//                               children: <Widget>[
-//                                 Container(
-//                                   height: 1,
-//                                   color: Colors.grey[300],
-//                                 ),
-//                                 Expanded(
-//                                     child: MaterialButton(
-//                                   minWidth: 300,
-//                                   shape: RoundedRectangleBorder(
-//                                       borderRadius: BorderRadius.vertical(
-//                                           bottom: Radius.circular(15))),
-//                                   child: Text('+ 添加'),
-//                                   onPressed: () {
-//                                     if (newFridgeName.isNotEmpty) {
-//                                       //_addFridge(newFridgeName, context);
-//                                     }
-//                                   },
-//                                 )),
-//                               ],
-//                             ),
-//                           ),
-//                         ],
-//                       ))),
-//               Align(
-//                 alignment: Alignment(0, -0.8),
-//                 child: Container(
-//                   width: 70,
-//                   height: 70,
-//                   decoration: BoxDecoration(
-//                       color: Colors.lightGreen,
-//                       borderRadius: BorderRadius.circular(35)),
-//                   child: ClipOval(
-//                       child: Image.asset('srouce/fridge_icon.jpg',
-//                           fit: BoxFit.contain)),
-//                 ),
-//               ),
-//               Align(
-//                 alignment: Alignment(0, -0.1),
-//                 child: IconButton(
-//                   icon: Icon(Icons.cancel, color: Colors.grey[300]),
-//                   iconSize: 30,
-//                   onPressed: () {
-//                     Navigator.of(context).pop();
-//                   },
-//                 ),
-//               )
-//             ]),
-//           );
-//         },
-//         transitionBuilder: (ctx, animation, _, child) {
-//           return ScaleTransition(
-//             alignment: Alignment.topLeft,
-//             scale: animation,
-//             child: child,
-//           );
-//         });
-//   }
 }
 
 class _FridgeWidget extends StatefulWidget {

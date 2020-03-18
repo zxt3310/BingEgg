@@ -16,7 +16,7 @@ class _FoodAnalyzeWidgitState extends State<FoodAnalyzeWidgit> {
   int curSelMonth;
 
   @override
-  void initState() { 
+  void initState() {
     super.initState();
     int days = DateTime.now().day;
     DateTime lastMonth = DateTime.now().subtract(Duration(days: days + 1));
@@ -27,7 +27,10 @@ class _FoodAnalyzeWidgitState extends State<FoodAnalyzeWidgit> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('统计')),
+      appBar: AppBar(
+        title: Text('统计', style: TextStyle(color: Colors.white)),
+        brightness: Brightness.dark,
+      ),
       body: Stack(
         key: _stackKey,
         children: <Widget>[
@@ -56,15 +59,11 @@ class _FoodAnalyzeWidgitState extends State<FoodAnalyzeWidgit> {
                   }))),
               GZXDropdownMenuBuilder(
                   dropDownHeight: 200,
-                  dropDownWidget: Container(
-                    child: _getMonthList((value){
-                      curSelMonth = value;
-                      _dropdownMenuController.hide();
-                      setState(() {
-                        
-                      });
-                    })
-                  )),
+                  dropDownWidget: Container(child: _getMonthList((value) {
+                    curSelMonth = value;
+                    _dropdownMenuController.hide();
+                    setState(() {});
+                  }))),
             ],
           ),
         ],
@@ -107,12 +106,12 @@ class _FoodAnalyzeWidgitState extends State<FoodAnalyzeWidgit> {
       itemBuilder: (context, idx) {
         return GestureDetector(
             onTap: () {
-              itemOnTap(idx+1);
+              itemOnTap(idx + 1);
             },
             child: Container(
               color: Colors.grey[100],
               height: 30,
-              child: Center(child: Text('${idx+1}月')),
+              child: Center(child: Text('${idx + 1}月')),
             ));
       },
       separatorBuilder: (context, idx) {

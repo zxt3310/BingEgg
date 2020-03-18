@@ -1,4 +1,4 @@
-import 'package:flutter/gestures.dart';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -19,6 +19,12 @@ class _MainPageState extends State<MainPage> {
         body: WebView(
           initialUrl: widget.url,
           javascriptMode: JavascriptMode.unrestricted,
+          onPageStarted: (e){
+            BotToast.showLoading(duration: Duration(seconds: 3));
+          },
+          onPageFinished: (e){
+            BotToast.closeAllLoading();
+          },
         ));
   }
 }
