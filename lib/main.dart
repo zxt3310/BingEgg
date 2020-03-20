@@ -25,9 +25,9 @@ void main() {
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   } else {
     SystemUiOverlayStyle light = SystemUiOverlayStyle(
-      systemNavigationBarColor: Color(0xFF000000),
-      systemNavigationBarDividerColor: null,
-      statusBarColor: null,
+      // systemNavigationBarColor: Color(0xFF000000),
+      // systemNavigationBarDividerColor: null,
+      statusBarColor: Colors.lightGreen,
       systemNavigationBarIconBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.light,
       statusBarBrightness: Brightness.dark,
@@ -51,10 +51,11 @@ class MyApp extends StatelessWidget {
             title: 'Voice Demo',
             navigatorObservers: [BotToastNavigatorObserver()],
             theme: ThemeData(
-              primarySwatch: Colors.lightGreen,
-              scaffoldBackgroundColor: Colors.white
-              //splashColor: Colors.transparent,
-            ),
+                primarySwatch: Colors.lightGreen,
+                scaffoldBackgroundColor: Colors.white,
+                buttonTheme: ButtonThemeData(minWidth: 20),
+                //splashColor: Colors.transparent,
+                ),
             home: MyHomePage()));
   }
 }

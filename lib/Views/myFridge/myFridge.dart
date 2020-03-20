@@ -104,7 +104,7 @@ class _TitleHeaderWidgetState extends State<TitleHeaderWidget> {
             Text('${curFridges.curList[curFridges.curBoxIndex].boxname}',
                 style: TextStyle(color: Colors.white)),
             PopupMenuButton(
-              icon: Icon(Icons.arrow_drop_down,color: Colors.white),
+              icon: Icon(Icons.arrow_drop_down, color: Colors.white),
               itemBuilder: (context) {
                 return List.generate(curFridges.curList.length, (idx) {
                   return PopupMenuItem(
@@ -342,3 +342,4 @@ class CurrentIndexProvider with ChangeNotifier {
 //     defaultId = boxid;
 //   }
 // }
+

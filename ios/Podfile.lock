@@ -33,7 +33,7 @@ PODS:
 
 DEPENDENCIES:
   - esptouch_plugin (from `.symlinks/plugins/esptouch_plugin/ios`)
-  - Flutter (from `.symlinks/flutter/ios-release`)
+  - Flutter (from `.symlinks/flutter/ios`)
   - flutter_audio_recorder (from `.symlinks/plugins/flutter_audio_recorder/ios`)
   - flutter_sound (from `.symlinks/plugins/flutter_sound/ios`)
   - image_cropper (from `.symlinks/plugins/image_cropper/ios`)
@@ -56,7 +56,7 @@ EXTERNAL SOURCES:
   esptouch_plugin:
     :path: ".symlinks/plugins/esptouch_plugin/ios"
   Flutter:
-    :path: ".symlinks/flutter/ios-release"
+    :path: ".symlinks/flutter/ios"
   flutter_audio_recorder:
     :path: ".symlinks/plugins/flutter_audio_recorder/ios"
   flutter_sound:

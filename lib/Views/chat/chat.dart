@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,7 @@ const String secret_key = 'Zakea9N9mRYRTOxxit2DuqpuW1ta3lQl';
 
 class ChatWidget extends StatefulWidget {
   final int curBoxId;
-  
+
   ChatWidget(this.curBoxId);
   @override
   _ChatWidgetState createState() => _ChatWidgetState();
@@ -29,7 +30,9 @@ class _ChatWidgetState extends State<ChatWidget> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => state,
-      child: Scaffold(appBar: AppBar(title: Text('增加食物')), body: ChatBodyWidget(widget.curBoxId)),
+      child: Scaffold(
+          appBar: AppBar(title: Text('增加食物'), automaticallyImplyLeading: false),
+          body: ChatBodyWidget(widget.curBoxId)),
     );
   }
 
@@ -155,7 +158,8 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
           type: 1,
           timestamp: DateTime.now().toLocal().toString(),
           content: str);
-      ChatStateProvider state = Provider.of<ChatStateProvider>(context,listen: false);
+      ChatStateProvider state =
+          Provider.of<ChatStateProvider>(context, listen: false);
       addChat(state, data);
       _hideToast();
     }
@@ -176,7 +180,8 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
         type: 0,
         timestamp: DateTime.now().toLocal().toString(),
         content: str);
-    ChatStateProvider state = Provider.of<ChatStateProvider>(context,listen: false);
+    ChatStateProvider state =
+        Provider.of<ChatStateProvider>(context, listen: false);
     addChat(state, data);
 
     await dio
@@ -196,131 +201,133 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
   //移除toast
   _hideToast() {
     //Future.delayed(Duration(seconds: 1), () {
-      BotToast.removeAll();
-   // });
+    BotToast.removeAll();
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.all(0),
+      color: const Color(0xFFF9F9F9),
       child: Consumer<ChatStateProvider>(builder: (context, state, child) {
-        return Column(children: [
-          Expanded(
-              child: ListView.builder(
-            itemCount: state.chatList.length,
-            controller: controller,
-            itemBuilder: (context, index) {
-              ChateData chat = state.chatList[index];
-              return Container(
-                  padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                  child: Column(
-                    children: [
-                      Text(chat.timestamp),
-                      SizedBox(height: 10),
-                      chat.type == 0
-                          ? Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Icon(Icons.computer),
-                                SizedBox(width: 10),
-                                Container(
-                                  padding: EdgeInsets.all(5),
-                                  child: Text(chat.content),
-                                  constraints: BoxConstraints(maxWidth: 200),
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          width: 1, color: Colors.grey)),
+        return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                  child: ListView.builder(
+                padding: EdgeInsets.all(20),
+                itemCount: state.chatList.length,
+                controller: controller,
+                itemBuilder: (context, index) {
+                  ChateData chat = state.chatList[index];
+                  return Container(
+                      padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                      child: Column(
+                        children: [
+                          chat.type == 1
+                              ? Text(
+                                  chat.timestamp,
+                                  style: TextStyle(
+                                      fontSize: 10,
+                                      color: const Color(0xff9b9b9b)),
                                 )
-                              ],
-                            )
-                          : Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: <Widget>[
-                                Container(
-                                  padding: EdgeInsets.all(5),
-                                  child: Text(chat.content),
-                                  constraints: BoxConstraints(maxWidth: 200),
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          width: 1, color: Colors.grey)),
-                                ),
-                                SizedBox(width: 10),
-                                Icon(Icons.supervised_user_circle)
-                              ],
-                            )
-                    ],
-                  ));
-            },
-          )),
-          Column(children: [
-            Text('请这样说：放入一个鸡蛋'),
-            SizedBox(height: 5),
-            GestureDetector(
-              onTapDown: (e) {
-                toastKey = UniqueKey();
-                BotToast.showEnhancedWidget(
-                    key: toastKey,
-                    toastBuilder: (context) {
-                      return ChangeNotifierProvider<ToastStateProvider>(
-                          create: (context) {
-                            provider = ToastStateProvider(stateStr: '正在录音...');
-                            return provider;
-                          },
-                          child: Container(
-                              width: double.infinity,
-                              height: double.infinity,
-                              child: Stack(
-                                alignment: AlignmentDirectional.center,
-                                children: [
-                                  Container(
-                                      height: 200,
-                                      width: 200,
-                                      color: Colors.grey,
-                                      child: Center(
-                                          child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                            Icon(Icons.mic_none,
-                                                size: 100, color: Colors.white),
-                                            Consumer<ToastStateProvider>(
-                                                builder:
-                                                    (context, state, child) {
-                                              return Text(state.stateStr,
-                                                  style: TextStyle(
-                                                      color: Colors.white));
-                                            })
-                                          ])))
-                                ],
-                              )));
-                    });
-                start();
-              },
-              onTapUp: (e) {
-                Future.delayed(Duration(milliseconds: 300),(){
-                  stop();
-                });
-              },
-              // onTap: () {
-              //   addChat(state);
-              //   Future.delayed(Duration(milliseconds: 100), () {
-              //     controller.jumpTo(controller.position.maxScrollExtent);
-              //   });
-              // },
-              child: Container(
-                padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                child: Icon(Icons.mic, size: 40, color: Colors.black),
-                decoration: BoxDecoration(
-                    border: Border.all(width: 1),
-                    borderRadius: BorderRadius.circular(20)),
-              ),
-            ),
-            Text('按住说话')
-          ])
-        ]);
+                              : SizedBox(),
+                          SizedBox(height: 15),
+                          chat.type == 0
+                              ? Align(
+                                  alignment: AlignmentDirectional.centerStart,
+                                  child: Container(
+                                    padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
+                                    child: Text(chat.content,
+                                        style: TextStyle(fontSize: 12)),
+                                    constraints: BoxConstraints(
+                                        maxWidth: 250, minHeight: 35),
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        boxShadow: [
+                                          BoxShadow(
+                                              color: const Color(0XFFF2F2F2),
+                                              blurRadius: 6)
+                                        ],
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.zero,
+                                            topRight: Radius.circular(20),
+                                            bottomLeft: Radius.circular(20),
+                                            bottomRight: Radius.circular(20))),
+                                  ))
+                              : Align(
+                                  alignment: AlignmentDirectional.centerEnd,
+                                  child: Container(
+                                    padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
+                                    child: Text(chat.content,
+                                        style: TextStyle(fontSize: 12)),
+                                    constraints: BoxConstraints(
+                                        maxWidth: 250, minHeight: 35),
+                                    decoration: BoxDecoration(
+                                        color: const Color(0xffd8f0bf),
+                                        boxShadow: [
+                                          BoxShadow(
+                                              color: const Color(0xffd8f0bf),
+                                              blurRadius: 6)
+                                        ],
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(20),
+                                            topRight: Radius.zero,
+                                            bottomLeft: Radius.circular(20),
+                                            bottomRight: Radius.circular(20))),
+                                  ))
+                        ],
+                      ));
+                },
+              )),
+              Container(
+                  height: 135,
+                  padding: EdgeInsets.all(20),
+                  color: Colors.lightGreen,
+                  child: Center(
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          FlatButton(
+                              padding: EdgeInsets.all(10),
+                              shape: CircleBorder(
+                                  side: BorderSide(
+                                      width: 1, color: Colors.white)),
+                              onPressed: null,
+                              child: Text('?',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 20))),
+                          GestureDetector(
+                            onTapDown: (e) {
+                              popupRecordingToast();
+                            },
+                            onTapUp: (e) {
+                              Future.delayed(Duration(milliseconds: 300), () {
+                                stop();
+                              });
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(10),
+                              child: Icon(Icons.mic,
+                                  size: 40, color: Colors.white),
+                              decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius: BorderRadius.circular(30)),
+                            ),
+                          ),
+                          FlatButton(
+                              padding: EdgeInsets.all(7),
+                              shape: CircleBorder(
+                                  side: BorderSide(
+                                      width: 1, color: Colors.white)),
+                              onPressed: (){Navigator.of(context).pop();},
+                              child: Text('X',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 20))),
+                        ]),
+                  ))
+            ]);
       }),
     );
   }
@@ -330,6 +337,44 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
     Future.delayed(Duration(milliseconds: 100), () {
       controller.jumpTo(controller.position.maxScrollExtent);
     });
+  }
+
+  popupRecordingToast() {
+    toastKey = UniqueKey();
+    BotToast.showEnhancedWidget(
+        key: toastKey,
+        toastBuilder: (context) {
+          return ChangeNotifierProvider<ToastStateProvider>(
+              create: (context) {
+                provider = ToastStateProvider(stateStr: '正在录音...');
+                return provider;
+              },
+              child: Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  child: Stack(
+                    alignment: AlignmentDirectional.center,
+                    children: [
+                      Container(
+                          height: 200,
+                          width: 200,
+                          color: Colors.grey,
+                          child: Center(
+                              child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                Icon(Icons.mic_none,
+                                    size: 100, color: Colors.white),
+                                Consumer<ToastStateProvider>(
+                                    builder: (context, state, child) {
+                                  return Text(state.stateStr,
+                                      style: TextStyle(color: Colors.white));
+                                })
+                              ])))
+                    ],
+                  )));
+        });
+    start();
   }
 }
 

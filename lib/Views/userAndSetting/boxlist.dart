@@ -4,6 +4,7 @@ import 'package:sirilike_flutter/Views/myFridge/myFridge.dart';
 import 'package:sirilike_flutter/main.dart';
 import 'package:sirilike_flutter/model/mainModel.dart';
 import 'package:sirilike_flutter/model/network.dart';
+import 'boxAdd.dart';
 
 class BoxListWidget extends StatelessWidget {
   final BuildContext providerContext;
@@ -36,7 +37,7 @@ class _BoxListBodyState extends State<BoxListBody> {
         padding: EdgeInsets.all(20),
         itemBuilder: (context, idx) {
           return Container(
-            height: 40, 
+            height: 40,
             child: Center(
                 child: idx < state.curList.length
                     ? Row(
@@ -54,7 +55,10 @@ class _BoxListBodyState extends State<BoxListBody> {
                                         style: TextStyle(color: Colors.blue)))
                           ])
                     : FlatButton.icon(
-                        onPressed: _popAddUI,
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (ctx) => BoxAddWidget(),fullscreenDialog: true));
+                        },
                         icon: Icon(Icons.add_circle_outline),
                         label: Text('新增冰箱'))),
           );

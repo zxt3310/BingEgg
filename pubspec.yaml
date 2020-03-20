@@ -22,7 +22,6 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.2
   event_bus:
   dio:
   flutter_audio_recorder:
@@ -36,7 +35,6 @@ dependencies:
   flutter_screenutil:
   provider:
   gzx_dropdown_menu : ^1.0.3
-  english_words:
   #toast
   bot_toast: ^2.2.1
   #图像采集器
@@ -46,6 +44,7 @@ dependencies:
   esptouch_plugin: ^0.0.2
   #小红点
   badges: 1.1.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

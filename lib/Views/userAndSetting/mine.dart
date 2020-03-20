@@ -14,80 +14,85 @@ class UserCenterWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.grey[300],
-        brightness: Brightness.light,
-        elevation: 0,
-        leading: IconButton(
-            icon: Icon(Icons.settings, color: Colors.black),
-            onPressed: () => {}),
-        actions: <Widget>[
-          IconButton(
-              icon: Icon(Icons.share, color: Colors.black),
-              onPressed: user.isLogin
-                  ? () {}
-                  : () {
-                      Navigator.of(context).push(CustomRoute(
-                          UserContainer(user: null, child: AuthorPage())));
-                    })
-        ],
-      ),
-      body: Container(
-        color: Colors.grey[300],
-        child: Column(
-          children: <Widget>[
-            UserHeaderWidget(),
-            Expanded(
-              child: Container(
-                color: Colors.white,
-                padding: EdgeInsets.all(20),
-                child: ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: optionList.length,
-                    itemBuilder: (ctx, idx) {
-                      return GestureDetector(
-                          onTap: () {
-                            switch (idx) {
-                              case 0:
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (ctx) => BoxListWidget(
-                                        providerContext: context)));
-                                break;
-                              case 1:
-                                 Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (ctx) => UserInfoWidget()));
-                                break;
-                              default:
-                            }
-                          },
-                          child: Container(
-                            color: Colors.white,
-                            child: Column(children: <Widget>[
-                              Padding(
-                                  padding: EdgeInsets.fromLTRB(0, 10, 5, 10),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      FlatButton.icon(
-                                          icon: Icon(Icons.android),
-                                          label: Text(optionList[idx]),
-                                          splashColor: Colors.transparent,
-                                          onPressed: () {}),
-                                      Icon(Icons.chevron_right,
-                                          color: Colors.grey[500], size: 30)
-                                    ],
-                                  )),
-                              Container(height: 1, color: Colors.grey[400])
-                            ]),
-                          ));
-                    }),
+        backgroundColor: Colors.lightGreen,
+        body: SafeArea(
+          bottom: false,
+          child: CustomScrollView(slivers: [
+            SliverToBoxAdapter(
+                child: Container(
+              child: Column(
+                children: <Widget>[
+                  UserHeaderWidget(),
+                ],
               ),
-            )
-          ],
-        ),
-      ),
-    );
+            )),
+            SliverToBoxAdapter(
+                child: Container(
+              padding: EdgeInsets.all(16),
+              color: const Color(0xfff9f9f9),
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12)),
+                    child: Column(
+                      children: <Widget>[
+                        OptionsSelectWidget(
+                            title: '个人信息',
+                            icon: Icons.my_location,
+                            onTap: () {}),
+                        OptionsSelectWidget(
+                            title: '账号绑定', icon: Icons.alarm, onTap: () {}),
+                        OptionsSelectWidget(
+                            title: '冰箱列表',
+                            icon: Icons.phone,
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) =>
+                                      BoxListWidget(providerContext: context)));
+                            },
+                            showSeprate: false)
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12)),
+                    child: Column(
+                      children: <Widget>[
+                        OptionsSelectWidget(
+                            title: '新手引导',
+                            icon: Icons.my_location,
+                            onTap: () {}),
+                        OptionsSelectWidget(
+                            title: '联系我们', icon: Icons.alarm, onTap: () {}),
+                        OptionsSelectWidget(
+                            title: '隐私政策',
+                            icon: Icons.phone,
+                            onTap: () {},
+                            showSeprate: false)
+                      ],
+                    ),
+                  ),
+                  Container(
+                    height: 100,
+                    child: Center(
+                      child: FlatButton(
+                          onPressed: null,
+                          child: Text('退出登录',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: const Color(0xfff5635e)))),
+                    ),
+                  )
+                ],
+              ),
+            )),
+          ]),
+        ));
   }
 }
 
@@ -101,33 +106,95 @@ class _UserHeaderWidgetState extends State<UserHeaderWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 130,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Padding(
-              padding: EdgeInsets.all(15),
-              child: Container(
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(width: 4, color: Colors.orangeAccent)),
-                  child: ClipOval(
-                      child: Image.network(
-                          'https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=612723378,2699755568&fm=11&gp=0.jpg')))),
-          Container(
-              child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+      color: Colors.lightGreen,
+      padding: EdgeInsets.all(15),
+      child: Column(children: <Widget>[
+        Row(
+          children: <Widget>[
+            Padding(
+                padding: EdgeInsets.all(15),
+                child: ClipOval(
+                    child: Image.network(
+                  'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1584699083702&di=7cf57bf8d0bb6f7662ebf1721b1cd9a7&imgtype=0&src=http%3A%2F%2Fwx1.sinaimg.cn%2Forj360%2Fdc1ebfbdly1gc0oora8g9j21hc0u0dkg.jpg',
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.fitHeight,
+                ))),
+            Container(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text('${user.username == null ? '小冰的箱' : user.username}',
+                    style: TextStyle(fontSize: 18, color: Colors.white)),
+                Text('手机登录',
+                    style:
+                        TextStyle(fontSize: 10, color: const Color(0xff437722)))
+              ],
+            )),
+          ],
+        ),
+        Container(
+          padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+          height: 50,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(31),
+              color: const Color(0xff659E40)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Text('${user.username == null ? '小冰的箱' : user.username}',
-                  style: TextStyle(fontSize: 18)),
-              SizedBox(height: 15),
-              Text('手机登录', style: TextStyle(color: Colors.grey[500]))
+              Text('xxx的冰箱', style: TextStyle(color: Colors.white)),
+              Text('食材充足', style: TextStyle(color: Colors.white))
             ],
-          )),
-        ],
-      ),
+          ),
+        )
+      ]),
     );
+  }
+}
+
+class OptionsSelectWidget extends StatelessWidget {
+  @required
+  final String title;
+  @required
+  final Function onTap;
+  final IconData icon;
+  final bool showSeprate;
+  OptionsSelectWidget(
+      {this.title, this.onTap, this.icon, this.showSeprate = true});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+          child: Column(children: [
+            Row(
+              children: <Widget>[
+                Container(
+                    decoration: BoxDecoration(
+                        color: const Color(0xffF9F9F9),
+                        borderRadius: BorderRadius.circular(8)),
+                    padding: EdgeInsets.all(10),
+                    child: Icon(icon, color: Colors.lightGreen, size: 20)),
+                Expanded(
+                    child: Padding(
+                        padding: EdgeInsets.only(left: 20),
+                        child: Text(title,
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold)))),
+                Icon(Icons.keyboard_arrow_right,
+                    size: 23, color: const Color(0xffc8c7cc))
+              ],
+            ),
+            SizedBox(height: 10),
+            showSeprate
+                ? Divider(
+                    height: 1, thickness: 1, color: const Color(0xffEFEFF4))
+                : SizedBox()
+          ]),
+        ));
   }
 }
 

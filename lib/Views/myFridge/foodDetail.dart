@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/single_child_widget.dart';
 import 'package:sirilike_flutter/model/mainModel.dart';
 import 'package:sirilike_flutter/model/network.dart';
 import 'package:sirilike_flutter/webpage.dart';
@@ -6,7 +7,6 @@ import 'package:sirilike_flutter/webpage.dart';
 class FoodDetailWidget extends StatefulWidget {
   final FoodMaterial food;
   FoodDetailWidget({Key key, this.food}) : super(key: key);
-
   @override
   _FoodDetailWidgetState createState() => _FoodDetailWidgetState();
 }
@@ -35,7 +35,7 @@ class _FoodDetailWidgetState extends State<FoodDetailWidget> {
             if (snapshot.connectionState == ConnectionState.done) {
               Response res = snapshot.data;
               if (res.data['err'] != 0) {
-                return Center(child: Text('琼求出错'));
+                return Center(child: Text('请求出错'));
               } else {
                 FoodPageStruct data = FoodPageStruct.fromJson(res.data['data']);
                 return getUI(data);
