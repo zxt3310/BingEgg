@@ -5,6 +5,7 @@ import '../../model/user.dart';
 import '../../login/ui/user_provider.dart';
 import 'boxlist.dart';
 import 'userinfo.dart';
+import 'package:sirilike_flutter/Views/deviceConnect/deviceConnect.dart';
 export 'package:sirilike_flutter/main.dart' show AppSharedState;
 
 List optionList = ['我的冰箱', '个人信息', '选项卡'];
@@ -43,7 +44,11 @@ class UserCenterWidget extends StatelessWidget {
                             icon: Icons.my_location,
                             onTap: () {}),
                         OptionsSelectWidget(
-                            title: '账号绑定', icon: Icons.alarm, onTap: () {}),
+                            title: '账号绑定', icon: Icons.alarm, onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) =>
+                                      WIFIConnectWidget()));
+                            }),
                         OptionsSelectWidget(
                             title: '冰箱列表',
                             icon: Icons.phone,
