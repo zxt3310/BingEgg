@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:sirilike_flutter/main.dart';
+import 'package:sirilike_flutter/model/customRoute.dart';
 import '../style/theme.dart' as theme;
 import 'package:dio/dio.dart';
 import '../../model/network.dart';
 import '../../model/user.dart';
+
 /*
  注册界面
  */
@@ -283,8 +286,8 @@ class _SignInPageState extends State<SignInPage> {
           //如果输入都检验通过，则进行登录操作
           _startLogin().then((e) {
             if (e is String) {
-              _saveUser(e).then((e)=>Navigator.of(context).pop());
-              
+              _saveUser(e).then((e) => Navigator.of(context).pushAndRemoveUntil(
+                  CustomRoute.fade(MyHomePage()), (e) => false));
             } else {
               String error = e['errmsg'];
               Scaffold.of(context)
@@ -300,8 +303,7 @@ class _SignInPageState extends State<SignInPage> {
 
   Future _startLogin() async {
     Dio req = NetManager.instance.dio;
-    String url =
-        '/api/login?mobile=$account&password=$pswd';
+    String url = '/api/login?mobile=$account&password=$pswd';
     Response res = await req.get(url);
     int err = res.data['err'];
     if (err != 0) {
@@ -312,7 +314,7 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  Future _saveUser(String token) async{
-    await User.instance.save(account,pswd , token);
+  Future _saveUser(String token) async {
+    await User.instance.save(account, pswd, token);
   }
 }

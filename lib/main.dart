@@ -11,6 +11,7 @@ import 'Views/chat/chat.dart';
 import 'package:provider/provider.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'Views/bottomBar/bingEBottomNaviBar.dart';
+import 'login/ui/login_page.dart';
 
 const List barList = ["提醒", "冰箱", "统计", "我的"];
 
@@ -34,7 +35,7 @@ void main() {
     );
     SystemChrome.setSystemUIOverlayStyle(light);
   }
-
+  
   realRunApp();
 }
 
@@ -48,15 +49,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BotToastInit(
         child: MaterialApp(
+          routes: {
+            'homeRoute':(context) => MyHomePage(),
+            'loginRoute':(context) => LoginPage()
+          },
             title: 'Voice Demo',
             navigatorObservers: [BotToastNavigatorObserver()],
             theme: ThemeData(
-                primarySwatch: Colors.lightGreen,
-                scaffoldBackgroundColor: Colors.white,
-                buttonTheme: ButtonThemeData(minWidth: 20),
-                //splashColor: Colors.transparent,
-                ),
-            home: MyHomePage()));
+              primarySwatch: Colors.lightGreen,
+              scaffoldBackgroundColor: Colors.white,
+              buttonTheme: ButtonThemeData(minWidth: 20),
+              //splashColor: Colors.transparent,
+            ),
+            home:User.instance.isLogin? MyHomePage():LoginPage()));
   }
 }
 
@@ -94,46 +99,56 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<AppSharedState>(
         create: (ctx) => appSharedState,
-        child: Consumer<AppSharedState>(builder: (ctx, state, child) {
-          return Scaffold(
-            body: Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, 0, 34),
-                child: IndexedStack(
-                  index: state.curTabIndex,
-                  children: <Widget>[
-                    DontaiWidget(),
-                    MyFridgeWidget(),
-                    FoodAnalyzeWidgit(),
-                    UserCenterWidget()
-                  ],
+        child: Selector<AppSharedState, int>(
+            selector: (context, state) => state.curTabIndex,
+            shouldRebuild: (index, next) => index != next,
+            builder: (ctx, curTabIndex, child) {
+              return Scaffold(
+                body: Padding(
+                    padding: EdgeInsets.fromLTRB(0, 0, 0, 34),
+                    child: IndexedStack(
+                      index: curTabIndex,
+                      children: <Widget>[
+                        DontaiWidget(),
+                        MyFridgeWidget(),
+                        FoodAnalyzeWidgit(),
+                        UserCenterWidget()
+                      ],
+                    )),
+                extendBody: true,
+                bottomNavigationBar: SafeArea(
+                    child: BingEBottomBaviBar(
+                  height: 60,
+                  items: items,
+                  existCenterDock: true,
+                  curSelectIndex: curTabIndex,
+                  backgroundImg: const AssetImage('srouce/bottom/nva_bg.png'),
+                  itemSize: 25,
+                  onTap: (idx) {
+                    appSharedState.tabSwitch(idx);
+                  },
+                  centerDock: GestureDetector(
+                      child: Image.asset('srouce/bottom/nva_add.png',
+                          width: 60, height: 60, fit: BoxFit.fitHeight),
+                      onTap: () {
+                        Navigator.of(context)
+                            .push(MaterialPageRoute(
+                                builder: (context) =>
+                                    ChatWidget(appSharedState.curBoxId),
+                                fullscreenDialog: true))
+                            .then((e) {
+                          myEvent.fire(null);
+                        });
+                      }),
                 )),
-            extendBody: true,
-            bottomNavigationBar: SafeArea(
-                child: BingEBottomBaviBar(
-              height: 60,
-              items: items,
-              existCenterDock: true,
-              curSelectIndex: state.curTabIndex,
-              backgroundImg: const AssetImage('srouce/bottom/nva_bg.png'),
-              itemSize: 25,
-              onTap: (idx) {
-                state.tabSwitch(idx);
-              },
-              centerDock: GestureDetector(
-                  child: Image.asset('srouce/bottom/nva_add.png',
-                      width: 60, height: 60, fit: BoxFit.fitHeight),
-                  onTap: () {
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(
-                            builder: (context) => ChatWidget(state.curBoxId),
-                            fullscreenDialog: true))
-                        .then((e) {
-                      myEvent.fire(null);
-                    });
-                  }),
-            )),
-          );
-        }));
+              );
+            }));
+  }
+
+  @override
+  void dispose() {
+    print('home page dealloc');
+    super.dispose();
   }
 }
 
@@ -142,6 +157,11 @@ class AppSharedState with ChangeNotifier {
   int curBoxId = 0;
   int curBoxIndex = 0; //当前选中冰箱
   List<Fridge> curList = List();
+
+  @override
+  dispose(){
+    super.dispose();
+  }
 
   tabSwitch(int index) {
     curTabIndex = index;

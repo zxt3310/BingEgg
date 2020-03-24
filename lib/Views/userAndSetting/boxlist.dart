@@ -32,7 +32,7 @@ class _BoxListBodyState extends State<BoxListBody> {
   int curDefault;
   @override
   Widget build(BuildContext context) {
-    AppSharedState state = Provider.of(widget.providerContext);
+    AppSharedState state = Provider.of(widget.providerContext,listen: false);
     return ListView.separated(
         padding: EdgeInsets.all(20),
         itemBuilder: (context, idx) {
@@ -91,7 +91,7 @@ class _BoxListBodyState extends State<BoxListBody> {
       return Fridge.fromJson(sources[idx]);
     });
     AppSharedState curProvider =
-        Provider.of<AppSharedState>(widget.providerContext);
+        Provider.of<AppSharedState>(widget.providerContext,listen: false);
     curProvider.changeBoxList(fridges);
     print(curProvider.curList);
   }

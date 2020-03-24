@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:esptouch_flutter/esptouch_flutter.dart';
 import 'package:connectivity/connectivity.dart';
@@ -11,17 +12,19 @@ class WIFIConnectWidget extends StatefulWidget {
 }
 
 class _WIFIConnectWidgetState extends State<WIFIConnectWidget> {
-  String password;
+  String password = '';
   StreamSubscription subscription;
+  StreamSubscription espStream;
 
   String ssid = '';
   String bssid = '';
 
+  String connectResult = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Plugin example app'),
+        title: const Text('设备连接'),
       ),
       body: Center(
         child: Column(children: <Widget>[
@@ -40,10 +43,37 @@ class _WIFIConnectWidgetState extends State<WIFIConnectWidget> {
             height: 20,
           ),
           FlatButton(
-              onPressed: () {},
+              onPressed: () {
+                if (ssid == null || bssid == null) {
+                  BotToast.showText(text: '未能正确获取wifi');
+                  return;
+                }
+                BotToast.showLoading();
+                ESPTouchTask task = ESPTouchTask(
+                    ssid: ssid,
+                    bssid: bssid,
+                    password: password,
+                    packet: ESPTouchPacket.broadcast,
+                    taskParameter: ESPTouchTaskParameter(
+                        waitUdpReceiving: Duration(seconds: 10)));
+                Stream<ESPTouchResult> stream = task.execute();
+                espStream = stream.listen((e) {
+                  print(e);
+                  espStream.cancel();
+                  BotToast.closeAllLoading();
+
+                  if (e.bssid == null) {
+                    connectResult = '连接失败';
+                  } else {
+                    connectResult = 'device:${e.bssid} ip: ${e.ip}';
+                  }
+                  setState(() {});
+                });
+              },
               child: Text('连接设备'),
               shape: RoundedRectangleBorder(side: BorderSide(width: 1))),
           SizedBox(height: 40),
+          Text(connectResult)
         ]),
       ),
     );
@@ -52,6 +82,9 @@ class _WIFIConnectWidgetState extends State<WIFIConnectWidget> {
   @override
   void dispose() {
     subscription.cancel();
+    if(espStream != null){
+       espStream.cancel();
+    }
     super.dispose();
   }
 
@@ -71,13 +104,13 @@ class _WIFIConnectWidgetState extends State<WIFIConnectWidget> {
     getCurWifi();
   }
 
-
   getCurWifi() async {
-    PermissionStatus permission = await LocationPermissions().checkPermissionStatus();
-    if (permission != PermissionStatus.granted){
+    PermissionStatus permission =
+        await LocationPermissions().checkPermissionStatus();
+    if (permission != PermissionStatus.granted) {
       await LocationPermissions().requestPermissions();
     }
-    
+
     ConnectivityResult connectivityResult =
         await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.mobile ||

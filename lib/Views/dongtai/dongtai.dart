@@ -11,6 +11,7 @@ class DontaiWidget extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
           elevation: 0,
+          automaticallyImplyLeading: false,
           title:
               Center(child: Text('动态', style: TextStyle(color: Colors.white))),
           brightness: Brightness.dark),
@@ -65,6 +66,7 @@ Widget getUI(DynamicData data, BuildContext ctx) {
   List<Dailyads> dailyAds = data.dailyMealAdvice;
   List<FriendAction> actions = data.actions;
   return CustomScrollView(
+    shrinkWrap: true,
     slivers: <Widget>[
       SliverToBoxAdapter(
         child: Container(
@@ -139,7 +141,7 @@ Widget getUI(DynamicData data, BuildContext ctx) {
       SliverToBoxAdapter(
           child: Container(
         color: const Color(0xFFF9F9F9),
-        padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+        padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
@@ -165,46 +167,100 @@ Widget getUI(DynamicData data, BuildContext ctx) {
                 scrollDirection: Axis.horizontal,
                 itemCount: dailyAds.length,
                 separatorBuilder: (BuildContext context, int index) {
-                  return SizedBox(width: 20);
+                  return SizedBox(width: 10);
                 },
                 itemBuilder: (BuildContext context, int index) {
                   Dailyads ads = dailyAds[index];
-                  return Container(
-                    padding: EdgeInsets.all(10),
-                    width: 130,
-                    decoration: BoxDecoration(
-                        border: Border.all(width: 1),
-                        color: const Color(0XFF708090)),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(ads.name, style: TextStyle(color: Colors.white)),
-                        SizedBox(height: 15),
-                        Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: _getDailyText(ads.menu)),
-                        SizedBox(height: 15),
-                        MaterialButton(
-                          padding: EdgeInsets.all(0),
-                          color: Colors.white,
-                          minWidth: 70,
-                          height: 25,
-                          child: Text('查看做法'),
-                          onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => MainPage(url: ads.url)));
-                          },
-                        )
-                      ],
-                    ),
-                  );
+                  return GestureDetector(
+                      child: Padding(
+                          padding: EdgeInsets.all(5),
+                          child: Container(
+                              width: 138,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: const Color(0xFFE0E0E0),
+                                        offset: Offset(0, 1),
+                                        blurRadius: 6)
+                                  ]),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: <Widget>[
+                                    Flexible(
+                                        flex: 1,
+                                        child: Image.network(ads.bgUrl,
+                                            height: 95, fit: BoxFit.fill)),
+                                    Flexible(
+                                        flex: 1,
+                                        child: Padding(
+                                            padding: EdgeInsets.fromLTRB(
+                                                15, 8, 20, 0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                Text(ads.name,
+                                                    style: TextStyle(
+                                                        fontSize: 17,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                                Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children:
+                                                        _getDailyText(ads.menu))
+                                              ],
+                                            )))
+                                  ],
+                                ),
+                              ))),
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => MainPage(url: ads.url)));
+                      });
                 },
               ),
             ),
           ],
         ),
       )),
+      SliverToBoxAdapter(
+        child: Container(
+          height: 50,
+          margin: EdgeInsets.all(15),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(blurRadius: 6, color: const Color(0xffe0e0e0))
+              ]),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                    color: const Color(0xffd8d8d8),
+                    borderRadius: BorderRadius.circular(18)),
+              ),
+              Text('午餐打卡',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+              Checkbox(
+                  value: true,
+                  tristate: true,
+                  onChanged: (e) {},
+                  activeColor: Colors.green)
+            ],
+          ),
+        ),
+      ),
       SliverToBoxAdapter(
         child: Container(
             color: const Color(0xFFF9F9F9),
@@ -237,7 +293,8 @@ Widget getUI(DynamicData data, BuildContext ctx) {
             FriendAction action = actions[idx];
             return Container(
               margin: EdgeInsets.fromLTRB(20, 5, 20, 5),
-              decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(
+                  color: Colors.white, borderRadius: BorderRadius.circular(12)),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
@@ -273,7 +330,7 @@ Widget getUI(DynamicData data, BuildContext ctx) {
 
 List<Widget> _getDailyText(List list) {
   return List.generate(list.length, (idx) {
-    return Text(list[idx], style: TextStyle(color: Colors.white));
+    return Text(list[idx], style: TextStyle(fontSize: 11));
   });
 }
 
@@ -302,11 +359,13 @@ class FriHealth {
 class Dailyads {
   String name;
   List menu;
+  String bgUrl;
   String url;
 
   Dailyads.fromJson(Map<String, dynamic> json)
       : name = json['name'],
         menu = json['menu'],
+        bgUrl = json['bg_url'],
         url = json['url'];
 
   static List<Dailyads> fromListJson(List list) {

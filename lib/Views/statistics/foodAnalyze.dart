@@ -28,6 +28,7 @@ class _FoodAnalyzeWidgitState extends State<FoodAnalyzeWidgit> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text('统计', style: TextStyle(color: Colors.white)),
         brightness: Brightness.dark,
       ),

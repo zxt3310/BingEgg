@@ -32,6 +32,7 @@ class _MyFridgeWidgetState extends State<MyFridgeWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: TitleHeaderWidget(),
         brightness: Brightness.dark,
         centerTitle: true,
@@ -342,4 +343,3 @@ class CurrentIndexProvider with ChangeNotifier {
 //     defaultId = boxid;
 //   }
 // }
-

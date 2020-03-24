@@ -211,122 +211,166 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
       padding: EdgeInsets.all(0),
       color: const Color(0xFFF9F9F9),
       child: Consumer<ChatStateProvider>(builder: (context, state, child) {
+        Color tipColor = const Color(0xffc8c7cc);
         return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(
-                  child: ListView.builder(
-                padding: EdgeInsets.all(20),
-                itemCount: state.chatList.length,
-                controller: controller,
-                itemBuilder: (context, index) {
-                  ChateData chat = state.chatList[index];
-                  return Container(
-                      padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                      child: Column(
-                        children: [
-                          chat.type == 1
-                              ? Text(
-                                  chat.timestamp,
-                                  style: TextStyle(
-                                      fontSize: 10,
-                                      color: const Color(0xff9b9b9b)),
-                                )
-                              : SizedBox(),
-                          SizedBox(height: 15),
-                          chat.type == 0
-                              ? Align(
-                                  alignment: AlignmentDirectional.centerStart,
-                                  child: Container(
-                                    padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
-                                    child: Text(chat.content,
-                                        style: TextStyle(fontSize: 12)),
-                                    constraints: BoxConstraints(
-                                        maxWidth: 250, minHeight: 35),
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        boxShadow: [
-                                          BoxShadow(
-                                              color: const Color(0XFFF2F2F2),
-                                              blurRadius: 6)
-                                        ],
-                                        borderRadius: BorderRadius.only(
-                                            topLeft: Radius.zero,
-                                            topRight: Radius.circular(20),
-                                            bottomLeft: Radius.circular(20),
-                                            bottomRight: Radius.circular(20))),
-                                  ))
-                              : Align(
-                                  alignment: AlignmentDirectional.centerEnd,
-                                  child: Container(
-                                    padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
-                                    child: Text(chat.content,
-                                        style: TextStyle(fontSize: 12)),
-                                    constraints: BoxConstraints(
-                                        maxWidth: 250, minHeight: 35),
-                                    decoration: BoxDecoration(
-                                        color: const Color(0xffd8f0bf),
-                                        boxShadow: [
-                                          BoxShadow(
-                                              color: const Color(0xffd8f0bf),
-                                              blurRadius: 6)
-                                        ],
-                                        borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(20),
-                                            topRight: Radius.zero,
-                                            bottomLeft: Radius.circular(20),
-                                            bottomRight: Radius.circular(20))),
-                                  ))
-                        ],
-                      ));
-                },
-              )),
+                child: Stack(children: [
+                  Offstage(
+                      offstage: state.chatList.length > 3,
+                      child: Align(
+                        alignment: AlignmentDirectional.bottomCenter,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Text('你可以说:',
+                                style:
+                                    TextStyle(fontSize: 15, color: tipColor)),
+                            SizedBox(height: 20),
+                            Text('"放入1个鸡蛋"',
+                                style:
+                                    TextStyle(fontSize: 12, color: tipColor)),
+                            Text('"拿出3个西红柿"',
+                                style:
+                                    TextStyle(fontSize: 12, color: tipColor)),
+                            SizedBox(height: 40)
+                          ],
+                        ),
+                      )),
+                  ListView.builder(
+                    padding: EdgeInsets.all(20),
+                    itemCount: state.chatList.length,
+                    controller: controller,
+                    itemBuilder: (context, index) {
+                      ChateData chat = state.chatList[index];
+                      return Container(
+                          padding: EdgeInsets.only(top: 10),
+                          child: Column(
+                            children: [
+                              chat.type == 1
+                                  ? Text(
+                                      chat.timestamp,
+                                      style: TextStyle(
+                                          fontSize: 10,
+                                          color: const Color(0xff9b9b9b)),
+                                    )
+                                  : SizedBox(),
+                              SizedBox(height: 15),
+                              chat.type == 0
+                                  ? Align(
+                                      alignment:
+                                          AlignmentDirectional.centerStart,
+                                      child: Container(
+                                        padding:
+                                            EdgeInsets.fromLTRB(20, 8, 20, 8),
+                                        child: Text(chat.content,
+                                            style: TextStyle(fontSize: 12)),
+                                        constraints: BoxConstraints(
+                                            maxWidth: 250, minHeight: 35),
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                  color:
+                                                      const Color(0XFFF2F2F2),
+                                                  blurRadius: 6)
+                                            ],
+                                            borderRadius: BorderRadius.only(
+                                                topLeft: Radius.zero,
+                                                topRight: Radius.circular(20),
+                                                bottomLeft: Radius.circular(20),
+                                                bottomRight:
+                                                    Radius.circular(20))),
+                                      ))
+                                  : Align(
+                                      alignment: AlignmentDirectional.centerEnd,
+                                      child: Container(
+                                        padding:
+                                            EdgeInsets.fromLTRB(20, 8, 20, 8),
+                                        child: Text(chat.content,
+                                            style: TextStyle(fontSize: 12)),
+                                        constraints: BoxConstraints(
+                                            maxWidth: 250, minHeight: 35),
+                                        decoration: BoxDecoration(
+                                            color: const Color(0xffd8f0bf),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                  color:
+                                                      const Color(0xffd8f0bf),
+                                                  blurRadius: 6)
+                                            ],
+                                            borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(20),
+                                                topRight: Radius.zero,
+                                                bottomLeft: Radius.circular(20),
+                                                bottomRight:
+                                                    Radius.circular(20))),
+                                      ))
+                            ],
+                          ));
+                    },
+                  )
+                ]),
+              ),
               Container(
                   height: 135,
                   padding: EdgeInsets.all(20),
                   color: Colors.lightGreen,
-                  child: Center(
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          FlatButton(
-                              padding: EdgeInsets.all(10),
-                              shape: CircleBorder(
-                                  side: BorderSide(
-                                      width: 1, color: Colors.white)),
-                              onPressed: null,
-                              child: Text('?',
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 20))),
-                          GestureDetector(
-                            onTapDown: (e) {
-                              popupRecordingToast();
-                            },
-                            onTapUp: (e) {
-                              Future.delayed(Duration(milliseconds: 300), () {
-                                stop();
-                              });
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(10),
-                              child: Icon(Icons.mic,
-                                  size: 40, color: Colors.white),
-                              decoration: BoxDecoration(
-                                  color: Colors.black,
-                                  borderRadius: BorderRadius.circular(30)),
-                            ),
+                  child: Stack(
+                      alignment: AlignmentDirectional.center,
+                      children: <Widget>[
+                        Align(
+                          alignment: AlignmentDirectional.topStart,
+                          child: Icon(
+                            Icons.keyboard,
+                            color: Colors.white,
                           ),
-                          FlatButton(
-                              padding: EdgeInsets.all(7),
-                              shape: CircleBorder(
-                                  side: BorderSide(
-                                      width: 1, color: Colors.white)),
-                              onPressed: (){Navigator.of(context).pop();},
-                              child: Text('X',
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 20))),
-                        ]),
-                  ))
+                        ),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              FlatButton(
+                                  padding: EdgeInsets.all(10),
+                                  shape: CircleBorder(
+                                      side: BorderSide(
+                                          width: 1, color: Colors.white)),
+                                  onPressed: null,
+                                  child: Text('?',
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 20))),
+                              GestureDetector(
+                                onTapDown: (e) {
+                                  popupRecordingToast();
+                                },
+                                onTapUp: (e) {
+                                  Future.delayed(Duration(milliseconds: 300),
+                                      () {
+                                    stop();
+                                  });
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  child: Icon(Icons.mic,
+                                      size: 40, color: Colors.white),
+                                  decoration: BoxDecoration(
+                                      color: Colors.black,
+                                      borderRadius: BorderRadius.circular(30)),
+                                ),
+                              ),
+                              FlatButton(
+                                  padding: EdgeInsets.all(7),
+                                  shape: CircleBorder(
+                                      side: BorderSide(
+                                          width: 1, color: Colors.white)),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('X',
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 20))),
+                            ]),
+                      ]))
             ]);
       }),
     );
@@ -376,10 +420,27 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
         });
     start();
   }
+
+  @override
+  void didChangeDependencies() {
+    //加载欢迎语
+    ChateData welcome = ChateData(
+      content: '欢迎使用小冰记录食材，健康饮食开始起航。',
+      type: 0,
+    );
+    ChatStateProvider state =
+        Provider.of<ChatStateProvider>(context, listen: false);
+    Future.delayed(Duration(seconds: 1), () {
+      addChat(state, welcome);
+    });
+
+    super.didChangeDependencies();
+  }
 }
 
 class ChatStateProvider with ChangeNotifier {
   List<ChateData> chatList = List();
+  bool isFirstChat = false;
 
   add(ChateData data) {
     chatList.add(data);

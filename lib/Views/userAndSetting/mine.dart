@@ -1,11 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:sirilike_flutter/login/ui/home_page.dart';
+import 'package:sirilike_flutter/login/ui/login_page.dart';
 import '../../model/user.dart';
-import '../../login/ui/user_provider.dart';
 import 'boxlist.dart';
 import 'userinfo.dart';
 import 'package:sirilike_flutter/Views/deviceConnect/deviceConnect.dart';
+import 'package:sirilike_flutter/model/customRoute.dart';
 export 'package:sirilike_flutter/main.dart' show AppSharedState;
 
 List optionList = ['我的冰箱', '个人信息', '选项卡'];
@@ -18,7 +18,7 @@ class UserCenterWidget extends StatelessWidget {
         backgroundColor: Colors.lightGreen,
         body: SafeArea(
           bottom: false,
-          child: CustomScrollView(slivers: [
+          child: CustomScrollView(shrinkWrap: true, slivers: [
             SliverToBoxAdapter(
                 child: Container(
               child: Column(
@@ -44,10 +44,11 @@ class UserCenterWidget extends StatelessWidget {
                             icon: Icons.my_location,
                             onTap: () {}),
                         OptionsSelectWidget(
-                            title: '账号绑定', icon: Icons.alarm, onTap: () {
+                            title: '账号绑定',
+                            icon: Icons.alarm,
+                            onTap: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (ctx) =>
-                                      WIFIConnectWidget()));
+                                  builder: (ctx) => WIFIConnectWidget()));
                             }),
                         OptionsSelectWidget(
                             title: '冰箱列表',
@@ -86,7 +87,33 @@ class UserCenterWidget extends StatelessWidget {
                     height: 100,
                     child: Center(
                       child: FlatButton(
-                          onPressed: null,
+                          onPressed: () {
+                            User.instance.clear();
+
+                            showCupertinoDialog(
+                                context: context,
+                                builder: (ctx) {
+                                  return CupertinoAlertDialog(
+                                    title: Text('确定登出？'),
+                                    actions: <Widget>[
+                                      CupertinoDialogAction(
+                                          child: Text('确定'),
+                                          onPressed: () {
+                                            Navigator.of(context)
+                                                .pushAndRemoveUntil(
+                                                    CustomRoute.fade(
+                                                        LoginPage()),
+                                                    (e) => false);
+                                          }),
+                                      CupertinoDialogAction(
+                                          child: Text('取消'),
+                                          onPressed: () {
+                                            Navigator.of(ctx).pop();
+                                          })
+                                    ],
+                                  );
+                                });
+                          },
                           child: Text('退出登录',
                               style: TextStyle(
                                   fontSize: 12,
@@ -201,34 +228,4 @@ class OptionsSelectWidget extends StatelessWidget {
           ]),
         ));
   }
-}
-
-class CustomRoute extends PageRouteBuilder {
-  final Widget widget;
-  CustomRoute(this.widget)
-      : super(
-            opaque: false,
-            barrierColor: Color(0x7F000000),
-            maintainState: true,
-            transitionDuration: Duration(milliseconds: 500),
-            pageBuilder: (
-              BuildContext context,
-              Animation<double> animation1,
-              Animation<double> animation2,
-            ) {
-              return widget;
-            },
-            transitionsBuilder: (BuildContext context,
-                Animation<double> animation1,
-                Animation<double> animation2,
-                Widget child) {
-              return SlideTransition(
-                position:
-                    Tween<Offset>(begin: Offset(0.0, 1.0), end: Offset(0, 0.1))
-                        .animate(CurvedAnimation(
-                            parent: animation1,
-                            curve: Curves.fastLinearToSlowEaseIn)),
-                child: child,
-              );
-            });
 }

@@ -54,23 +54,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               child: new Column(
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
-
                   new SizedBox(
                     height: 75,
-                    child: Stack(
-                      children: <Widget>[
-                        Positioned(
-                          top: 20,
-                          left: 0,
-                          child: FlatButton.icon(
-                              label: Text(''),
-                              icon: Icon(Icons.settings_power),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              }),
-                        )
-                      ],
-                    ),
                   ),
                   /**
                        * 可以用SizeBox这种写法代替Padding：在Row或者Column中单独设置一个方向的间距的时候
@@ -156,5 +141,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 ],
               ))),
     );
+  }
+
+  @override
+  void dispose() {
+    print('login page dealloc');
+    super.dispose();
   }
 }
