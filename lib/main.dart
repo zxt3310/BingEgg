@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'Views/bottomBar/bingEBottomNaviBar.dart';
 import 'login/ui/login_page.dart';
+import 'package:sirilike_flutter/model/event.dart';
 
 const List barList = ["提醒", "冰箱", "统计", "我的"];
 

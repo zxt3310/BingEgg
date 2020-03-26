@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:sirilike_flutter/Views/myFridge/myFridge.dart';
+import 'package:sirilike_flutter/model/event.dart';
 import 'package:sirilike_flutter/model/network.dart';
 import 'package:sirilike_flutter/webpage.dart';
 import 'package:sirilike_flutter/main.dart' show AppSharedState;
@@ -27,9 +30,16 @@ class DontaiBody extends StatefulWidget {
 
 class _DontaiBodyState extends State<DontaiBody> {
   Future requestFuture;
+  //保存旧布局作为刷新前的缓冲
+  Widget old;
+  StreamSubscription streamSubscription;
+
   @override
   void initState() {
-    requestFuture = requestData();
+    freshData();
+    streamSubscription = myEvent.on().listen((e) {
+      freshData();
+    });
     super.initState();
   }
 
@@ -46,9 +56,10 @@ class _DontaiBodyState extends State<DontaiBody> {
               return Center(child: Text('请先登录'));
             }
             DynamicData data = DynamicData.fromJson(res.data['data']);
-            return getUI(data, context);
+            old = getUI(data, context);
+            return old;
           } else {
-            return Center(child: Text('loading...'));
+            return old ?? Center(child: Text('loading...'));
           }
         },
       ),
@@ -57,7 +68,12 @@ class _DontaiBodyState extends State<DontaiBody> {
 
   Future requestData() async {
     NetManager manager = NetManager.instance;
+    print('reloading  Dongtai。。。。');
     return manager.dio.get('/api/user/home');
+  }
+
+  freshData() {
+    requestFuture = requestData();
   }
 }
 
@@ -65,6 +81,7 @@ Widget getUI(DynamicData data, BuildContext ctx) {
   FriHealth healthState = data.frigeHealth;
   List<Dailyads> dailyAds = data.dailyMealAdvice;
   List<FriendAction> actions = data.actions;
+  List<TopItem> items = data.topItems;
   return CustomScrollView(
     shrinkWrap: true,
     slivers: <Widget>[
@@ -109,8 +126,9 @@ Widget getUI(DynamicData data, BuildContext ctx) {
               child: ListView.builder(
                   padding: EdgeInsets.all(13),
                   itemExtent: (MediaQuery.of(ctx).size.width - 26) / 5,
-                  itemCount: 5,
+                  itemCount: items.length,
                   itemBuilder: (ctx, idx) {
+                    TopItem item = items[idx];
                     double width =
                         (MediaQuery.of(ctx).size.width - 26) / 5 - 10;
                     return Container(
@@ -123,15 +141,15 @@ Widget getUI(DynamicData data, BuildContext ctx) {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Container(
-                                width: width - 12,
-                                height: width - 12,
-                                decoration: BoxDecoration(
-                                    color: Colors.lightGreen,
-                                    borderRadius: BorderRadius.circular(
-                                        (width - 12) / 2))),
-                            Text('水果', style: TextStyle(fontSize: 13)),
-                            Text('2', style: TextStyle(fontSize: 13))
+                            ClipOval(
+                                child: Image.network(
+                              'http://106.13.105.43:8889/static/images/item-pics/item-${item.id}.jpg',
+                              width: width - 12,
+                              height: width - 12,
+                            )),
+                            Text('${item.name}',
+                                style: TextStyle(fontSize: 13)),
+                            Text('${item.rest}', style: TextStyle(fontSize: 13))
                           ],
                         ),
                       ),
@@ -302,13 +320,14 @@ Widget getUI(DynamicData data, BuildContext ctx) {
                     child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Container(
-                              margin: EdgeInsets.all(10),
-                              width: 50,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                  border: Border.all(width: 1),
-                                  borderRadius: BorderRadius.circular(25))),
+                          Padding(
+                              padding: EdgeInsets.all(15),
+                              child: ClipOval(
+                                  child: FadeInImage.assetNetwork(
+                                      placeholder: 'srouce/login_logo.png',
+                                      image: action.avatar,
+                                      width: 30,
+                                      height: 30))),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -337,11 +356,13 @@ List<Widget> _getDailyText(List list) {
 class DynamicData {
   FriHealth frigeHealth;
   List<Dailyads> dailyMealAdvice;
+  List<TopItem> topItems;
   List<FriendAction> actions;
 
   DynamicData.fromJson(Map<String, dynamic> json)
       : frigeHealth = FriHealth.fromJson(json['health_status']),
         dailyMealAdvice = Dailyads.fromListJson(json['daily_meal_advise']),
+        topItems = TopItem.fromListJson(json['top_items']),
         actions = FriendAction.fromListJson(json['activaties']);
 }
 
@@ -379,15 +400,34 @@ class FriendAction {
   String name;
   String message;
   String lastUpdate;
+  String avatar;
 
   FriendAction.fromJson(Map<String, dynamic> json)
       : name = json['name'],
         message = json['message'],
-        lastUpdate = json['last_update'];
+        lastUpdate = json['last_update'],
+        avatar = json['avatar'];
 
   static List<FriendAction> fromListJson(List list) {
     return List<FriendAction>.generate(list.length, (idx) {
       return FriendAction.fromJson(list[idx]);
+    });
+  }
+}
+
+class TopItem {
+  final int id;
+  final String name;
+  final int rest;
+
+  TopItem.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        name = json['name'],
+        rest = json['rest'];
+
+  static List<TopItem> fromListJson(List list) {
+    return List<TopItem>.generate(list.length, (idx) {
+      return TopItem.fromJson(list[idx]);
     });
   }
 }

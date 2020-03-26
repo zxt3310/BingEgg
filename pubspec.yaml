@@ -48,6 +48,8 @@ dependencies:
   connectivity: ^0.4.8+2
   #小红点
   badges: 1.1.1
+  #网络图片
+  cached_network_image:
 
 dev_dependencies:
   flutter_test:

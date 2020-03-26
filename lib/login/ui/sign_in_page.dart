@@ -30,6 +30,7 @@ class _SignInPageState extends State<SignInPage> {
 
   String account;
   String pswd;
+  String avatar;
 
   @override
   Widget build(BuildContext context) {
@@ -295,8 +296,6 @@ class _SignInPageState extends State<SignInPage> {
             }
           });
         }
-
-//          debugDumpApp();
       },
     );
   }
@@ -309,12 +308,13 @@ class _SignInPageState extends State<SignInPage> {
     if (err != 0) {
       return res.data;
     } else {
+      avatar = res.data['data']['avatar'];
       String token = res.headers.map['authorization'].first;
       return token;
     }
   }
 
   Future _saveUser(String token) async {
-    await User.instance.save(account, pswd, token);
+    await User.instance.save(account, pswd,token,avatar);
   }
 }

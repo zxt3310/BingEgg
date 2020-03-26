@@ -7,6 +7,7 @@ String sharekey = "SHARE_KEY";
 class User {
   String username;
   String password;
+  String avatar;
   String token;
   bool isLogin;
 
@@ -28,6 +29,7 @@ class User {
     _instance.username = prefs.get('id');
     _instance.password = prefs.get('pwd');
     _instance.token = prefs.get('token');
+    _instance.avatar = prefs.get('avatar');
     if (_instance.token != null) {
       _instance.isLogin = true;
     }
@@ -39,15 +41,17 @@ class User {
     isLogin = false;
   }
 
-  save(String account, String pswd, String author) async {
+  save(String account, String pswd, String author,String avatar) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('id', account);
     prefs.setString('pwd', pswd);
     prefs.setString('token', author);
+    prefs.setString('key', avatar);
 
     _instance.username = account;
     _instance.password = pswd;
     _instance.token = author;
+    _instance.avatar = avatar;
     _instance.isLogin = true;
   }
 

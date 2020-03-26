@@ -6,12 +6,10 @@ import 'package:provider/provider.dart';
 import 'package:sirilike_flutter/main.dart';
 import 'foodItemList.dart';
 import '../../model/network.dart';
-import 'package:event_bus/event_bus.dart';
+import 'package:sirilike_flutter/model/event.dart';
 import 'package:sirilike_flutter/model/mainModel.dart';
 import 'package:sirilike_flutter/main.dart' show AppSharedState;
 export 'package:provider/provider.dart';
-
-EventBus myEvent = EventBus();
 
 //List<String> namelist = ['全部', '水果', '蔬菜', '肉类', '饮品'];
 
@@ -292,6 +290,8 @@ class __FridgeWidgetState extends State<_FridgeWidget>
       return FoodMaterial.fromJson(datas[idx]);
     });
     curState.changeSource(foods);
+
+    print('food items reloading ....');
   }
 }
 
