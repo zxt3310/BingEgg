@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/single_child_widget.dart';
+import 'package:flutter_screenutil/screenutil.dart';
 import 'package:sirilike_flutter/model/mainModel.dart';
 import 'package:sirilike_flutter/model/network.dart';
 import 'package:sirilike_flutter/webpage.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class FoodDetailWidget extends StatefulWidget {
   final FoodMaterial food;
@@ -81,7 +82,7 @@ class _FoodDetailWidgetState extends State<FoodDetailWidget> {
                                   fontSize: 15, fontWeight: FontWeight.bold))),
                       Container(
                           decoration: BoxDecoration(
-                              color: Colors.red,
+                              color: const Color(0xffFF8B6B),
                               borderRadius: BorderRadius.circular(10)),
                           padding: EdgeInsets.fromLTRB(15, 3, 15, 3),
                           child: Text(
@@ -97,39 +98,52 @@ class _FoodDetailWidgetState extends State<FoodDetailWidget> {
                 ]),
             SizedBox(height: 10),
             //剩余 即将过期  一共
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <
-                Widget>[
-              Container(
-                  width: 100,
-                  height: 80,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                      border: Border.all(width: 3, color: Colors.grey[300]))),
-              Container(
-                  width: 100,
-                  height: 80,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                      border: Border.all(width: 3, color: Colors.grey[300]))),
-              Container(
-                  width: 100,
-                  height: 80,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                      border: Border.all(width: 3, color: Colors.grey[300]))),
-            ]),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  _statusWidget(
+                      '剩余',
+                      data.itemStatus.totalRest.toDouble(),
+                      data.itemStatus.unit,
+                      const Color(0xff437722),
+                      const Color(0xffD8F0BF)),
+                  _statusWidget(
+                      '即将过期',
+                      data.itemStatus.expireSoon.toDouble(),
+                      data.itemStatus.unit,
+                      const Color(0xffF5635E),
+                      const Color(0xffFBF5F0)),
+                  _statusWidget(
+                      '一共吃掉',
+                      data.itemStatus.totalTaken.toDouble(),
+                      data.itemStatus.unit,
+                      const Color(0xff66B7A6),
+                      const Color(0xffCFECEB))
+                ]),
             SizedBox(height: 20),
             //库存
-            Text('库存',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-            Container(
-                height: 152,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.greenAccent)),
+            Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: Text('库存',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+            ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Table(
+                columnWidths: {
+                  0: FlexColumnWidth(6),
+                  1: FlexColumnWidth(2),
+                  2: FlexColumnWidth(2),
+                },
+                children: batchesTale(data.batches,data.itemStatus.totalRest),
+              ),
+            ),
             SizedBox(height: 20),
-            Text('推荐菜谱',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+            Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: Text('推荐菜谱',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+            ),
           ]),
         ),
         SliverGrid(
@@ -154,8 +168,14 @@ class _FoodDetailWidgetState extends State<FoodDetailWidget> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: <Widget>[
                               Flexible(
-                                  child: Image.network(book.imgUrl,
-                                      fit: BoxFit.fitWidth)),
+                                  child: CachedNetworkImage(
+                                imageUrl: book.imgUrl,
+                                fit: BoxFit.fitWidth,
+                                placeholder: (ctx, str) {
+                                  return Center(
+                                      child: Image.asset("srouce/loading.gif",width: 30,height: 30));
+                                },
+                              )),
                               Flexible(child: Center(child: Text(book.title)))
                             ],
                           ),
@@ -173,5 +193,156 @@ class _FoodDetailWidgetState extends State<FoodDetailWidget> {
         )
       ],
     );
+  }
+
+  Widget _statusWidget(String content, double count, String unit,
+      Color borderColor, Color color) {
+    return Container(
+      width: ScreenUtil().setWidth(100),
+      height: ScreenUtil().setWidth(80),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(25),
+          border: Border.all(width: 3, color: Colors.grey[300])),
+      child: Padding(
+          padding: EdgeInsets.all(ScreenUtil().setWidth(12)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(content,
+                      style: TextStyle(
+                          fontSize: 13, color: const Color(0xff666666))),
+                  Container(
+                    padding: EdgeInsets.all(3),
+                    decoration: BoxDecoration(
+                        color: color,
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(
+                          width: 2,
+                          color: borderColor,
+                        )),
+                  )
+                ],
+              ),
+              Row(
+                textBaseline: TextBaseline.alphabetic,
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                children: <Widget>[
+                  Text(count.toStringAsFixed(0),
+                      style: TextStyle(fontSize: 22)),
+                  SizedBox(width: 3),
+                  Text(unit,
+                      style: TextStyle(
+                          fontSize: 10, color: const Color(0xff666666)))
+                ],
+              )
+            ],
+          )),
+    );
+  }
+
+  List<TableRow> batchesTale(List<ItemBatch> list, double totalrest) {
+    TableRow firstRow = TableRow(
+        decoration: BoxDecoration(color: const Color(0xffD9D2B6)),
+        children: [
+          Padding(
+              padding: const EdgeInsets.fromLTRB(20, 13, 0, 5),
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Text(
+                  '时间',
+                  style: TextStyle(color: Colors.white, fontSize: 12),
+                ),
+              )),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 13, 0, 5),
+            child: Center(
+              child: Text(
+                '放入',
+                style: TextStyle(color: Colors.white, fontSize: 12),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 13, 0, 5),
+            child: Center(
+              child: Text(
+                '剩余',
+                style: TextStyle(color: Colors.white, fontSize: 12),
+              ),
+            ),
+          )
+        ]);
+
+    TableRow lastRow = TableRow(
+        decoration: BoxDecoration(color: const Color(0xffFBF5F0)),
+        children: [
+          Padding(
+              padding: const EdgeInsets.fromLTRB(20, 13, 0, 13),
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Text(
+                  '总计',
+                  style: TextStyle(fontSize: 13),
+                ),
+              )),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 13, 0, 13),
+            child: Center(
+              child: Text(
+                ' ',
+                style: TextStyle(color: Colors.white, fontSize: 13),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 13, 0, 13),
+            child: Center(
+              child: Text(
+                totalrest.toStringAsFixed(0),
+                style: TextStyle(fontSize: 13),
+              ),
+            ),
+          )
+        ]);
+
+    return List.generate(list.length, (idx) {
+      ItemBatch batch = list[idx];
+      return TableRow(
+          decoration: BoxDecoration(color: const Color(0xffFBF5F0)),
+          children: [
+            Padding(
+                padding: const EdgeInsets.fromLTRB(20, 4, 0, 4),
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Text(
+                    batch.addDate,
+                    style: TextStyle(fontSize: 13),
+                  ),
+                )),
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Center(
+                child: Text(
+                  batch.quantity.toStringAsFixed(0),
+                  style: TextStyle(fontSize: 13),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Center(
+                child: Text(
+                  batch.rest.toStringAsFixed(0),
+                  style: TextStyle(fontSize: 13),
+                ),
+              ),
+            )
+          ]);
+    }, growable: true)
+      ..insert(0, firstRow)..add(lastRow);
   }
 }

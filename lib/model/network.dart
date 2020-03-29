@@ -32,6 +32,7 @@ class NetManager {
       if (err == 999) {
         return dio.reject(DioError(error: 'need relogin'));
       }
+      return dio.resolve(res);
     },onError: (err){
       print(err);
       return dio.resolve(Response(data: {'err':990,'errmsg':'网络连接失败'}));

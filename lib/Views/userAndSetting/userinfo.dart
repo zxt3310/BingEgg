@@ -2,6 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 
+/*
+#Dart
+# -*- encoding: utf-8 -*-
+@File    :   userinfo.dart
+@Time    :   2020/03/28 21:21:03
+@Author  :   Zxt 
+@Version :   1.0
+@Contact :   78163796@qq.com
+# Start typing your code from here
+*/
+
 class UserInfoWidget extends StatefulWidget {
   @override
   _UserInfoWidgetState createState() => _UserInfoWidgetState();
@@ -27,7 +38,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                           Text('头像'),
                           ClipOval(
                               child: GestureDetector(
-                            child: Image.asset(path,width: 60,height: 60),
+                            child: Image.asset(path, width: 60, height: 60),
                             onTap: getImage,
                           ))
                         ],
@@ -35,6 +46,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                     );
                     break;
                   default:
+                    return Container();
                 }
               },
               separatorBuilder: (ctx, idx) {
@@ -46,7 +58,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
 
   Future getImage() async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-    if (image == null){
+    if (image == null) {
       return;
     }
     var croppedFile = await ImageCropper.cropImage(

@@ -9,8 +9,16 @@ class FoodMaterial {
   final String lastDateAdd;
   final int category;
 
-  FoodMaterial(this.id, this.itemId, this.boxId, this.itemName, this.quantity,
-      this.createdAt, this.expiryDate, this.lastDateAdd, this.category);
+  FoodMaterial(
+      {this.id,
+      this.itemId,
+      this.boxId,
+      this.itemName,
+      this.quantity,
+      this.createdAt,
+      this.expiryDate,
+      this.lastDateAdd,
+      this.category});
   FoodMaterial.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         itemId = json['item_id'],
@@ -34,8 +42,8 @@ class FoodMaterial {
         'category_id': category
       };
 
-  static List<FoodMaterial> getList(List list){
-    return List<FoodMaterial>.generate(list.length, (idx){
+  static List<FoodMaterial> getList(List list) {
+    return List<FoodMaterial>.generate(list.length, (idx) {
       return FoodMaterial.fromJson(list[idx]);
     });
   }
@@ -93,23 +101,65 @@ class Cookbooks {
         imgUrl = json['img_url'],
         webUrl = json['web_url'],
         tags = json['tags'];
-        
-  static List<Cookbooks> getBooks(List list){
-    return List.generate(list.length, (idx){
+
+  static List<Cookbooks> getBooks(List list) {
+    return List.generate(list.length, (idx) {
       return Cookbooks.fromJson(list[idx]);
     });
   }
 }
 
-class FoodPageStruct{
-  final List <FoodMaterial> batches;
+//食物 存储状态
+class ItemStatus {
+  final String name; //食物名
+  final num totalRest; //剩余数量
+  final num totalTaken; //一共拿走
+  final num expireSoon; //即将过期
+  final String unit;
+
+  ItemStatus.fromJson(Map<String, dynamic> json)
+      : name = json['name'],
+        totalRest =  json['total_rest'],
+        totalTaken = json['total_taken'],
+        expireSoon = json['expire_soon'],
+        unit = json['unit'];
+}
+
+class ItemBatch {
+  final String itemName;
+  final String unitName;
+  final double quantity;
+  final double rest;
+  final String expiryDate;
+  final String addDate;
+
+  ItemBatch.fromJson(Map<String, dynamic> json)
+      : itemName = json['item_name'],
+        unitName = json['unit_name'],
+        quantity = json['quantity'],
+        rest = json['rest'],
+        expiryDate = json['expiry_date'],
+        addDate = json['add_date'];
+
+  static itemsFromJson(List list){
+    return List<ItemBatch>.generate(list.length, (idx){
+      return ItemBatch.fromJson(list[idx]);
+    });
+  }
+}
+
+class FoodPageStruct {
+  final List<ItemBatch> batches;
   final FoodMaterial inventory;
-  final List <Cookbooks> cookbooks;
+  final ItemStatus itemStatus;
+  final List<Cookbooks> cookbooks;
 
-  FoodPageStruct({this.batches,this.inventory,this.cookbooks});
+  FoodPageStruct(
+      {this.batches, this.inventory, this.itemStatus, this.cookbooks});
 
-  FoodPageStruct.fromJson(Map<String ,dynamic> json):
-  batches = FoodMaterial.getList(json['batches']),
-  inventory = FoodMaterial.fromJson(json['inventory']),
-  cookbooks = Cookbooks.getBooks(json['cookbooks']);
+  FoodPageStruct.fromJson(Map<String, dynamic> json)
+      : batches = ItemBatch.itemsFromJson(json['batches'] ?? []),
+        inventory = FoodMaterial.fromJson(json['inventory'] ?? {}),
+        itemStatus = ItemStatus.fromJson(json['item']),
+        cookbooks = Cookbooks.getBooks(json['cookbooks'] ?? []);
 }

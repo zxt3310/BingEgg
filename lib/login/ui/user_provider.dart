@@ -34,8 +34,8 @@ class UserContainer extends StatefulWidget {
   _UserContainerState createState() => _UserContainerState();
 
   static UserProvider of(BuildContext context) {
-    //return context.dependOnInheritedWidgetOfExactType(aspect:UserProvider);
-    return context.inheritFromWidgetOfExactType(UserProvider);
+    return context.dependOnInheritedWidgetOfExactType(aspect:UserProvider);
+    //return context.inheritFromWidgetOfExactType(UserProvider);
   }
 }
 

@@ -1,7 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:sirilike_flutter/Views/chat/chat.dart';
 import 'package:sirilike_flutter/Views/myFridge/myFridge.dart';
 import 'package:sirilike_flutter/login/ui/login_page.dart';
 import 'package:sirilike_flutter/model/network.dart';
@@ -13,7 +12,6 @@ export 'package:sirilike_flutter/main.dart' show AppSharedState;
 
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 List optionList = ['我的冰箱', '个人信息', '选项卡'];
 

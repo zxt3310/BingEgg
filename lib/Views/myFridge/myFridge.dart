@@ -67,18 +67,6 @@ class _MyFridgeWidgetState extends State<MyFridgeWidget> {
     NetManager manager = NetManager.instance;
     return manager.dio.get('/api/basic-data/fetch');
   }
-
-  _showActionSheet() {
-    showCupertinoModalPopup(
-        context: context,
-        builder: (ctx) {
-          return Container(
-              height: 400,
-              width: double.infinity,
-              color: Colors.white,
-              child: Column());
-        });
-  }
 }
 
 //冰箱页主体

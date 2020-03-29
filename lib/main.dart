@@ -13,6 +13,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'Views/bottomBar/bingEBottomNaviBar.dart';
 import 'login/ui/login_page.dart';
 import 'package:sirilike_flutter/model/event.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 const List barList = ["提醒", "冰箱", "统计", "我的"];
 
@@ -98,6 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(context, width: 375, height: 667, allowFontScaling: false);
     return ChangeNotifierProvider<AppSharedState>(
         create: (ctx) => appSharedState,
         child: Selector<AppSharedState, int>(

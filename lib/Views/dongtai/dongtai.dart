@@ -1,11 +1,13 @@
 import 'dart:async';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:sirilike_flutter/Views/myFridge/foodDetail.dart';
 import 'package:sirilike_flutter/Views/myFridge/myFridge.dart';
+import 'package:sirilike_flutter/main.dart';
 import 'package:sirilike_flutter/model/event.dart';
+import 'package:sirilike_flutter/model/mainModel.dart';
 import 'package:sirilike_flutter/model/network.dart';
 import 'package:sirilike_flutter/webpage.dart';
-import 'package:sirilike_flutter/main.dart' show AppSharedState;
 import 'activaties.dart';
 
 class DontaiWidget extends StatelessWidget {
@@ -41,6 +43,12 @@ class _DontaiBodyState extends State<DontaiBody> {
       freshData();
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    streamSubscription.cancel();
+    super.dispose();
   }
 
   @override
@@ -129,30 +137,43 @@ Widget getUI(DynamicData data, BuildContext ctx) {
                   itemCount: items.length,
                   itemBuilder: (ctx, idx) {
                     TopItem item = items[idx];
+                    AppSharedState state =
+                        Provider.of<AppSharedState>(ctx, listen: false);
                     double width =
                         (MediaQuery.of(ctx).size.width - 26) / 5 - 10;
-                    return Container(
-                      padding: EdgeInsets.all(5),
+                    return GestureDetector(
                       child: Container(
-                        padding: EdgeInsets.fromLTRB(6, 6, 6, 12),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(width / 2)),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            ClipOval(
-                                child: Image.network(
-                              'http://106.13.105.43:8889/static/images/item-pics/item-${item.id}.jpg',
-                              width: width - 12,
-                              height: width - 12,
-                            )),
-                            Text('${item.name}',
-                                style: TextStyle(fontSize: 13)),
-                            Text('${item.rest}', style: TextStyle(fontSize: 13))
-                          ],
+                        padding: EdgeInsets.all(5),
+                        child: Container(
+                          padding: EdgeInsets.fromLTRB(6, 6, 6, 12),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(width / 2)),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              ClipOval(
+                                  child: Image.network(
+                                'http://106.13.105.43:8889/static/images/item-pics/item-${item.id}.jpg',
+                                width: width - 12,
+                                height: width - 12,
+                              )),
+                              Text('${item.name}',
+                                  style: TextStyle(fontSize: 13)),
+                              Text('${item.rest}',
+                                  style: TextStyle(fontSize: 13))
+                            ],
+                          ),
                         ),
                       ),
+                      onTap: () {
+                        Navigator.of(ctx).push(MaterialPageRoute(
+                            builder: (context) => FoodDetailWidget(
+                                food: FoodMaterial(
+                                    itemId: item.id,
+                                    itemName: item.name,
+                                    boxId: state.curBoxId))));
+                      },
                     );
                   },
                   scrollDirection: Axis.horizontal))),
@@ -211,8 +232,17 @@ Widget getUI(DynamicData data, BuildContext ctx) {
                                   children: <Widget>[
                                     Flexible(
                                         flex: 1,
-                                        child: Image.network(ads.bgUrl,
-                                            height: 95, fit: BoxFit.fill)),
+                                        child: CachedNetworkImage(
+                                            imageUrl: ads.bgUrl,
+                                            height: 90,
+                                            fit: BoxFit.fill,
+                                            placeholder: (ctx, str) {
+                                              return Center(
+                                                  child: Image.asset(
+                                                      "srouce/loading.gif",
+                                                      width: 30,
+                                                      height: 30));
+                                            })),
                                     Flexible(
                                         flex: 1,
                                         child: Padding(
@@ -333,7 +363,7 @@ Widget getUI(DynamicData data, BuildContext ctx) {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: <Widget>[
                               Text(action.name),
-                              Text(action.message),
+                              Container(width:250,child: Text(action.message,maxLines: 2)),
                             ],
                           )
                         ]),
