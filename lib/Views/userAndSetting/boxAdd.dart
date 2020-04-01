@@ -9,6 +9,7 @@ class BoxAddWidget extends StatelessWidget {
       backgroundColor: Colors.lightGreen,
       appBar: AppBar(
           iconTheme: IconThemeData(color: Colors.white),
+          brightness: Brightness.dark,
           title: Text('添加冰箱', style: TextStyle(color: Colors.white)),
           elevation: 0),
       body: Container(

@@ -77,12 +77,27 @@ class FoodMaterial {
 class Fridge {
   final int id;
   final String boxname;
+  final String boxbrand;
+  final String boxtype;
+  final String sharecode;
+  final String createdat;
   final bool isdefault;
-  Fridge(this.id, this.boxname, this.isdefault);
+  Fridge(
+      {this.id,
+      this.boxname,
+      this.boxbrand,
+      this.boxtype,
+      this.sharecode,
+      this.createdat,
+      this.isdefault});
 
   Fridge.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         boxname = json['box_name'],
+        boxbrand = json['box_brand'],
+        boxtype = json['box_type'],
+        sharecode = json['share_code'],
+        createdat = json['created_at'],
         isdefault = json['is_default'] == 0 ? false : true;
 }
 
@@ -119,7 +134,7 @@ class ItemStatus {
 
   ItemStatus.fromJson(Map<String, dynamic> json)
       : name = json['name'],
-        totalRest =  json['total_rest'],
+        totalRest = json['total_rest'],
         totalTaken = json['total_taken'],
         expireSoon = json['expire_soon'],
         unit = json['unit'];
@@ -141,8 +156,8 @@ class ItemBatch {
         expiryDate = json['expiry_date'],
         addDate = json['add_date'];
 
-  static itemsFromJson(List list){
-    return List<ItemBatch>.generate(list.length, (idx){
+  static itemsFromJson(List list) {
+    return List<ItemBatch>.generate(list.length, (idx) {
       return ItemBatch.fromJson(list[idx]);
     });
   }
