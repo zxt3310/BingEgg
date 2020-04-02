@@ -336,40 +336,36 @@ Widget getUI(DynamicData data, BuildContext ctx) {
             )),
       ),
       SliverFixedExtentList(
-          itemExtent: 111,
+          itemExtent: 150,
           delegate: SliverChildBuilderDelegate((ctx, idx) {
             FriendAction action = actions[idx];
             return Container(
-              margin: EdgeInsets.fromLTRB(20, 5, 20, 5),
+              margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
               decoration: BoxDecoration(
                   color: Colors.white, borderRadius: BorderRadius.circular(12)),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  Expanded(
-                    child: Row(
+              child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                        padding: EdgeInsets.all(15),
+                        child: ClipOval(
+                            child: FadeInImage.assetNetwork(
+                                placeholder: 'srouce/login_logo.png',
+                                image: action.avatar,
+                                width: 30,
+                                height: 30))),
+                    Flexible(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
-                          Padding(
-                              padding: EdgeInsets.all(15),
-                              child: ClipOval(
-                                  child: FadeInImage.assetNetwork(
-                                      placeholder: 'srouce/login_logo.png',
-                                      image: action.avatar,
-                                      width: 30,
-                                      height: 30))),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
-                              Text(action.name),
-                              Container(width:250,child: Text(action.message,maxLines: 2)),
-                            ],
-                          )
-                        ]),
-                  ),
-                ],
-              ),
+                          Text(action.name),
+                          Text(action.message, maxLines: 2),
+                          Wrap(children: _getActionsItem(action))
+                        ],
+                      ),
+                    )
+                  ]),
             );
           }, childCount: data.actions.length > 5 ? 5 : data.actions.length)),
       SliverToBoxAdapter(child: SizedBox(height: 60))
@@ -380,6 +376,28 @@ Widget getUI(DynamicData data, BuildContext ctx) {
 List<Widget> _getDailyText(List list) {
   return List.generate(list.length, (idx) {
     return Text(list[idx], style: TextStyle(fontSize: 11));
+  });
+}
+
+List<Widget> _getActionsItem(FriendAction action) {
+  return List.generate(action.items.length, (idx) {
+    FoodMaterial item = action.items[idx];
+    return Padding(
+      padding: const EdgeInsets.all(3.0),
+      child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: CachedNetworkImage(
+            width: 38,
+            height: 38,
+            placeholder: (ctx,str){
+              return Text('loading...');
+            },
+            errorWidget: (ctx,str,obj){
+              return Text('faild');
+            },
+              imageUrl:
+                  "http://106.13.105.43:8889/static/images/item-pics/item-${item.itemId}.jpg")),
+    );
   });
 }
 
@@ -431,12 +449,14 @@ class FriendAction {
   String message;
   String lastUpdate;
   String avatar;
+  List items;
 
   FriendAction.fromJson(Map<String, dynamic> json)
       : name = json['name'],
         message = json['message'],
         lastUpdate = json['last_update'],
-        avatar = json['avatar'];
+        avatar = json['avatar'],
+        items = FoodMaterial.getList(json['items']);
 
   static List<FriendAction> fromListJson(List list) {
     return List<FriendAction>.generate(list.length, (idx) {

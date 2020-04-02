@@ -1,18 +1,60 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:sirilike_flutter/Views/myFridge/myFridge.dart';
+import 'package:sirilike_flutter/model/mainModel.dart';
+import 'package:sirilike_flutter/model/network.dart';
 
 class BoxAddWidget extends StatelessWidget {
-  const BoxAddWidget({Key key}) : super(key: key);
+  const BoxAddWidget({Key key, this.fridge}) : super(key: key);
+  final Fridge fridge;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.lightGreen,
-      appBar: AppBar(
-          iconTheme: IconThemeData(color: Colors.white),
-          brightness: Brightness.dark,
-          title: Text('添加冰箱', style: TextStyle(color: Colors.white)),
-          elevation: 0),
-      body: Container(
+        backgroundColor: Colors.lightGreen,
+        appBar: AppBar(
+            iconTheme: IconThemeData(color: Colors.white),
+            brightness: Brightness.dark,
+            title: Text('添加冰箱', style: TextStyle(color: Colors.white)),
+            elevation: 0,
+            leading: IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                })),
+        body: _AddBody(fridge));
+  }
+}
+
+class _AddBody extends StatefulWidget {
+  final Fridge fridge;
+  _AddBody(this.fridge);
+  @override
+  __AddBodyState createState() => __AddBodyState();
+}
+
+class __AddBodyState extends State<_AddBody> {
+  TextEditingController nameCtl = TextEditingController();
+  TextEditingController addrCtl = TextEditingController();
+  @override
+  void initState() {
+    nameCtl.text = widget.fridge.boxname;
+    addrCtl.text = widget.fridge.createdat;
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    nameCtl.dispose();
+    addrCtl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider<BoxState>(
+      create: (context) => BoxState(curTypeIdx: widget.fridge.boxtype),
+      child: Container(
         padding: EdgeInsets.fromLTRB(20, 40, 20, 20),
         decoration: BoxDecoration(
             color: Colors.white,
@@ -25,6 +67,7 @@ class BoxAddWidget extends StatelessWidget {
                     children: <Widget>[
                   Text('冰箱名称'),
                   TextField(
+                    controller: nameCtl,
                     decoration: InputDecoration(
                         enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15),
@@ -50,6 +93,7 @@ class BoxAddWidget extends StatelessWidget {
                     children: <Widget>[
                   Text('地点'),
                   TextField(
+                    controller: addrCtl,
                     decoration: InputDecoration(
                         enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15),
@@ -72,14 +116,52 @@ class BoxAddWidget extends StatelessWidget {
               child: FlatButton(
                   color: Colors.lightGreen,
                   padding: EdgeInsets.fromLTRB(90, 15, 90, 15),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                  onPressed: () {},
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24)),
+                  onPressed: () {
+                    String name = nameCtl.text;
+                    if (name.isEmpty) {
+                      BotToast.showText(
+                          text: '填写冰箱名称', align: const Alignment(0, 0));
+                      return;
+                    }
+
+                    if (widget.fridge.id == null) {
+                      _addNewFridge(name);
+                    } else {
+                      _editFridge(name);
+                    }
+                  },
                   child: Text('添  加', style: TextStyle(color: Colors.white))),
             ))
           ],
         ),
       ),
     );
+  }
+
+  _addNewFridge(String name) async {
+    Response res = await NetManager.instance.dio
+        .post("/api/user-box/add", data: {"name": name});
+    if (res.data["err"] != 0) {
+      BotToast.showText(text: '添加失败，请重试');
+      return;
+    } else {
+      BotToast.showText(text: "添加成功");
+      Navigator.of(context).pop(true);
+    }
+  }
+
+  _editFridge(String name) async {
+    Response res = await NetManager.instance.dio.post("/api/user-box/edit",
+        data: {"id": widget.fridge.id, "name": name});
+    if (res.data["err"] != 0) {
+      BotToast.showText(text: '修改失败，请重试');
+      return;
+    } else {
+      BotToast.showText(text: "修改成功");
+      Navigator.of(context).pop(true);
+    }
   }
 }
 
@@ -89,31 +171,36 @@ class FridgeSortWidget extends StatefulWidget {
 }
 
 class _FridgeSortWidgetState extends State<FridgeSortWidget> {
-  int curIdx = 0;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          Row(children: [Text('冰箱类型'), SizedBox(width: 20), Text('双门')]),
-          Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: getBtnList()),
-        ],
-      ),
-    );
+    return Selector<BoxState, int>(
+        selector: (context, state) => state.curTypeIdx,
+        builder: (context, curIdx, child) {
+          return Container(
+            child: Column(
+              children: <Widget>[
+                Row(children: [
+                  Text('冰箱类型'),
+                  SizedBox(width: 20),
+                  Text(Fridgetype.values[curIdx].cn)
+                ]),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: getBtnList(curIdx)),
+              ],
+            ),
+          );
+        });
   }
 
-  List<Widget> getBtnList() {
+  List<Widget> getBtnList(int curIdx) {
     return List.generate(6, (idx) {
       return SingleSelectWidget(
         curIndex: curIdx,
         index: idx,
         child: Container(width: 48, height: 48),
         onTap: () {
-          setState(() {
-            curIdx = idx;
-          });
+          Provider.of<BoxState>(context, listen: false).changeTypeId(idx);
         },
       );
     });
@@ -146,5 +233,15 @@ class _SingleSelectWidgetState extends State<SingleSelectWidget> {
       onPressed: widget.onTap,
       child: widget.child,
     );
+  }
+}
+
+class BoxState with ChangeNotifier {
+  int curTypeIdx = 0;
+  BoxState({this.curTypeIdx});
+
+  changeTypeId(int idx) {
+    curTypeIdx = idx;
+    notifyListeners();
   }
 }

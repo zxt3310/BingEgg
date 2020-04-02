@@ -24,7 +24,7 @@ class FoodMaterial {
         itemId = json['item_id'],
         boxId = json['box_id'],
         itemName = json['item_name'],
-        quantity = json['quantity'],
+        quantity = json['quantity'].runtimeType == int? double.parse(json['quantity'].toString()):json['quantity'],
         createdAt = json['created_at'],
         expiryDate = json['expiry_date'],
         lastDateAdd = json['last_dateadd'],
@@ -78,24 +78,25 @@ class Fridge {
   final int id;
   final String boxname;
   final String boxbrand;
-  final String boxtype;
+  final int boxtype;
   final String sharecode;
   final String createdat;
   final bool isdefault;
   Fridge(
       {this.id,
-      this.boxname,
-      this.boxbrand,
-      this.boxtype,
-      this.sharecode,
-      this.createdat,
-      this.isdefault});
+      this.boxname = "",
+      this.boxbrand = "",
+      this.boxtype = 0,
+      this.sharecode = "",
+      this.createdat = "",
+      this.isdefault = false});
 
   Fridge.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         boxname = json['box_name'],
         boxbrand = json['box_brand'],
-        boxtype = json['box_type'],
+        boxtype =
+            int.parse(json['box_type'].runtimeType == String ? "0" : "0") ?? 0,
         sharecode = json['share_code'],
         createdat = json['created_at'],
         isdefault = json['is_default'] == 0 ? false : true;
@@ -177,4 +178,17 @@ class FoodPageStruct {
         inventory = FoodMaterial.fromJson(json['inventory'] ?? {}),
         itemStatus = ItemStatus.fromJson(json['item']),
         cookbooks = Cookbooks.getBooks(json['cookbooks'] ?? []);
+}
+
+enum Fridgetype {
+  singleDoor,
+  doubleDoors,
+  threeDoors,
+  oppositeDoubleDoors,
+  oppositefourDoors,
+  fourDoors
+}
+
+extension EnumToString on Fridgetype {
+  String get cn => ["单门", "双门", "三门", "对开双门", "对开四门", "四门"][this.index];
 }

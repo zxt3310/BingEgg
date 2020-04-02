@@ -16,12 +16,13 @@ class NetManager {
   NetManager._internal() {
     dio = Dio();
     dio.options.baseUrl = baseurl;
-    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
-        (HttpClient client) {
-      client.findProxy = (uri) {
-        return "PROXY 192.168.1.2:8888";
-      };
-    };
+    dio.options.contentType = "application/x-www-form-urlencoded";
+    // (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+    //     (HttpClient client) {
+    //   client.findProxy = (uri) {
+    //     return "PROXY 192.168.1.2:8888";
+    //   };
+    // };
     dio.interceptors
         .add(InterceptorsWrapper(onRequest: (RequestOptions options) {
       options.headers.addAll({'Authorization': User.instance.token});

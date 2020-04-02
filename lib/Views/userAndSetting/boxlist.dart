@@ -78,11 +78,12 @@ class _BoxListBodyState extends State<BoxListBody> {
                               onPressed: () {
                                 Navigator.of(context)
                                     .push(MaterialPageRoute(
-                                        builder: (ctx) => BoxAddWidget(),
+                                        builder: (ctx) =>
+                                            BoxAddWidget(fridge: Fridge()),
                                         fullscreenDialog: true))
-                                    .then((e) {
+                                    .then((e) async{
                                   if (e) {
-                                    _getFridgeList();
+                                    await _getFridgeList();
                                     setState(() {});
                                   }
                                 });
@@ -161,6 +162,20 @@ class _BoxListBodyState extends State<BoxListBody> {
                                               onSelected: (e) {
                                                 switch (e) {
                                                   case 0:
+                                                    {
+                                                      Navigator.of(context)
+                                                          .push(MaterialPageRoute(
+                                                              builder: (ctx) =>
+                                                                  BoxAddWidget(
+                                                                      fridge:
+                                                                          fridge),fullscreenDialog: true))
+                                                          .then((e) async{
+                                                        if (e) {
+                                                          await _getFridgeList();
+                                                          setState(() {});
+                                                        }
+                                                      });
+                                                    }
                                                     break;
                                                   default:
                                                     {
@@ -385,8 +400,8 @@ class _BoxListBodyState extends State<BoxListBody> {
 
   _deleteFridge(int boxid) async {
     NetManager manager = NetManager.instance;
-    Response res = await manager.dio.post('/api/user-box/delete',
-        data:"id=$boxid",options: Options(contentType: "application/x-www-form-urlencoded"));
+    Response res =
+        await manager.dio.post('/api/user-box/delete', data: "id=$boxid");
     if (res.data['err'] != 0) {
       BotToast.showText(text: '网络出错了，请重试');
       print('delege fridge error');

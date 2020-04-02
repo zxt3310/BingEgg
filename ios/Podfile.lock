@@ -49,7 +49,7 @@ DEPENDENCIES:
   - connectivity (from `.symlinks/plugins/connectivity/ios`)
   - connectivity_macos (from `.symlinks/plugins/connectivity_macos/ios`)
   - esptouch_flutter (from `.symlinks/plugins/esptouch_flutter/ios`)
-  - Flutter (from `.symlinks/flutter/ios`)
+  - Flutter (from `.symlinks/flutter/ios-release`)
   - flutter_audio_recorder (from `.symlinks/plugins/flutter_audio_recorder/ios`)
   - flutter_sound (from `.symlinks/plugins/flutter_sound/ios`)
   - image_cropper (from `.symlinks/plugins/image_cropper/ios`)
@@ -80,7 +80,7 @@ EXTERNAL SOURCES:
   esptouch_flutter:
     :path: ".symlinks/plugins/esptouch_flutter/ios"
   Flutter:
-    :path: ".symlinks/flutter/ios"
+    :path: ".symlinks/flutter/ios-release"
   flutter_audio_recorder:
     :path: ".symlinks/plugins/flutter_audio_recorder/ios"
   flutter_sound:
