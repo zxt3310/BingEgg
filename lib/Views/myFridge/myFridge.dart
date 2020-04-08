@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sirilike_flutter/Views/userAndSetting/boxAdd.dart';
 import 'package:sirilike_flutter/main.dart';
 import 'foodItemList.dart';
 import '../../model/network.dart';
@@ -12,6 +14,7 @@ import 'package:sirilike_flutter/main.dart' show AppSharedState;
 export 'package:provider/provider.dart';
 
 //List<String> namelist = ['全部', '水果', '蔬菜', '肉类', '饮品'];
+const int catMax = 7;
 
 class MyFridgeWidget extends StatefulWidget {
   @override
@@ -34,10 +37,6 @@ class _MyFridgeWidgetState extends State<MyFridgeWidget> {
         title: TitleHeaderWidget(),
         brightness: Brightness.dark,
         centerTitle: true,
-        //leading: Text(''),
-        actions: <Widget>[
-          //FlatButton(onPressed: _showActionSheet, child: Text('分享'))
-        ],
       ),
       body: FutureBuilder(
         future: requestFuture,
@@ -81,7 +80,21 @@ class _TitleHeaderWidgetState extends State<TitleHeaderWidget> {
     return Consumer<AppSharedState>(
         builder: (BuildContext context, curFridges, Widget child) {
       if (curFridges.curList.isEmpty) {
-        return Container();
+        return Center(
+            child: FlatButton(
+          child: Text('点击此处添加冰箱',
+              style: TextStyle(color: Colors.white, fontSize: 13)),
+          onPressed: () {
+            Navigator.of(context)
+                .push(MaterialPageRoute(
+                    builder: (ctx) => BoxAddWidget(fridge: Fridge())))
+                .then((e) {
+              if (e) {
+                _getFridgeList();
+              }
+            });
+          },
+        ));
       }
       return Container(
         child: Row(
@@ -91,6 +104,7 @@ class _TitleHeaderWidgetState extends State<TitleHeaderWidget> {
             Text('${curFridges.curList[curFridges.curBoxIndex].boxname}',
                 style: TextStyle(color: Colors.white)),
             PopupMenuButton(
+              offset: Offset(0, 40),
               icon: Icon(Icons.arrow_drop_down, color: Colors.white),
               itemBuilder: (context) {
                 return List.generate(curFridges.curList.length, (idx) {
@@ -99,6 +113,9 @@ class _TitleHeaderWidgetState extends State<TitleHeaderWidget> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Text('${curFridges.curList[idx].boxname}'),
+                          Checkbox(
+                              value: idx == curFridges.curBoxIndex,
+                              onChanged: (e) {})
                         ],
                       ),
                       value: idx);
@@ -174,7 +191,10 @@ class __FridgeWidgetState extends State<_FridgeWidget>
   @override
   void initState() {
     pageController = PageController();
-    tabcontroller = TabController(vsync: this, length: widget.nameList.length);
+    tabcontroller = TabController(
+      vsync: this,
+      length: min(widget.nameList.length, catMax),
+    );
     super.initState();
     _getDataSource();
 
@@ -192,7 +212,7 @@ class __FridgeWidgetState extends State<_FridgeWidget>
   _onChangeTab(e) {
     curState.changeIdx(e);
     pageController.animateToPage(e,
-        duration: Duration(milliseconds: 500), curve: Curves.easeInOutCubic);
+        duration: Duration(milliseconds: 300), curve: Curves.linear);
   }
 
   _onChangePage(e) {
@@ -209,15 +229,17 @@ class __FridgeWidgetState extends State<_FridgeWidget>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 TabBar(
-                  indicator: const BoxDecoration(),
+                  //indicator: const BoxDecoration(),
                   controller: tabcontroller,
                   isScrollable: true,
                   tabs: _getBtns(widget.nameList),
                   onTap: _onChangeTab,
+                  indicatorWeight: 4,
+                  indicatorSize: TabBarIndicatorSize.label,
                 ),
                 Expanded(
                     child: PageView.builder(
-                  itemCount: widget.nameList.length,
+                  itemCount: min(widget.nameList.length, catMax),
                   controller: pageController,
                   onPageChanged: _onChangePage,
                   itemBuilder: (BuildContext context, int index) {
@@ -225,6 +247,24 @@ class __FridgeWidgetState extends State<_FridgeWidget>
                         builder: (context, curFri, child) {
                       return Consumer<CurrentIndexProvider>(
                           builder: (context, cur, child) {
+                        if (curFri.curList.length == 0) {
+                          return Center(
+                              child: FlatButton(
+                            child: Text('点击此处添加冰箱',
+                                style: TextStyle(fontSize: 13)),
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .push(MaterialPageRoute(
+                                      builder: (ctx) =>
+                                          BoxAddWidget(fridge: Fridge())))
+                                  .then((e) {
+                                if (e) {
+                                  //_getFridgeList();
+                                }
+                              });
+                            },
+                          ));
+                        }
                         if (cur.filterOfBoxid(curFri.curBoxId, index).isEmpty) {
                           return Container(
                             child: Center(
@@ -244,18 +284,29 @@ class __FridgeWidgetState extends State<_FridgeWidget>
 
   List<Widget> _getBtns(List names) {
     return List<Widget>.generate(
-      names.length,
+      min(names.length, catMax),
       (idx) {
         return Consumer<CurrentIndexProvider>(builder: (context, cur, child) {
           return Container(
-              padding: EdgeInsets.fromLTRB(5, 5, 0, 0),
+              padding: const EdgeInsets.only(top: 10),
               child: Column(
                 children: <Widget>[
-                  Icon(Icons.camera,
-                      color:
-                          idx == cur.curIdx ? Colors.greenAccent : Colors.grey),
-                  Text('${names[idx]['name']}',
-                      style: TextStyle(color: Colors.black)),
+                  idx < catMax - 1
+                      ? Image.asset(
+                          "srouce/category/ico_cat_$idx.png",
+                          width: 38,
+                          height: 38,
+                        )
+                      : Image.asset(
+                          "srouce/category/ico_cat_other.png",
+                          width: 38,
+                          height: 38,
+                        ),
+                  Text(idx < catMax - 1 ? '${names[idx]['name']}' : '其他',
+                      style: TextStyle(
+                          color: idx == cur.curIdx
+                              ? Colors.lightGreen
+                              : Colors.grey)),
                 ],
               ));
         });
@@ -303,6 +354,12 @@ class CurrentIndexProvider with ChangeNotifier {
       if (food.boxId == boxid) {
         if (catagory == 0 || catagory == food.category) {
           result.add(food);
+          continue;
+        }
+
+        if (food.category >= catMax - 1 && catagory >= catMax - 1) {
+          result.add(food);
+          continue;
         }
       }
     }

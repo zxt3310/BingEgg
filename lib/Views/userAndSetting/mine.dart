@@ -1,9 +1,11 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:sirilike_flutter/Views/GlobalUser/GlobalLogin.dart';
 import 'package:sirilike_flutter/Views/myFridge/myFridge.dart';
 import 'package:sirilike_flutter/login/ui/login_page.dart';
 import 'package:sirilike_flutter/model/network.dart';
+import 'package:sirilike_flutter/webpage.dart';
 import '../../model/user.dart';
 import 'boxlist.dart';
 import 'package:sirilike_flutter/Views/deviceConnect/deviceConnect.dart';
@@ -84,7 +86,10 @@ class UserCenterWidget extends StatelessWidget {
                             OptionsSelectWidget(
                                 title: '隐私政策',
                                 icon: Icons.phone,
-                                onTap: () {},
+                                onTap: () {
+                                   Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (ctx) => MainPage(url: "http://106.13.105.43:8889/h5/privacy")));
+                                },
                                 showSeprate: false)
                           ],
                         ),
@@ -107,7 +112,7 @@ class UserCenterWidget extends StatelessWidget {
                                                 Navigator.of(context)
                                                     .pushAndRemoveUntil(
                                                         CustomRoute.fade(
-                                                            LoginPage()),
+                                                            GlobalLoginPage()),
                                                         (e) => false);
                                               }),
                                           CupertinoDialogAction(
@@ -148,61 +153,57 @@ class _UserHeaderWidgetState extends State<UserHeaderWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.lightGreen,
-      padding: EdgeInsets.all(15),
-      child: Column(children: <Widget>[
-        Consumer<UserInfoState>(
-          builder: (ctx, userInfo, child) {
-            return Row(
-              children: <Widget>[
-                GestureDetector(
-                  child: Padding(
-                      padding: EdgeInsets.all(15),
-                      child: ClipOval(
+    return Consumer<UserInfoState>(builder: (ctx, userInfo, child) {
+      return Container(
+        color: Colors.lightGreen,
+        padding: EdgeInsets.all(15),
+        child: Column(children: <Widget>[
+          Row(
+            children: <Widget>[
+              GestureDetector(
+                child: Padding(
+                    padding: EdgeInsets.all(15),
+                    child: ClipOval(
                         child: FadeInImage.assetNetwork(
                             placeholder: 'srouce/loading.gif',
                             image: userInfo.avatar ??
                                 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1584699083702&di=7cf57bf8d0bb6f7662ebf1721b1cd9a7&imgtype=0&src=http%3A%2F%2Fwx1.sinaimg.cn%2Forj360%2Fdc1ebfbdly1gc0oora8g9j21hc0u0dkg.jpg',
                             height: 50,
                             width: 50,
-                            fit: BoxFit.fitHeight)
-                        
-                      )),
-                  onTap: () => _headImageEdit(),
-                ),
-                Container(
-                    child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text('${userInfo.nickname ?? '小冰的箱'}',
-                        style: TextStyle(fontSize: 18, color: Colors.white)),
-                    Text('手机登录',
-                        style: TextStyle(
-                            fontSize: 10, color: const Color(0xff437722)))
-                  ],
-                )),
-              ],
-            );
-          },
-        ),
-        Container(
-          padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-          height: 50,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(31),
-              color: const Color(0xff659E40)),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text('xxx的冰箱', style: TextStyle(color: Colors.white)),
-              Text('食材充足', style: TextStyle(color: Colors.white))
+                            fit: BoxFit.fitHeight))),
+                onTap: () => _headImageEdit(),
+              ),
+              Container(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text('${userInfo.nickname ?? '小冰的箱'}',
+                      style: TextStyle(fontSize: 18, color: Colors.white)),
+                  Text('手机登录',
+                      style: TextStyle(
+                          fontSize: 10, color: const Color(0xff437722)))
+                ],
+              )),
             ],
           ),
-        )
-      ]),
-    );
+          Container(
+            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+            height: 50,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(31),
+                color: const Color(0xff659E40)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(userInfo.myBox.name, style: TextStyle(color: Colors.white)),
+                Text(userInfo.myBox.health, style: TextStyle(color: Colors.white))
+              ],
+            ),
+          )
+        ]),
+      );
+    });
   }
 
   _headImageEdit() {
@@ -283,10 +284,11 @@ class _UserHeaderWidgetState extends State<UserHeaderWidget> {
       return;
     } else {
       String name = res.data['data']['nickname'];
-      String path = res.data['data']['avatar']+'?${DateTime.now().toString()}';
+      String path = res.data['data']['avatar'];
       UserInfoState infoState =
           Provider.of<UserInfoState>(context, listen: false);
       infoState.nickname = name;
+      infoState.myBox = MyBox.fromJson(res.data['data']['my_box']);
       infoState.changeAvatar(path);
     }
   }
@@ -357,6 +359,7 @@ class OptionsSelectWidget extends StatelessWidget {
 class UserInfoState with ChangeNotifier {
   String nickname = User.instance.username;
   String avatar = User.instance.avatar;
+  MyBox myBox = MyBox();
 
   changeNick(String name) {
     nickname = name;
@@ -367,4 +370,17 @@ class UserInfoState with ChangeNotifier {
     avatar = path;
     notifyListeners();
   }
+}
+
+class MyBox {
+  final String name;
+  final String type;
+  final String health;
+
+  MyBox({this.name = "", this.type = "", this.health = ""});
+
+  MyBox.fromJson(Map json)
+      : name = json['name'],
+        type = json['type'],
+        health = json['health'];
 }

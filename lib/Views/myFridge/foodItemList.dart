@@ -60,7 +60,7 @@ class FoodListWidget extends StatelessWidget {
                                 child: Stack(children: [
                               Align(
                                   alignment: AlignmentDirectional.centerEnd,
-                                  child: Text('数量：${obj.quantity}'))
+                                  child: Text('数量：${QuantityStr.toStr(obj.quantity,unit:obj.unit)}'))
                             ]))
                           ],
                         )),

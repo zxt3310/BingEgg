@@ -91,10 +91,13 @@ class _FoodDetailWidgetState extends State<FoodDetailWidget> {
                           ))
                     ],
                   ),
-                  Image.network(
-                      'http://106.13.105.43:8889/static/images/item-pics/item-${widget.food.itemId}.jpg',
-                      width: 64,
-                      height: 64)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Image.network(
+                        'http://106.13.105.43:8889/static/images/item-pics/item-${widget.food.itemId}.jpg',
+                        width: 64,
+                        height: 64),
+                  )
                 ]),
             SizedBox(height: 10),
             //剩余 即将过期  一共
@@ -135,7 +138,7 @@ class _FoodDetailWidgetState extends State<FoodDetailWidget> {
                   1: FlexColumnWidth(2),
                   2: FlexColumnWidth(2),
                 },
-                children: batchesTale(data.batches,data.itemStatus.totalRest),
+                children: batchesTale(data.batches, data.itemStatus.totalRest),
               ),
             ),
             SizedBox(height: 20),
@@ -173,10 +176,46 @@ class _FoodDetailWidgetState extends State<FoodDetailWidget> {
                                 fit: BoxFit.fitWidth,
                                 placeholder: (ctx, str) {
                                   return Center(
-                                      child: Image.asset("srouce/loading.gif",width: 30,height: 30));
+                                      child: Image.asset("srouce/loading.gif",
+                                          width: 30, height: 30));
                                 },
                               )),
-                              Flexible(child: Center(child: Text(book.title)))
+                              Flexible(
+                                  child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Stack(
+                                  children: <Widget>[
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(book.title,
+                                            maxLines: 1,
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w500)),
+                                        Text(book.foodMaterial,
+                                            maxLines: 2,
+                                            style: TextStyle(
+                                                fontSize: 11,
+                                                color:
+                                                    const Color(0xff8A8A8F))),
+                                      ],
+                                    ),
+                                    Align(
+                                      alignment:
+                                          AlignmentDirectional.bottomStart,
+                                      child: Row(
+                                        children: <Widget>[
+                                          Icon(Icons.av_timer, size: 12),
+                                          Text(book.zzTime,
+                                              style: TextStyle(fontSize: 11))
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ))
                             ],
                           ),
                         ))),
@@ -231,8 +270,8 @@ class _FoodDetailWidgetState extends State<FoodDetailWidget> {
                 textBaseline: TextBaseline.alphabetic,
                 crossAxisAlignment: CrossAxisAlignment.baseline,
                 children: <Widget>[
-                  Text(count.toStringAsFixed(0),
-                      style: TextStyle(fontSize: 22)),
+                  Text(QuantityStr.tostring(count),
+                      style: TextStyle(fontSize: 20)),
                   SizedBox(width: 3),
                   Text(unit,
                       style: TextStyle(
@@ -278,7 +317,9 @@ class _FoodDetailWidgetState extends State<FoodDetailWidget> {
         ]);
 
     TableRow lastRow = TableRow(
-        decoration: BoxDecoration(color: const Color(0xffFBF5F0)),
+        decoration: BoxDecoration(
+          color: const Color(0xffFBF5F0),
+        ),
         children: [
           Padding(
               padding: const EdgeInsets.fromLTRB(20, 13, 0, 13),
@@ -312,7 +353,11 @@ class _FoodDetailWidgetState extends State<FoodDetailWidget> {
     return List.generate(list.length, (idx) {
       ItemBatch batch = list[idx];
       return TableRow(
-          decoration: BoxDecoration(color: const Color(0xffFBF5F0)),
+          decoration: BoxDecoration(
+              color: const Color(0xffFBF5F0),
+              border: Border(
+                  bottom:
+                      BorderSide(width: 1, color: const Color(0xffE9E9E9)))),
           children: [
             Padding(
                 padding: const EdgeInsets.fromLTRB(20, 4, 0, 4),
@@ -343,6 +388,7 @@ class _FoodDetailWidgetState extends State<FoodDetailWidget> {
             )
           ]);
     }, growable: true)
-      ..insert(0, firstRow)..add(lastRow);
+      ..insert(0, firstRow)
+      ..add(lastRow);
   }
 }

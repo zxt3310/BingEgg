@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import '../../model/network.dart';
+import 'package:intl/intl.dart';
 
 const String app_id = '17933442';
 const String api_key = 'WrG2dAP89ivVyr0LMGOKkliS';
@@ -31,7 +32,13 @@ class _ChatWidgetState extends State<ChatWidget> {
     return ChangeNotifierProvider(
       create: (context) => state,
       child: Scaffold(
-          appBar: AppBar(title: Text('增加食物'), automaticallyImplyLeading: false),
+          appBar: AppBar(
+              brightness: Brightness.dark,
+              title: Text(
+                '存/取',
+                style: TextStyle(color: Colors.white),
+              ),
+              automaticallyImplyLeading: false),
           body: ChatBodyWidget(widget.curBoxId)),
     );
   }
@@ -63,6 +70,9 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
   Dio dio;
   //对话ID
   int chatId;
+  //上次对话时间
+  DateTime lastTime = DateTime.fromMillisecondsSinceEpoch(-30000);
+
   @override
   void initState() {
     super.initState();
@@ -129,6 +139,8 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
 
   //停止录音
   Future stop() async {
+    var formater = DateFormat('HH:mm');
+
     provider.changeStr('识别中...');
     var resRecorder = await recorder.stop();
     File file = File(resRecorder.path);
@@ -152,11 +164,15 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
       _hideToast();
       return;
     } else {
+      DateTime now = DateTime.now();
+      Duration during = now.difference(lastTime);
+      lastTime = now;
+
       String str = resp.data['result'][0];
       ChateData data = ChateData(
           chatId: chatId,
           type: 1,
-          timestamp: DateTime.now().toLocal().toString(),
+          timestamp: during.inSeconds>=30?formater.format(now.toLocal()):"",
           content: str);
       ChatStateProvider state =
           Provider.of<ChatStateProvider>(context, listen: false);
@@ -173,12 +189,11 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
     }
 
     chatId = resNew.data['data']['chat_id'];
-
     String str = resNew.data['data']['words'];
     ChateData data = ChateData(
         chatId: chatId,
         type: 0,
-        timestamp: DateTime.now().toLocal().toString(),
+        timestamp: formater.format(DateTime.now().toLocal()),
         content: str);
     ChatStateProvider state =
         Provider.of<ChatStateProvider>(context, listen: false);
@@ -331,7 +346,7 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               FlatButton(
-                                  padding: EdgeInsets.all(10),
+                                  padding: EdgeInsets.all(9),
                                   shape: CircleBorder(
                                       side: BorderSide(
                                           width: 1, color: Colors.white)),
@@ -359,16 +374,15 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
                                 ),
                               ),
                               FlatButton(
-                                  padding: EdgeInsets.all(7),
+                                  padding: EdgeInsets.all(4),
                                   shape: CircleBorder(
                                       side: BorderSide(
                                           width: 1, color: Colors.white)),
                                   onPressed: () {
                                     Navigator.of(context).pop();
                                   },
-                                  child: Text('X',
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 20))),
+                                  child: Icon(Icons.close,
+                                      color: Colors.white, size: 20)),
                             ]),
                       ]))
             ]);

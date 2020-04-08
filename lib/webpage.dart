@@ -14,11 +14,17 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('详情'),
+          brightness: Brightness.dark,
+          title: Text('详情',style: TextStyle(color: Colors.white)),
+          iconTheme: IconThemeData(color: Colors.white),
         ),
         body: WebView(
+          debuggingEnabled: true,
           initialUrl: widget.url,
-          javascriptMode: JavascriptMode.unrestricted,
+          onWebViewCreated: (e){
+     
+          },
+          //javascriptMode: JavascriptMode.unrestricted,
           onPageStarted: (e) {
             BotToast.showLoading(duration: Duration(seconds: 3));
           },

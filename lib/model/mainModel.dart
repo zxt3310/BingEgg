@@ -8,6 +8,7 @@ class FoodMaterial {
   final String expiryDate;
   final String lastDateAdd;
   final int category;
+  final String unit;
 
   FoodMaterial(
       {this.id,
@@ -18,16 +19,20 @@ class FoodMaterial {
       this.createdAt,
       this.expiryDate,
       this.lastDateAdd,
-      this.category});
+      this.category,
+      this.unit});
   FoodMaterial.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         itemId = json['item_id'],
         boxId = json['box_id'],
         itemName = json['item_name'],
-        quantity = json['quantity'].runtimeType == int? double.parse(json['quantity'].toString()):json['quantity'],
+        quantity = json['quantity'].runtimeType == int
+            ? double.parse(json['quantity'].toString())
+            : json['quantity'],
         createdAt = json['created_at'],
         expiryDate = json['expiry_date'],
         lastDateAdd = json['last_dateadd'],
+        unit = json['unit'],
         category = json['category_id'];
 
   Map<String, dynamic> toJson() => {
@@ -107,15 +112,26 @@ class Cookbooks {
   final String title;
   final String imgUrl;
   final String webUrl;
+  final String foodMaterial;
+  final String zzTime;
   final int tags;
 
-  Cookbooks({this.id, this.title, this.imgUrl, this.webUrl, this.tags});
+  Cookbooks(
+      {this.id,
+      this.title,
+      this.imgUrl,
+      this.webUrl,
+      this.tags,
+      this.foodMaterial = "",
+      this.zzTime = ""});
 
   Cookbooks.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         title = json['title'],
         imgUrl = json['img_url'],
         webUrl = json['web_url'],
+        foodMaterial = json['foods'] ?? "",
+        zzTime = json['zz_time'] ?? "15-20分钟",
         tags = json['tags'];
 
   static List<Cookbooks> getBooks(List list) {
@@ -191,4 +207,40 @@ enum Fridgetype {
 
 extension EnumToString on Fridgetype {
   String get cn => ["单门", "双门", "三门", "对开双门", "对开四门", "四门"][this.index];
+}
+
+class QuantityStr {
+  static String toStr(double quantity, {String unit = "个"}) {
+    if (quantity == 0.5) {
+      return "半$unit";
+    }
+    if (quantity < 1.0 && quantity > 0) {
+      return "一点";
+    }
+
+    if (quantity.remainder(quantity.toInt()) == 0.5) {
+      return '${quantity.toStringAsFixed(0)}$unit半';
+    }
+
+    if (quantity.remainder(quantity.toInt()) > 0) {
+      return '${quantity.toString()}$unit';
+    }
+
+    return '${quantity.toStringAsFixed(0)}$unit';
+  }
+
+  static String tostring(double quantity) {
+    if (quantity == 0.5) {
+      return "半";
+    }
+    if (quantity < 1.0 && quantity > 0) {
+      return "一点";
+    }
+
+    if (quantity.remainder(quantity.toInt()) > 0) {
+      return quantity.toString();
+    }
+
+    return quantity.toStringAsFixed(0);
+  }
 }

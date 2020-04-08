@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:sirilike_flutter/Views/GlobalUser/GlobalLogin.dart';
 import 'package:sirilike_flutter/Views/myFridge/foodDetail.dart';
 import 'package:sirilike_flutter/Views/myFridge/myFridge.dart';
 import 'package:sirilike_flutter/main.dart';
@@ -9,6 +10,7 @@ import 'package:sirilike_flutter/model/mainModel.dart';
 import 'package:sirilike_flutter/model/network.dart';
 import 'package:sirilike_flutter/webpage.dart';
 import 'activaties.dart';
+import 'package:intl/intl.dart';
 
 class DontaiWidget extends StatelessWidget {
   @override
@@ -20,6 +22,7 @@ class DontaiWidget extends StatelessWidget {
           title:
               Center(child: Text('动态', style: TextStyle(color: Colors.white))),
           brightness: Brightness.dark),
+      backgroundColor: const Color(0xFFF9F9F9),
       body: DontaiBody(),
     );
   }
@@ -46,6 +49,15 @@ class _DontaiBodyState extends State<DontaiBody> {
   }
 
   @override
+  void deactivate() {
+    bool isback = ModalRoute.of(context).isCurrent;
+    if (isback) {
+      print('back');
+    }
+    super.deactivate();
+  }
+
+  @override
   void dispose() {
     streamSubscription.cancel();
     super.dispose();
@@ -54,7 +66,7 @@ class _DontaiBodyState extends State<DontaiBody> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFFF9F9F9),
+      //color: const Color(0xFFF9F9F9),
       child: FutureBuilder(
         future: requestFuture,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -109,18 +121,6 @@ Widget getUI(DynamicData data, BuildContext ctx) {
                           fontSize: 34,
                           fontWeight: FontWeight.bold,
                           color: Colors.white)),
-                  // MaterialButton(
-                  //   minWidth: 50,
-                  //   height: 25,
-                  //   onPressed: () {
-                  //     AppSharedState state =
-                  //         Provider.of<AppSharedState>(ctx, listen: false);
-                  //     state.tabSwitch(1);
-                  //   },
-                  //   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  //   child: Text('去看看'),
-                  //   shape: RoundedRectangleBorder(side: BorderSide(width: 1)),
-                  // )
                 ],
               ),
             ],
@@ -128,55 +128,56 @@ Widget getUI(DynamicData data, BuildContext ctx) {
         ),
       ),
       SliverToBoxAdapter(
-          child: Container(
-              color: Colors.lightGreen,
-              height: 150,
-              child: ListView.builder(
-                  padding: EdgeInsets.all(13),
-                  itemExtent: (MediaQuery.of(ctx).size.width - 26) / 5,
-                  itemCount: items.length,
-                  itemBuilder: (ctx, idx) {
-                    TopItem item = items[idx];
-                    AppSharedState state =
-                        Provider.of<AppSharedState>(ctx, listen: false);
-                    double width =
-                        (MediaQuery.of(ctx).size.width - 26) / 5 - 10;
-                    return GestureDetector(
+          child: Offstage(
+        offstage: data.topItems.isEmpty,
+        child: Container(
+            color: Colors.lightGreen,
+            height: 150,
+            child: ListView.builder(
+                padding: EdgeInsets.all(13),
+                itemExtent: (MediaQuery.of(ctx).size.width - 26) / 5,
+                itemCount: items.length,
+                itemBuilder: (ctx, idx) {
+                  TopItem item = items[idx];
+                  AppSharedState state =
+                      Provider.of<AppSharedState>(ctx, listen: false);
+                  double width = (MediaQuery.of(ctx).size.width - 26) / 5 - 10;
+                  return GestureDetector(
+                    child: Container(
+                      padding: EdgeInsets.all(5),
                       child: Container(
-                        padding: EdgeInsets.all(5),
-                        child: Container(
-                          padding: EdgeInsets.fromLTRB(6, 6, 6, 12),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(width / 2)),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              ClipOval(
-                                  child: Image.network(
-                                'http://106.13.105.43:8889/static/images/item-pics/item-${item.id}.jpg',
-                                width: width - 12,
-                                height: width - 12,
-                              )),
-                              Text('${item.name}',
-                                  style: TextStyle(fontSize: 13)),
-                              Text('${item.rest}',
-                                  style: TextStyle(fontSize: 13))
-                            ],
-                          ),
+                        padding: EdgeInsets.fromLTRB(6, 6, 6, 12),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(width / 2)),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            ClipOval(
+                                child: Image.network(
+                              'http://106.13.105.43:8889/static/images/item-pics/item-${item.id}.jpg',
+                              width: width - 12,
+                              height: width - 12,
+                            )),
+                            Text('${item.name}',
+                                style: TextStyle(fontSize: 13)),
+                            Text('${item.rest}', style: TextStyle(fontSize: 13))
+                          ],
                         ),
                       ),
-                      onTap: () {
-                        Navigator.of(ctx).push(MaterialPageRoute(
-                            builder: (context) => FoodDetailWidget(
-                                food: FoodMaterial(
-                                    itemId: item.id,
-                                    itemName: item.name,
-                                    boxId: state.curBoxId))));
-                      },
-                    );
-                  },
-                  scrollDirection: Axis.horizontal))),
+                    ),
+                    onTap: () {
+                      Navigator.of(ctx).push(MaterialPageRoute(
+                          builder: (context) => FoodDetailWidget(
+                              food: FoodMaterial(
+                                  itemId: item.id,
+                                  itemName: item.name,
+                                  boxId: state.curBoxId))));
+                    },
+                  );
+                },
+                scrollDirection: Axis.horizontal)),
+      )),
       SliverToBoxAdapter(
           child: Container(
         color: const Color(0xFFF9F9F9),
@@ -191,11 +192,15 @@ Widget getUI(DynamicData data, BuildContext ctx) {
                       style:
                           TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
                   FlatButton(
-                      onPressed: () {},
+                      // onPressed: () {
+                      //   Navigator.of(ctx).push(MaterialPageRoute(
+                      //       builder: (context) => GlobalLoginPage()));
+                      // },
+                      onPressed: null,
                       child: Row(
                         children: <Widget>[
-                          Text('换一批', style: TextStyle(fontSize: 12)),
-                          Icon(Icons.refresh, size: 13)
+                          Text("", style: TextStyle(fontSize: 12)),
+                          // Icon(Icons.refresh, size: 13)
                         ],
                       )),
                 ]),
@@ -343,29 +348,32 @@ Widget getUI(DynamicData data, BuildContext ctx) {
               margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
               decoration: BoxDecoration(
                   color: Colors.white, borderRadius: BorderRadius.circular(12)),
-              child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                        padding: EdgeInsets.all(15),
-                        child: ClipOval(
-                            child: FadeInImage.assetNetwork(
-                                placeholder: 'srouce/login_logo.png',
-                                image: action.avatar,
-                                width: 30,
-                                height: 30))),
-                    Flexible(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          Text(action.name),
-                          Text(action.message, maxLines: 2),
-                          Wrap(children: _getActionsItem(action))
-                        ],
+              child: Padding(
+                padding: const EdgeInsets.all(15),
+                child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      ClipOval(
+                          child: FadeInImage.assetNetwork(
+                              placeholder: 'srouce/login_logo.png',
+                              image: action.avatar,
+                              width: 30,
+                              height: 30)),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: <Widget>[
+                            Text(action.name),
+                            Text(action.message, maxLines: 1),
+                            Wrap(children: _getActionsItem(action)),
+                          ],
+                        ),
                       ),
-                    )
-                  ]),
+                      Text(_getActTimeStr(action.lastUpdate),
+                          style: TextStyle(fontSize: 10)),
+                    ]),
+              ),
             );
           }, childCount: data.actions.length > 5 ? 5 : data.actions.length)),
       SliverToBoxAdapter(child: SizedBox(height: 60))
@@ -373,9 +381,37 @@ Widget getUI(DynamicData data, BuildContext ctx) {
   );
 }
 
+String _getActTimeStr(String timeStr) {
+  DateFormat formater = DateFormat('yyyy-MM-ddTHH:mm:ss');
+  DateTime create = formater.parse(timeStr);
+  Duration duration = DateTime.now().difference(create);
+
+  int days = duration.inDays;
+  int hours = duration.inHours;
+  int minutes = duration.inMinutes;
+
+  if (days > 30) {
+    return '${days ~/ 30}个月前';
+  }
+
+  if (days > 0) {
+    return '$days天前';
+  }
+
+  if (hours > 0) {
+    return '$hours小时前';
+  }
+
+  if (minutes > 0) {
+    return '$minutes分钟前';
+  }
+
+  return "刚刚";
+}
+
 List<Widget> _getDailyText(List list) {
   return List.generate(list.length, (idx) {
-    return Text(list[idx], style: TextStyle(fontSize: 11));
+    return Text(list[idx], maxLines: 1, style: TextStyle(fontSize: 11));
   });
 }
 
@@ -387,14 +423,14 @@ List<Widget> _getActionsItem(FriendAction action) {
       child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
           child: CachedNetworkImage(
-            width: 38,
-            height: 38,
-            placeholder: (ctx,str){
-              return Text('loading...');
-            },
-            errorWidget: (ctx,str,obj){
-              return Text('faild');
-            },
+              width: 38,
+              height: 38,
+              placeholder: (ctx, str) {
+                return Text('loading...');
+              },
+              errorWidget: (ctx, str, obj) {
+                return Text('faild');
+              },
               imageUrl:
                   "http://106.13.105.43:8889/static/images/item-pics/item-${item.itemId}.jpg")),
     );

@@ -46,9 +46,15 @@ class BoxListBody extends StatefulWidget {
 
 class _BoxListBodyState extends State<BoxListBody> {
   int curDefault;
+  AppSharedState state;
+  @override
+  void initState() {
+    state = Provider.of(widget.providerContext, listen: false);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    AppSharedState state = Provider.of(widget.providerContext, listen: false);
     return SafeArea(
       child: Container(
         padding: EdgeInsets.only(top: 5),
@@ -81,7 +87,7 @@ class _BoxListBodyState extends State<BoxListBody> {
                                         builder: (ctx) =>
                                             BoxAddWidget(fridge: Fridge()),
                                         fullscreenDialog: true))
-                                    .then((e) async{
+                                    .then((e) async {
                                   if (e) {
                                     await _getFridgeList();
                                     setState(() {});
@@ -148,6 +154,7 @@ class _BoxListBodyState extends State<BoxListBody> {
                                           alignment:
                                               AlignmentDirectional.topEnd,
                                           child: PopupMenuButton(
+                                              offset: Offset(0, 30),
                                               padding: EdgeInsets.zero,
                                               itemBuilder: (ctx) {
                                                 return [
@@ -168,8 +175,10 @@ class _BoxListBodyState extends State<BoxListBody> {
                                                               builder: (ctx) =>
                                                                   BoxAddWidget(
                                                                       fridge:
-                                                                          fridge),fullscreenDialog: true))
-                                                          .then((e) async{
+                                                                          fridge),
+                                                              fullscreenDialog:
+                                                                  true))
+                                                          .then((e) async {
                                                         if (e) {
                                                           await _getFridgeList();
                                                           setState(() {});
@@ -179,7 +188,37 @@ class _BoxListBodyState extends State<BoxListBody> {
                                                     break;
                                                   default:
                                                     {
-                                                      _deleteFridge(fridge.id);
+                                                      showCupertinoDialog(
+                                                          context: context,
+                                                          builder: (ctx) {
+                                                            return CupertinoAlertDialog(
+                                                              content: Text(
+                                                                  '冰箱内食物也将一并删除'),
+                                                              title: Text(
+                                                                  '确定要删除吗？'),
+                                                              actions: <Widget>[
+                                                                CupertinoDialogAction(
+                                                                    child: Text(
+                                                                        '确定'),
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.of(
+                                                                              ctx)
+                                                                          .pop();
+                                                                      _deleteFridge(
+                                                                          fridge
+                                                                              .id,
+                                                                          idx);
+                                                                    }),
+                                                                CupertinoDialogAction(
+                                                                    onPressed: () =>
+                                                                        Navigator.of(ctx)
+                                                                            .pop(),
+                                                                    child: Text(
+                                                                        '取消'))
+                                                              ],
+                                                            );
+                                                          });
                                                     }
                                                 }
                                               })))
@@ -398,7 +437,7 @@ class _BoxListBodyState extends State<BoxListBody> {
     setState(() {});
   }
 
-  _deleteFridge(int boxid) async {
+  _deleteFridge(int boxid, int boxIndex) async {
     NetManager manager = NetManager.instance;
     Response res =
         await manager.dio.post('/api/user-box/delete', data: "id=$boxid");
@@ -408,6 +447,11 @@ class _BoxListBodyState extends State<BoxListBody> {
       return;
     }
     await _getFridgeList();
+    if (state.curBoxIndex == boxIndex) {
+      boxIndex = boxIndex == 0 ? 1 : boxIndex;
+      state.changeCurIndex(boxIndex - 1);
+    }
+
     setState(() {});
   }
 }

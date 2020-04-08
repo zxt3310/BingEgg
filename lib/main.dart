@@ -1,17 +1,17 @@
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:sirilike_flutter/Views/GlobalUser/GlobalLogin.dart';
+import 'package:sirilike_flutter/Views/statistics/foodStatistics.dart';
 import 'package:sirilike_flutter/model/mainModel.dart';
 import 'model/user.dart';
 import 'Views/myFridge/myFridge.dart';
-import 'Views/statistics/foodAnalyze.dart';
 import 'Views/userAndSetting/mine.dart';
 import 'Views/dongtai/dongtai.dart';
 import 'Views/chat/chat.dart';
 import 'package:provider/provider.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'Views/bottomBar/bingEBottomNaviBar.dart';
-import 'login/ui/login_page.dart';
 import 'package:sirilike_flutter/model/event.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -20,7 +20,6 @@ const List barList = ["提醒", "冰箱", "统计", "我的"];
 void main() {
   //在加载app前 载入所有插件
   WidgetsFlutterBinding.ensureInitialized();
-
   if (Platform.isAndroid) {
     // 以下两行 设置android状态栏为透明的沉浸。写在组件渲染之后，是为了在渲染后进行set赋值，覆盖状态栏，写在渲染之前MaterialApp组件会覆盖掉这个值。
     SystemUiOverlayStyle systemUiOverlayStyle =
@@ -37,7 +36,7 @@ void main() {
     );
     SystemChrome.setSystemUIOverlayStyle(light);
   }
-  
+
   realRunApp();
 }
 
@@ -51,10 +50,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BotToastInit(
         child: MaterialApp(
-          routes: {
-            'homeRoute':(context) => MyHomePage(),
-            'loginRoute':(context) => LoginPage()
-          },
+            routes: {
+              'homeRoute': (context) => MyHomePage(),
+              'loginRoute': (context) => GlobalLoginPage()
+            },
             title: 'Voice Demo',
             navigatorObservers: [BotToastNavigatorObserver()],
             theme: ThemeData(
@@ -63,7 +62,7 @@ class MyApp extends StatelessWidget {
               buttonTheme: ButtonThemeData(minWidth: 20),
               //splashColor: Colors.transparent,
             ),
-            home:User.instance.isLogin? MyHomePage():LoginPage()));
+            home: User.instance.isLogin ? MyHomePage() : GlobalLoginPage()));
   }
 }
 
@@ -114,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: <Widget>[
                         DontaiWidget(),
                         MyFridgeWidget(),
-                        FoodAnalyzeWidgit(),
+                        FoodStatistics(),
                         UserCenterWidget()
                       ],
                     )),
@@ -162,7 +161,7 @@ class AppSharedState with ChangeNotifier {
   List<Fridge> curList = List();
 
   @override
-  dispose(){
+  dispose() {
     super.dispose();
   }
 
