@@ -319,6 +319,9 @@ class _FoodDetailWidgetState extends State<FoodDetailWidget> {
     TableRow lastRow = TableRow(
         decoration: BoxDecoration(
           color: const Color(0xffFBF5F0),
+          border: Border(
+                  top:
+                      BorderSide(width: 1, color: const Color(0xffE9E9E9)))
         ),
         children: [
           Padding(
@@ -354,10 +357,8 @@ class _FoodDetailWidgetState extends State<FoodDetailWidget> {
       ItemBatch batch = list[idx];
       return TableRow(
           decoration: BoxDecoration(
-              color: const Color(0xffFBF5F0),
-              border: Border(
-                  bottom:
-                      BorderSide(width: 1, color: const Color(0xffE9E9E9)))),
+            color: const Color(0xffFBF5F0),
+          ),
           children: [
             Padding(
                 padding: const EdgeInsets.fromLTRB(20, 4, 0, 4),

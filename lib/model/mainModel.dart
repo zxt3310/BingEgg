@@ -87,6 +87,9 @@ class Fridge {
   final String sharecode;
   final String createdat;
   final bool isdefault;
+  final int foodCount;
+  final String addr;
+  final String state;
   Fridge(
       {this.id,
       this.boxname = "",
@@ -94,16 +97,23 @@ class Fridge {
       this.boxtype = 0,
       this.sharecode = "",
       this.createdat = "",
+      this.addr = "",
+      this.foodCount = 0,
+      this.state = "",
       this.isdefault = false});
 
   Fridge.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         boxname = json['box_name'],
         boxbrand = json['box_brand'],
-        boxtype =
-            int.parse(json['box_type'].runtimeType == String ? "0" : "0") ?? 0,
+        boxtype = json['box_type'].runtimeType == String
+            ? int.parse(json['box_type'])
+            : json['box_type'],
         sharecode = json['share_code'],
         createdat = json['created_at'],
+        addr = json['addr'] ?? "",
+        state = json['health_status'] ?? "",
+        foodCount = json['inventory_count'] ?? 0,
         isdefault = json['is_default'] == 0 ? false : true;
 }
 

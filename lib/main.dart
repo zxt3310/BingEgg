@@ -14,6 +14,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'Views/bottomBar/bingEBottomNaviBar.dart';
 import 'package:sirilike_flutter/model/event.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sirilike_flutter/model/quick_check.dart';
 
 const List barList = ["提醒", "冰箱", "统计", "我的"];
 
@@ -36,7 +37,8 @@ void main() {
     );
     SystemChrome.setSystemUIOverlayStyle(light);
   }
-
+  //预取号
+  QuickCheckManager.instance.reCheck();
   realRunApp();
 }
 

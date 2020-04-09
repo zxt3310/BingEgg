@@ -116,6 +116,7 @@ class _BoxListBodyState extends State<BoxListBody> {
                                 mainAxisSize: MainAxisSize.max,
                                 children: <Widget>[
                                   Container(
+                                    padding: const EdgeInsets.all(5),
                                     width: ScreenUtil().setWidth(48),
                                     height: ScreenUtil().setWidth(48),
                                     margin: EdgeInsets.only(left: 10),
@@ -124,6 +125,7 @@ class _BoxListBodyState extends State<BoxListBody> {
                                         border: Border.all(
                                             width: 4,
                                             color: const Color(0xfff2f2f2))),
+                                    child: Image.asset('srouce/icotype/ico_type_${fridge.boxtype}_p.png',),
                                   ),
                                   SizedBox(
                                     width: 10,
@@ -141,7 +143,7 @@ class _BoxListBodyState extends State<BoxListBody> {
                                               fontWeight: FontWeight.bold),
                                         ),
                                         Text(
-                                          '王府井东方新天地',
+                                          fridge.addr,
                                           style: TextStyle(
                                               fontSize: 13,
                                               color: const Color(0xff8A8A8F)),
@@ -329,8 +331,8 @@ class _BoxListBodyState extends State<BoxListBody> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                  _stateContain('物品数量', '12'),
-                                  _stateContain('冰箱状态', '充足'),
+                                  _stateContain('物品数量', '${fridge.foodCount}'),
+                                  _stateContain('冰箱状态', fridge.state),
                                   Container(
                                       width: ScreenUtil().setWidth(100),
                                       height: ScreenUtil().setWidth(80),

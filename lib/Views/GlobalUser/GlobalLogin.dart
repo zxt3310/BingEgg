@@ -10,6 +10,7 @@ import 'package:sirilike_flutter/Views/myFridge/myFridge.dart';
 import 'package:sirilike_flutter/main.dart';
 import 'package:sirilike_flutter/model/customRoute.dart';
 import 'package:sirilike_flutter/model/network.dart';
+import 'package:sirilike_flutter/model/quick_check.dart';
 import 'package:sirilike_flutter/model/user.dart';
 
 class GlobalLoginPage extends StatelessWidget {
@@ -41,11 +42,8 @@ class _LoginUI extends StatefulWidget {
 }
 
 class __LoginUIState extends State<_LoginUI> {
-  OneKeyLoginManager oneKeyLoginManager = new OneKeyLoginManager();
-  Future builderFuture;
   @override
   void initState() {
-    builderFuture = initQuickCheck();
     super.initState();
   }
 
@@ -54,25 +52,30 @@ class __LoginUIState extends State<_LoginUI> {
     return Selector<LoginPageState, bool>(
         selector: (context, state) => state.isQuickCheck,
         builder: (context, isQuick, child) {
-          return Container(
-            padding: const EdgeInsets.all(30),
-            color: Colors.white,
-            child: Column(
-              children: <Widget>[
-                isQuick ? _QuickCheckWidget() : _MessageCheckWidget(),
-                FutureBuilder<QuickLogCheck>(
-                    future: builderFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        return snapshot.data.isSupport
+          return FutureBuilder<bool>(
+              future: QuickCheckManager.instance.preCheck,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  BotToast.closeAllLoading();
+                  return Container(
+                    padding: const EdgeInsets.all(30),
+                    color: Colors.white,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        isQuick && snapshot.data
+                            ? _QuickCheckWidget()
+                            : _MessageCheckWidget(),
+                        snapshot.data
                             ? FlatButton(
-                                onPressed: authorQuickCheck,
-                                //  () {
-                                //   // LoginPageState state =
-                                //   //     Provider.of(context, listen: false);
-                                //   // state.changeMode(!isQuick);
-
-                                // },
+                                splashColor: Colors.white,
+                                highlightColor: Colors.white,
+                                onPressed: () {
+                                  LoginPageState state =
+                                      Provider.of<LoginPageState>(context,
+                                          listen: false);
+                                  state.changeMode(!isQuick);
+                                },
                                 child: Text(
                                   isQuick ? "短信验证登录" : "本机号码登录",
                                   style: TextStyle(
@@ -80,79 +83,82 @@ class __LoginUIState extends State<_LoginUI> {
                                       decoration: TextDecoration.underline,
                                       decorationColor: Colors.grey),
                                 ))
-                            : SizedBox();
-                      } else {
-                        return Text('检测一键登录......');
-                      }
-                    })
-              ],
-            ),
-          );
+                            : SizedBox()
+                      ],
+                    ),
+                  );
+                } else {
+                  BotToast.showLoading();
+                  return Container();
+                }
+              });
         });
   }
 
-  Future<QuickLogCheck> initQuickCheck() async {
-    QuickLogCheck faild = QuickLogCheck(false);
-    //初始化校验
-    Map res = await oneKeyLoginManager.init(
-      appId: "QLMrcjQI",
-    );
-    int code = res['code'];
-    print(res['result']);
-    if (!isSucc(code)) {
-      return faild;
-    }
-    //预取号
-    Map prePhone = await oneKeyLoginManager.getPhoneInfo();
-    code = prePhone['code'];
-    if (code != 1022) {
-      print(res['result']);
-      return QuickLogCheck(false);
-    }
-    return QuickLogCheck(true);
-  }
+  // Future<QuickLogCheck> initQuickCheck() async {
+  //   QuickLogCheck faild = QuickLogCheck(false);
+  //   //初始化校验
+  //   Map res = await oneKeyLoginManager.init(
+  //     appId: "QLMrcjQI",
+  //   );
+  //   int code = res['code'];
+  //   print(res['result']);
+  //   if (!isSucc(code)) {
+  //     return faild;
+  //   }
+  //   //预取号
+  //   Map prePhone = await oneKeyLoginManager.getPhoneInfo();
+  //   code = prePhone['code'];
+  //   if (code != 1022) {
+  //     print(res['result']);
+  //     return QuickLogCheck(false);
+  //   }
+  //   return QuickLogCheck(true);
+  // }
 
-  authorQuickCheck() async {
-    oneKeyLoginManager
-        .quickAuthLoginWithConfigure(ShanyanUIConfiguration.getIosUIConfig());
-    oneKeyLoginManager.openLoginAuthListener().then((e) {
-      print(e);
-    });
-    //自定义组件回调
-    oneKeyLoginManager.setCustomInterface().then((e) {
-      print(e);
-    });
+  // authorQuickCheck() async {
+  //   OneKeyLoginManager oneKeyLoginManager =
+  //       QuickCheckManager.instance.oneKeyLoginManager;
+  //   oneKeyLoginManager
+  //       .quickAuthLoginWithConfigure(ShanyanUIConfiguration.getIosUIConfig());
+  //   oneKeyLoginManager.openLoginAuthListener().then((e) {
+  //     print(e);
+  //   });
+  //   //自定义组件回调
+  //   oneKeyLoginManager.setCustomInterface().then((e) {
+  //     print(e);
+  //   });
 
-    Map res = await oneKeyLoginManager.oneKeyLoginListener();
-    print(res);
+  //   Map res = await oneKeyLoginManager.oneKeyLoginListener();
+  //   print(res);
 
-    if (isSucc(res['code'])) {
-      Map token = json.decode(res['result']);
-      Dio req = NetManager.instance.dio;
-      String url = '/api/login?token=${token['token']}';
+  //   if (isSucc(res['code'])) {
+  //     Map token = json.decode(res['result']);
+  //     Dio req = NetManager.instance.dio;
+  //     String url = '/api/login?token=${token['token']}';
 
-      Response loginres = await req.get(url);
-      int err = loginres.data['err'];
-      if (err != 0) {
-        oneKeyLoginManager.finishAuthControllerCompletion();
-        BotToast.showText(text: '登录超时，请重试或更换登录方式');
-        return;
-      } else {
-        String phone = loginres.data['data']['mobile'];
-        String avatar = loginres.data['data']['avatar'];
-        String token = loginres.headers.map['authorization'].first;
-        await User.instance.save(phone, "", token, avatar);
-      }
-      Navigator.of(context)
-          .pushAndRemoveUntil(CustomRoute.fade(MyHomePage()), (e) => false);
-      oneKeyLoginManager.finishAuthControllerCompletion();
-    }
-  }
+  //     Response loginres = await req.get(url);
+  //     int err = loginres.data['err'];
+  //     if (err != 0) {
+  //       oneKeyLoginManager.finishAuthControllerCompletion();
+  //       BotToast.showText(text: '登录超时，请重试或更换登录方式');
+  //       return;
+  //     } else {
+  //       String phone = loginres.data['data']['mobile'];
+  //       String avatar = loginres.data['data']['avatar'];
+  //       String token = loginres.headers.map['authorization'].first;
+  //       await User.instance.save(phone, "", token, avatar);
+  //     }
+  //     Navigator.of(context)
+  //         .pushAndRemoveUntil(CustomRoute.fade(MyHomePage()), (e) => false);
+  //     oneKeyLoginManager.finishAuthControllerCompletion();
+  //   }
+  // }
 
-  bool isSucc(int code) {
-    return (Platform.isAndroid && code == 1022) ||
-        (Platform.isIOS && code == 1000);
-  }
+  // bool isSucc(int code) {
+  //   return (Platform.isAndroid && code == 1022) ||
+  //       (Platform.isIOS && code == 1000);
+  // }
 }
 
 // 验证码登录
@@ -187,7 +193,8 @@ class __MessageCheckWidgetState extends State<_MessageCheckWidget> {
                       borderSide: BorderSide(color: Colors.lightGreen))),
               onChanged: (e) {
                 phone = e;
-                LoginPageState state = Provider.of<LoginPageState>(context,listen:false);
+                LoginPageState state =
+                    Provider.of<LoginPageState>(context, listen: false);
                 state.setPhone(e);
               },
               onFieldSubmitted: (e) {
@@ -298,13 +305,63 @@ class __QuickCheckWidgetState extends State<_QuickCheckWidget> {
       child: Column(
         children: <Widget>[
           Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(width: 1)),
+            child: FlatButton(
+                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                color: Colors.lightGreen,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                onPressed: authorQuickCheck,
+                child: Text(
+                  '本机号码一键登录',
+                  style: TextStyle(color: Colors.white),
+                )),
           )
         ],
       ),
     );
+  }
+
+  authorQuickCheck() async {
+    OneKeyLoginManager oneKeyLoginManager =
+        QuickCheckManager.instance.oneKeyLoginManager;
+    oneKeyLoginManager
+        .quickAuthLoginWithConfigure(ShanyanUIConfiguration.getIosUIConfig());
+    oneKeyLoginManager.openLoginAuthListener().then((e) {
+      print(e);
+    });
+    //自定义组件回调
+    oneKeyLoginManager.setCustomInterface().then((e) {
+      print(e);
+    });
+
+    Map res = await oneKeyLoginManager.oneKeyLoginListener();
+    print(res);
+
+    if (isSucc(res['code'])) {
+      Map token = json.decode(res['result']);
+      Dio req = NetManager.instance.dio;
+      String url = '/api/login?token=${token['token']}';
+
+      Response loginres = await req.get(url);
+      int err = loginres.data['err'];
+      if (err != 0) {
+        oneKeyLoginManager.finishAuthControllerCompletion();
+        BotToast.showText(text: '登录超时，请重试或更换登录方式');
+        return;
+      } else {
+        String phone = loginres.data['data']['mobile'];
+        String avatar = loginres.data['data']['avatar'];
+        String token = loginres.headers.map['authorization'].first;
+        await User.instance.save(phone, "", token, avatar);
+      }
+      Navigator.of(context)
+          .pushAndRemoveUntil(CustomRoute.fade(MyHomePage()), (e) => false);
+      oneKeyLoginManager.finishAuthControllerCompletion();
+    }
+  }
+
+  bool isSucc(int code) {
+    return (Platform.isAndroid && code == 1022) ||
+        (Platform.isIOS && code == 1000);
   }
 }
 
@@ -373,7 +430,7 @@ class __CheckCodeBtnState extends State<_CheckCodeBtn> {
 }
 
 class LoginPageState with ChangeNotifier {
-  bool isQuickCheck = false;
+  bool isQuickCheck = true;
   String phoneNo = "";
   String checkCode = "";
 

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:sirilike_flutter/Views/GlobalUser/GlobalLogin.dart';
 import 'package:sirilike_flutter/Views/myFridge/foodDetail.dart';
 import 'package:sirilike_flutter/Views/myFridge/myFridge.dart';
 import 'package:sirilike_flutter/main.dart';

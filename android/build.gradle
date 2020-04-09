@@ -1,7 +1,7 @@
 buildscript {
     ext.kotlin_version = '1.2.71'
     repositories {
-        // google()
+        google()
         // jcenter()
         maven { url 'https://maven.aliyun.com/repository/google' }
         maven { url 'https://maven.aliyun.com/repository/jcenter' }
@@ -16,7 +16,7 @@ buildscript {
 
 allprojects {
     repositories {
-        // google()
+        google()
         // jcenter()
         maven { url 'https://maven.aliyun.com/repository/google' }
         maven { url 'https://maven.aliyun.com/repository/jcenter' }
@@ -37,18 +37,25 @@ task clean(type: Delete) {
 }
 
 
-// rootProject.allprojects {
-//     project.configurations.all {
-//         resolutionStrategy.eachDependency { details ->
-//             if (details.requested.group == 'androidx.core') {
-//                 details.useVersion "1.0.1"
-//             }
-//             if (details.requested.group == 'androidx.lifecycle') {
-//                 details.useVersion "2.0.0"
-//             }
-//             if (details.requested.group == 'androidx.versionedparcelable') {
-//                 details.useVersion "1.0.0"
-//             }
-//         }
-//     }
-// }
+rootProject.allprojects {
+    project.configurations.all {
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == 'com.android.support'
+                        && details.requested.name.contains('support-compat')) {
+                    details.useVersion "28.0.0"
+                }
+            if (details.requested.group == 'androidx.core') {
+                details.useVersion "1.1.0"
+            }
+            if (details.requested.group == 'androidx.fragment') {
+                details.useVersion "1.1.0"
+            }
+            // if (details.requested.group == 'androidx.lifecycle') {
+            //     details.useVersion "2.0.0"
+            // }
+            // if (details.requested.group == 'androidx.versionedparcelable') {
+            //     details.useVersion "1.0.0"
+            // }
+        }
+    }
+}
