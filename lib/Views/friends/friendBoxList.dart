@@ -7,11 +7,10 @@ import 'package:sirilike_flutter/Views/myFridge/myFridge.dart';
 import 'package:sirilike_flutter/main.dart';
 import 'package:sirilike_flutter/model/mainModel.dart';
 import 'package:sirilike_flutter/model/network.dart';
-import 'boxAdd.dart';
 
-class BoxListWidget extends StatelessWidget {
+class FriendBoxListWidget extends StatelessWidget {
   final BuildContext providerContext;
-  BoxListWidget({this.providerContext});
+  FriendBoxListWidget({this.providerContext});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,17 +79,7 @@ class _BoxListBodyState extends State<BoxListBody> {
                               textColor: Colors.white,
                               child: Text('添加新冰箱'),
                               onPressed: () {
-                                Navigator.of(context)
-                                    .push(MaterialPageRoute(
-                                        builder: (ctx) =>
-                                            BoxAddWidget(fridge: Fridge()),
-                                        fullscreenDialog: true))
-                                    .then((e) async {
-                                  if (e) {
-                                    await _getFridgeList();
-                                    setState(() {});
-                                  }
-                                });
+                                
                               })),
                     )
                   : Padding(
@@ -179,57 +168,9 @@ class _BoxListBodyState extends State<BoxListBody> {
                                               onSelected: (e) {
                                                 switch (e) {
                                                   case 0:
-                                                    {
-                                                      Navigator.of(context)
-                                                          .push(MaterialPageRoute(
-                                                              builder: (ctx) =>
-                                                                  BoxAddWidget(
-                                                                      fridge:
-                                                                          fridge),
-                                                              fullscreenDialog:
-                                                                  true))
-                                                          .then((e) async {
-                                                        if (e) {
-                                                          await _getFridgeList();
-                                                          setState(() {});
-                                                        }
-                                                      });
-                                                    }
+                                                   
                                                     break;
                                                   default:
-                                                    {
-                                                      showCupertinoDialog(
-                                                          context: context,
-                                                          builder: (ctx) {
-                                                            return CupertinoAlertDialog(
-                                                              content: Text(
-                                                                  '冰箱内食物也将一并删除'),
-                                                              title: Text(
-                                                                  '确定要删除吗？'),
-                                                              actions: <Widget>[
-                                                                CupertinoDialogAction(
-                                                                    child: Text(
-                                                                        '确定'),
-                                                                    onPressed:
-                                                                        () {
-                                                                      Navigator.of(
-                                                                              ctx)
-                                                                          .pop();
-                                                                      _deleteFridge(
-                                                                          fridge
-                                                                              .id,
-                                                                          idx);
-                                                                    }),
-                                                                CupertinoDialogAction(
-                                                                    onPressed: () =>
-                                                                        Navigator.of(ctx)
-                                                                            .pop(),
-                                                                    child: Text(
-                                                                        '取消'))
-                                                              ],
-                                                            );
-                                                          });
-                                                    }
                                                 }
                                               })))
                                 ],
