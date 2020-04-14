@@ -57,7 +57,7 @@ class FoodMaterial {
     if (lastDateAdd == null) {
       return "";
     }
-    DateTime create = DateTime.parse(lastDateAdd);
+    DateTime create = DateTime.now();
     if (expiryDate.isNotEmpty) {
       int days = 0;
       int hours = 0;
@@ -67,8 +67,10 @@ class FoodMaterial {
       days = hours ~/ 24;
       if (days > 0) {
         return '$days天后过期';
-      } else {
+      } else if(hours>0) {
         return '$hours小时后过期';
+      }else{
+        return "已过期";
       }
     } else {
       Duration duration = DateTime.now().difference(create);

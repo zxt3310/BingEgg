@@ -71,6 +71,7 @@ class _DontaiBodyState extends State<DontaiBody> {
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             Response res = snapshot.data;
+            print(res.request.headers);
             if (res.data['err'] != 0) {
               return Center(child: Text('请先登录'));
             }
@@ -107,7 +108,7 @@ Widget getUI(DynamicData data, BuildContext ctx) {
       SliverToBoxAdapter(
         child: Container(
           color: Colors.lightGreen,
-          padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+          padding: EdgeInsets.fromLTRB(20, 0, 20, 15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -282,37 +283,37 @@ Widget getUI(DynamicData data, BuildContext ctx) {
           ],
         ),
       )),
-      SliverToBoxAdapter(
-        child: Container(
-          height: 50,
-          margin: EdgeInsets.all(15),
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: [
-                BoxShadow(blurRadius: 6, color: const Color(0xffe0e0e0))
-              ]),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                    color: const Color(0xffd8d8d8),
-                    borderRadius: BorderRadius.circular(18)),
-              ),
-              Text('午餐打卡',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-              Checkbox(
-                  value: true,
-                  tristate: true,
-                  onChanged: (e) {},
-                  activeColor: Colors.green)
-            ],
-          ),
-        ),
-      ),
+      // SliverToBoxAdapter(
+      //   child: Container(
+      //     height: 50,
+      //     margin: EdgeInsets.all(15),
+      //     decoration: BoxDecoration(
+      //         color: Colors.white,
+      //         borderRadius: BorderRadius.circular(18),
+      //         boxShadow: [
+      //           BoxShadow(blurRadius: 6, color: const Color(0xffe0e0e0))
+      //         ]),
+      //     child: Row(
+      //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+      //       children: <Widget>[
+      //         Container(
+      //           width: 36,
+      //           height: 36,
+      //           decoration: BoxDecoration(
+      //               color: const Color(0xffd8d8d8),
+      //               borderRadius: BorderRadius.circular(18)),
+      //         ),
+      //         Text('午餐打卡',
+      //             style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+      //         Checkbox(
+      //             value: true,
+      //             tristate: true,
+      //             onChanged: (e) {},
+      //             activeColor: Colors.green)
+      //       ],
+      //     ),
+      //   ),
+      // ),
       SliverToBoxAdapter(
         child: Container(
             color: const Color(0xFFF9F9F9),

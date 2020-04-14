@@ -2,6 +2,7 @@ import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:sirilike_flutter/model/mainModel.dart';
 import 'foodDetail.dart';
+import 'package:intl/intl.dart';
 
 class FoodListWidget extends StatelessWidget {
   final List<FoodMaterial> foods;
@@ -20,10 +21,14 @@ class FoodListWidget extends StatelessWidget {
                   position: BadgePosition.topRight(top: 5),
                   padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
                   shape: BadgeShape.square,
+                  badgeColor: expiredColor(obj.expiryDate),
                   borderRadius: 5,
                   isHorizal: true,
-                  badgeContent: Text('过期',
-                      style: TextStyle(fontSize: 10, color: Colors.white)),
+                  badgeContent: Offstage(
+                    offstage: !isExpiring(obj.expiryDate),
+                    child: Text(expiredStr(obj.expiryDate),
+                        style: TextStyle(fontSize: 10, color: Colors.white)),
+                  ),
                   child: GestureDetector(
                     child: Container(
                         padding: EdgeInsets.all(8),
@@ -72,5 +77,46 @@ class FoodListWidget extends StatelessWidget {
         },
       ),
     );
+  }
+
+  bool isExpiring(String timeStr){
+    DateFormat formater = DateFormat('yyyy-MM-dd');
+    DateTime target = formater.parse(timeStr);
+    DateTime now = DateTime.now().add(Duration(days: 5));
+    return now.isAfter(target);
+  }
+
+  String expiredStr(String timeStr){
+    DateFormat formater = DateFormat('yyyy-MM-dd');
+    DateTime target = formater.parse(timeStr);
+    DateTime now = DateTime.now();
+    Duration during = target.difference(now);
+    if(during.inDays <0){
+      return "已过期";
+    }
+    if(during.inDays == 0){
+      return "今天过期";
+    }
+    if(during.inDays>0){
+      return "即将过期";
+    }
+    return "";
+  }
+
+  Color expiredColor(String timeStr){
+    DateFormat formater = DateFormat('yyyy-MM-dd');
+    DateTime target = formater.parse(timeStr);
+    DateTime now = DateTime.now();
+    Duration during = target.difference(now);
+    if(during.inDays <0){
+      return Colors.red;
+    }
+    if(during.inDays == 0){
+      return Colors.orange;
+    }
+    if(during.inDays>0){
+      return Colors.yellow;
+    }
+    return Colors.white;
   }
 }

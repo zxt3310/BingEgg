@@ -1,4 +1,3 @@
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +13,7 @@ class BoxListWidget extends StatelessWidget {
   BoxListWidget({this.providerContext});
   @override
   Widget build(BuildContext context) {
+    BoxListBody body = BoxListBody(providerContext);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -24,9 +24,26 @@ class BoxListWidget extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
         brightness: Brightness.dark,
+        actions: <Widget>[
+          FlatButton.icon(
+              onPressed: (){
+                body.fresh();
+              },
+              splashColor: Colors.lightGreen,
+              icon: Icon(
+                Icons.add,
+                size: 18,
+                color: Colors.white,
+              ),
+              label: Text(
+                '添加',
+                style: TextStyle(color: Colors.white, fontSize: 15),
+              ))
+        ],
       ),
       backgroundColor: Colors.lightGreen,
-      body: BoxListBody(providerContext),
+      body: body,
+      //body: BoxListBody(providerContext),
       bottomNavigationBar: Container(
         height: ScreenUtil.bottomBarHeight,
         color: Colors.white,
@@ -38,8 +55,13 @@ class BoxListWidget extends StatelessWidget {
 class BoxListBody extends StatefulWidget {
   final BuildContext providerContext;
   BoxListBody(this.providerContext);
+  final _BoxListBodyState state = _BoxListBodyState();
   @override
-  _BoxListBodyState createState() => _BoxListBodyState();
+  _BoxListBodyState createState() => state;
+
+  void fresh(){
+    state.freshData();
+  }
 }
 
 class _BoxListBodyState extends State<BoxListBody> {
@@ -72,27 +94,15 @@ class _BoxListBodyState extends State<BoxListBody> {
                       color: Colors.white,
                       height: 100 + ScreenUtil.bottomBarHeight,
                       child: Center(
-                          child: MaterialButton(
-                              padding: EdgeInsets.fromLTRB(70, 14, 70, 14),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24)),
-                              color: Colors.lightGreen,
-                              textColor: Colors.white,
-                              child: Text('添加新冰箱'),
-                              onPressed: () {
-                                Navigator.of(context)
-                                    .push(MaterialPageRoute(
-                                        builder: (ctx) =>
-                                            BoxAddWidget(fridge: Fridge()),
-                                        fullscreenDialog: true))
-                                    .then((e) async {
-                                  if (e) {
-                                    await _getFridgeList();
-                                    setState(() {});
-                                  }
-                                });
-                              })),
-                    )
+                        child: MaterialButton(
+                            padding: EdgeInsets.fromLTRB(70, 14, 70, 14),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24)),
+                            color: Colors.lightGreen,
+                            textColor: Colors.white,
+                            child: Text('添加新冰箱'),
+                            onPressed: freshData),
+                      ))
                   : Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       child: Container(
@@ -124,7 +134,7 @@ class _BoxListBodyState extends State<BoxListBody> {
                                             width: 4,
                                             color: const Color(0xfff2f2f2))),
                                     child: Image.asset(
-                                      'srouce/icotype/ico_type_${fridge.boxtype}_p.png',
+                                      'srouce/icotype/ico_type_${fridge.boxtype+1}_p.png',
                                     ),
                                   ),
                                   SizedBox(
@@ -363,7 +373,7 @@ class _BoxListBodyState extends State<BoxListBody> {
                       ),
                     );
             },
-            itemCount: state.curList.length + 1),
+            itemCount: state.curList.length),
       ),
     );
   }
@@ -381,6 +391,19 @@ class _BoxListBodyState extends State<BoxListBody> {
         Text(content, style: TextStyle(fontSize: 20))
       ]),
     );
+  }
+
+  freshData() {
+    Navigator.of(context)
+        .push(MaterialPageRoute(
+            builder: (ctx) => BoxAddWidget(fridge: Fridge()),
+            fullscreenDialog: true))
+        .then((e) async {
+      if (e) {
+        await _getFridgeList();
+        setState(() {});
+      }
+    });
   }
 
   _changeDefault(int boxid) async {

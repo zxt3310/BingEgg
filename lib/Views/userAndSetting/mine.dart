@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sirilike_flutter/Views/GlobalUser/GlobalLogin.dart';
 import 'package:sirilike_flutter/Views/myFridge/myFridge.dart';
-import 'package:sirilike_flutter/login/ui/login_page.dart';
 import 'package:sirilike_flutter/model/network.dart';
 import 'package:sirilike_flutter/webpage.dart';
 import '../../model/user.dart';
@@ -11,6 +10,7 @@ import 'boxlist.dart';
 import 'package:sirilike_flutter/Views/deviceConnect/deviceConnect.dart';
 import 'package:sirilike_flutter/model/customRoute.dart';
 export 'package:sirilike_flutter/main.dart' show AppSharedState;
+import 'package:sirilike_flutter/Views/friends/friendBoxList.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -52,14 +52,16 @@ class UserCenterWidget extends StatelessWidget {
                                 icon: Icons.my_location,
                                 onTap: () {}),
                             OptionsSelectWidget(
-                                title: '账号绑定',
+                                title: '好友冰箱',
                                 icon: Icons.alarm,
                                 onTap: () {
+                                  // Navigator.of(context).push(MaterialPageRoute(
+                                  //     builder: (ctx) => WIFIConnectWidget()));
                                   Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (ctx) => WIFIConnectWidget()));
+                                      builder: (ctx) => FriendBoxListWidget()));
                                 }),
                             OptionsSelectWidget(
-                                title: '冰箱列表',
+                                title: '我的冰箱',
                                 icon: Icons.phone,
                                 onTap: () {
                                   Navigator.of(context).push(MaterialPageRoute(
@@ -87,8 +89,10 @@ class UserCenterWidget extends StatelessWidget {
                                 title: '隐私政策',
                                 icon: Icons.phone,
                                 onTap: () {
-                                   Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (ctx) => MainPage(url: "http://106.13.105.43:8889/h5/privacy")));
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (ctx) => MainPage(
+                                          url:
+                                              "http://106.13.105.43:8889/h5/privacy")));
                                 },
                                 showSeprate: false)
                           ],
@@ -196,8 +200,10 @@ class _UserHeaderWidgetState extends State<UserHeaderWidget> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text(userInfo.myBox.name, style: TextStyle(color: Colors.white)),
-                Text(userInfo.myBox.health, style: TextStyle(color: Colors.white))
+                Text(userInfo.myBox.name,
+                    style: TextStyle(color: Colors.white)),
+                Text(userInfo.myBox.health,
+                    style: TextStyle(color: Colors.white))
               ],
             ),
           )
