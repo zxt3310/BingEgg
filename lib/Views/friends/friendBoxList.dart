@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sirilike_flutter/Views/friends/addFriend.dart';
+import 'package:sirilike_flutter/Views/friends/friendBoxItem.dart';
 import 'package:sirilike_flutter/Views/myFridge/myFridge.dart';
 import 'package:sirilike_flutter/model/mainModel.dart';
 import 'package:sirilike_flutter/model/network.dart';
@@ -130,7 +131,7 @@ class _BoxListBodyState extends State<BoxListBody> {
                                                 color:
                                                     const Color(0xfff2f2f2))),
                                         child: Image.asset(
-                                          'srouce/icotype/ico_type_${fridge.boxtype+1}_p.png',
+                                          'srouce/icotype/ico_type_${fridge.boxtype + 1}_p.png',
                                         ),
                                       ),
                                       SizedBox(
@@ -242,10 +243,22 @@ class _BoxListBodyState extends State<BoxListBody> {
                                           width: ScreenUtil().setWidth(100),
                                           height: ScreenUtil().setWidth(80),
                                           child: Center(
-                                            child: Text(
-                                              '查看食材',
-                                              style: TextStyle(
-                                                  color: Colors.lightGreen),
+                                            child: FlatButton(
+                                              child: Text(
+                                                '查看食材',
+                                                style: TextStyle(
+                                                    color: Colors.lightGreen),
+                                              ),
+                                              onPressed: () {
+                                                Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                        builder: (ctx) =>
+                                                            FriendBoxItemsWidget(
+                                                                boxName: fridge
+                                                                    .boxname,
+                                                                friendId: fridge
+                                                                    .userId)));
+                                              },
                                             ),
                                           ))
                                     ],
@@ -280,8 +293,7 @@ class _BoxListBodyState extends State<BoxListBody> {
   freshData() {
     Navigator.of(context)
         .push(MaterialPageRoute(
-            builder: (ctx) => FriendAddWidget(),
-            fullscreenDialog: true))
+            builder: (ctx) => FriendAddWidget(), fullscreenDialog: true))
         .then((e) async {
       if (e is bool && e) {
         _getFridgeList();
@@ -327,7 +339,9 @@ class FriendBoxState with ChangeNotifier {
 
 class FriendBox extends Fridge {
   final String friendBoxId;
+  final String userId;
   FriendBox.fromJson(Map json)
       : friendBoxId = json['box_id'],
+        userId = json['user_id'],
         super.fromJson(json);
 }

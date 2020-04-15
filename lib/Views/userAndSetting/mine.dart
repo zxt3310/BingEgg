@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sirilike_flutter/Views/GlobalUser/GlobalLogin.dart';
 import 'package:sirilike_flutter/Views/myFridge/myFridge.dart';
+import 'package:sirilike_flutter/main.dart';
 import 'package:sirilike_flutter/model/network.dart';
 import 'package:sirilike_flutter/webpage.dart';
 import '../../model/user.dart';
@@ -66,7 +67,14 @@ class UserCenterWidget extends StatelessWidget {
                                 onTap: () {
                                   Navigator.of(context).push(MaterialPageRoute(
                                       builder: (ctx) => BoxListWidget(
-                                          providerContext: context)));
+                                          providerContext: context))).then((e){
+                                            if(e is int){
+                                              AppSharedState appState = Provider.of<AppSharedState>(context,listen: false);
+                                              appState.curBoxIndex = e;
+                                              appState.freshBox(appState.curList[e].id);
+                                              appState.tabSwitch(1);
+                                            }
+                                          });
                                 },
                                 showSeprate: false)
                           ],

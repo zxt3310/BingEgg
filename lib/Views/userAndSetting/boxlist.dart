@@ -359,10 +359,15 @@ class _BoxListBodyState extends State<BoxListBody> {
                                       width: ScreenUtil().setWidth(100),
                                       height: ScreenUtil().setWidth(80),
                                       child: Center(
-                                        child: Text(
-                                          '查看食材',
-                                          style: TextStyle(
-                                              color: Colors.lightGreen),
+                                        child: FlatButton(
+                                          child: Text(
+                                            '查看食材',
+                                            style: TextStyle(
+                                                color: Colors.lightGreen),
+                                          ),
+                                          onPressed: (){
+                                            Navigator.of(context).pop(idx);
+                                          },
                                         ),
                                       ))
                                 ],

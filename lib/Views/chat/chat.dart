@@ -280,7 +280,7 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
                                         padding:
                                             EdgeInsets.fromLTRB(20, 8, 20, 8),
                                         child: Text(chat.content,
-                                            style: TextStyle(fontSize: 12)),
+                                            style: TextStyle(fontSize: 14)),
                                         constraints: BoxConstraints(
                                             maxWidth: 250, minHeight: 35),
                                         decoration: BoxDecoration(
@@ -304,7 +304,7 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
                                         padding:
                                             EdgeInsets.fromLTRB(20, 8, 20, 8),
                                         child: Text(chat.content,
-                                            style: TextStyle(fontSize: 12)),
+                                            style: TextStyle(fontSize: 14)),
                                         constraints: BoxConstraints(
                                             maxWidth: 250, minHeight: 35),
                                         decoration: BoxDecoration(
