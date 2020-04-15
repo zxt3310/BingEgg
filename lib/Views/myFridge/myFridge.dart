@@ -37,6 +37,8 @@ class _MyFridgeWidgetState extends State<MyFridgeWidget> {
         title: TitleHeaderWidget(),
         brightness: Brightness.dark,
         centerTitle: true,
+        leading: Text(""),
+        actions: <Widget>[_EditeBtn()],
       ),
       body: FutureBuilder(
         future: requestFuture,
@@ -331,6 +333,32 @@ class __FridgeWidgetState extends State<_FridgeWidget>
     curState.changeSource(foods);
 
     print('food items reloading ....');
+  }
+}
+
+class _EditeBtn extends StatefulWidget {
+  @override
+  __EditeBtnState createState() => __EditeBtnState();
+}
+
+class __EditeBtnState extends State<_EditeBtn> {
+  bool isEditing = false;
+  @override
+  Widget build(BuildContext context) {
+    return FlatButton.icon(
+        onPressed: () {
+          setState(() {
+            isEditing = !isEditing;
+          });
+          fridgeEditEvent.fire(null);
+        },
+        icon: Icon(
+          isEditing ? Icons.done : Icons.edit,
+          size: 15,
+          color: Colors.white,
+        ),
+        label: Text(isEditing ? '完成' : '编辑',
+            style: TextStyle(color: Colors.white)));
   }
 }
 

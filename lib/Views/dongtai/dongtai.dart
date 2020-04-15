@@ -19,7 +19,7 @@ class DontaiWidget extends StatelessWidget {
           elevation: 0,
           automaticallyImplyLeading: false,
           title:
-              Center(child: Text('动态', style: TextStyle(color: Colors.white))),
+              Center(child: Text('云冰箱管家', style: TextStyle(color: Colors.white))),
           brightness: Brightness.dark),
       backgroundColor: const Color(0xFFF9F9F9),
       body: DontaiBody(),

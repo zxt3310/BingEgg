@@ -25,7 +25,12 @@ class BoxAddWidget extends StatelessWidget {
                     onPressed: () {
                       Navigator.of(context).pop(false);
                     })),
-            body: _AddBody(fridge)));
+            resizeToAvoidBottomInset: false,
+            body: GestureDetector(
+                child: _AddBody(fridge),
+                onTap: () {
+                  FocusScope.of(context).requestFocus(FocusNode());
+                })));
   }
 }
 
@@ -146,7 +151,8 @@ class __AddBodyState extends State<_AddBody> {
                     _editFridge(context, name, addr);
                   }
                 },
-                child: Text(widget.fridge.id == null?'添  加':'修  改', style: TextStyle(color: Colors.white))),
+                child: Text(widget.fridge.id == null ? '添  加' : '修  改',
+                    style: TextStyle(color: Colors.white))),
           ))
         ],
       ),

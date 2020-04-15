@@ -140,7 +140,6 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
   //停止录音
   Future stop() async {
     var formater = DateFormat('HH:mm');
-
     provider.changeStr('识别中...');
     var resRecorder = await recorder.stop();
     File file = File(resRecorder.path);
@@ -185,6 +184,7 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
         '/api/voice-result/analyze?words=${resp.data['result'][0]}&boxid=${widget.curBoxId}$chatStr');
     if (resNew.data['err'] != 0 || resNew.data['data'] == null) {
       BotToast.showText(text: '请求失败,请重试');
+      _hideToast();
       return;
     }
 
