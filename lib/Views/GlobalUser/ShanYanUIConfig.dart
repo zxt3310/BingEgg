@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'dart:ui';
+import 'package:shanyan/shanyan.dart';
 
-class ShanyanUIConfiguration {
+class ShanyanIOSUIConfiguration {
   static Map getIosUIConfig() {
     if (Platform.isIOS) {
       //iOS 全屏模式
@@ -84,36 +85,36 @@ class ShanyanUIConfiguration {
         "clLoginBtnBorderColor": [0.1, 0.8, 0.1, 1.0], //rgba
 
         "clPhoneNumberFont": 20.0 * screenScale,
-        
+
         //隐私条款相关
-        "clAppPrivacyPunctuationMarks":true, //运营商隐私条款书名号
+        "clAppPrivacyPunctuationMarks": true, //运营商隐私条款书名号
         // "clAppPrivacyColor": [
         //   [0.6, 0.6, 0.6, 1.0],
         //   [0, 0, 1, 1.0]],
         // ], //2 item,commomTextColor and appPrivacyTextColor
-         "clAppPrivacyTextFont": 11 * screenScale,
+        "clAppPrivacyTextFont": 11 * screenScale,
         // "clAppPrivacyTextAlignment": 0, //0: center 1: left 2: right
         // "clAppPrivacyThird": ["测试连接C", "https://www.sina.com"], // 2 item, name and url
-        "clAppPrivacyAbbreviatedName": "冰箱",
+        "clAppPrivacyAbbreviatedName": "云冰箱管家",
         "clAppPrivacyNormalDesTextFirst": "同意",
         "clAppPrivacyNormalDesTextSecond": "和",
         "clAppPrivacyFirst": [
-          "《冰箱用户协议》",
+          "《云冰箱管家用户协议》",
           "https://www.baidu.com"
         ], // 2 item, name and url
 
         "clAppPrivacyNormalDesTextThird": "、",
 
         "clAppPrivacySecond": [
-          "《冰箱隐私政策》",
+          "《云冰箱管家隐私政策》",
           "http://106.13.105.43:8889/h5/privacy"
         ], // 2 item, name and url
-        
-        "clAppPrivacyNormalDesTextFourth": "并授权冰箱使用认证服务",
+
+        "clAppPrivacyNormalDesTextFourth": "并授权云冰箱管家使用认证服务",
         // "clAppPrivacyNormalDesTextLast": " ",
-        
+
         //协议勾选框
-        "clCheckBoxValue":true,//默认勾选
+        "clCheckBoxValue": true, //默认勾选
         "clCheckBoxVerticalAlignmentToAppPrivacyCenterY": true,
         "clCheckBoxSize": [
           30 * screenScale,
@@ -163,7 +164,6 @@ class ShanyanUIConfiguration {
         },
         //自定义控件
         "widgets": {
-          
           // "widget1": {
           //   "widgetId": "customView_one", //字符标记
           //   "type": "Button", // 类型：Button：按钮，ImageView:图片 TextView:文本
@@ -198,7 +198,6 @@ class ShanyanUIConfiguration {
           //   "numberOfLines": 0, //行数：默认单行， 0:无限，自动换行，其他：指定行数
           //   "textAlignment": 0, //0: center 1: left 2: right //仅TextView有效
 
-
           //   "clLayoutLeft": 80,
           //   // "clLayoutTop":300,
           //   "clLayoutRight": -80,
@@ -207,7 +206,6 @@ class ShanyanUIConfiguration {
           //   "clLayoutCenterX":0,
           //   "clLayoutCenterY":clLayoutPhoneCenterY_Portrait,
           // },
-         
         }
       };
     }
@@ -218,5 +216,29 @@ class ShanyanUIConfiguration {
 //           // _content = "自定义控件点击:" + map.toString();
 //         });
 //       }
+  }
+}
+
+// "clLoginBtnText": "本机号一键登录", //一键登录按钮文字
+//         "clLoginBtnTextColor": [1, 1, 1, 1.0], //rgba
+//         "clLoginBtnBgColor": [0.2, 0.8, 0.2, 1.0], //rgba
+//         "clLoginBtnTextFont": 15 * screenScale,
+//         "clLoginBtnCornerRadius": 20,
+//         "clLoginBtnBorderWidth": 0.5,
+//         "clLoginBtnBorderColor": [0.1, 0.8, 0.1, 1.0], //rgba
+
+class ShanyanAndroidUIConfiguration {
+  static ShanYanUIConfig getAndroidUIConfig() {
+    ShanYanUIConfig shanYanUIConfig = ShanYanUIConfig();
+    shanYanUIConfig.setLogBtnText = "本机号一键登录";
+    shanYanUIConfig.setLogBtnHeight = 60;
+    shanYanUIConfig.setLogBtnTextSize = 15;
+    shanYanUIConfig.setLogBtnTextColor = "#ffffff";
+    
+    shanYanUIConfig.setAppPrivacyOne = ["云冰箱管家用户协议", "https://baidu.com/"];
+    shanYanUIConfig.setAppPrivacyTwo = ["云冰箱管家隐私协议", "http://106.13.105.43:8889/h5/privacy"];
+    //shanYanUIConfig.setAppPrivacyThree = ["协议3", "https://baidu.com/"];
+    shanYanUIConfig.setPrivacyText = ["登录即同意", "、", "、", "和", "授权"];
+    shanYanUIConfig.setDialogTheme = ["120", "150", "0", "0", "false"];
   }
 }

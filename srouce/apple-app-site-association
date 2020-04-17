@@ -1,0 +1,11 @@
+{
+    "applinks": {
+        "apps": [],
+        "details": [
+            {
+                "appID": "93BV887SB4.com.xuange.bingbox",
+                "paths": ["/bingbox/*"]
+            }
+        ]
+    }
+}

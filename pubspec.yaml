@@ -54,6 +54,8 @@ dependencies:
   shanyan: 2.3.0
   # 定位插件
   location: 2.5.4
+  # 微信登录
+  fluwx: 2.0.8+1
 
 dev_dependencies:
   flutter_test:

@@ -8,7 +8,7 @@ import 'package:sirilike_flutter/model/network.dart';
 import 'package:sirilike_flutter/webpage.dart';
 import '../../model/user.dart';
 import 'boxlist.dart';
-import 'package:sirilike_flutter/Views/deviceConnect/deviceConnect.dart';
+//import 'package:sirilike_flutter/Views/deviceConnect/deviceConnect.dart';
 import 'package:sirilike_flutter/model/customRoute.dart';
 export 'package:sirilike_flutter/main.dart' show AppSharedState;
 import 'package:sirilike_flutter/Views/friends/friendBoxList.dart';
@@ -27,125 +27,143 @@ class UserCenterWidget extends StatelessWidget {
             backgroundColor: Colors.lightGreen,
             body: SafeArea(
               bottom: false,
-              child: CustomScrollView(shrinkWrap: true, slivers: [
-                SliverToBoxAdapter(
-                    child: Container(
-                  child: Column(
-                    children: <Widget>[
-                      UserHeaderWidget(),
-                    ],
-                  ),
-                )),
-                SliverToBoxAdapter(
-                    child: Container(
-                  padding: EdgeInsets.all(16),
-                  color: const Color(0xfff9f9f9),
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Column(
-                          children: <Widget>[
-                            OptionsSelectWidget(
-                                title: '个人信息',
-                                icon: Icons.my_location,
-                                onTap: () {}),
-                            OptionsSelectWidget(
-                                title: '好友冰箱',
-                                icon: Icons.alarm,
-                                onTap: () {
-                                  // Navigator.of(context).push(MaterialPageRoute(
-                                  //     builder: (ctx) => WIFIConnectWidget()));
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (ctx) => FriendBoxListWidget()));
-                                }),
-                            OptionsSelectWidget(
-                                title: '我的冰箱',
-                                icon: Icons.phone,
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (ctx) => BoxListWidget(
-                                          providerContext: context))).then((e){
-                                            if(e is int){
-                                              AppSharedState appState = Provider.of<AppSharedState>(context,listen: false);
-                                              appState.curBoxIndex = e;
-                                              appState.freshBox(appState.curList[e].id);
-                                              appState.tabSwitch(1);
-                                            }
-                                          });
-                                },
-                                showSeprate: false)
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 16),
-                      Container(
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Column(
-                          children: <Widget>[
-                            OptionsSelectWidget(
-                                title: '新手引导',
-                                icon: Icons.my_location,
-                                onTap: () {}),
-                            OptionsSelectWidget(
-                                title: '联系我们', icon: Icons.alarm, onTap: () {}),
-                            OptionsSelectWidget(
-                                title: '隐私政策',
-                                icon: Icons.phone,
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (ctx) => MainPage(
-                                          url:
-                                              "http://106.13.105.43:8889/h5/privacy")));
-                                },
-                                showSeprate: false)
-                          ],
-                        ),
-                      ),
-                      Container(
-                        height: 100,
-                        child: Center(
-                          child: FlatButton(
-                              onPressed: () {
-                                User.instance.clear();
-                                showCupertinoDialog(
-                                    context: context,
-                                    builder: (ctx) {
-                                      return CupertinoAlertDialog(
-                                        title: Text('确定登出？'),
-                                        actions: <Widget>[
-                                          CupertinoDialogAction(
-                                              child: Text('确定'),
-                                              onPressed: () {
-                                                Navigator.of(context)
-                                                    .pushAndRemoveUntil(
-                                                        CustomRoute.fade(
-                                                            GlobalLoginPage()),
-                                                        (e) => false);
-                                              }),
-                                          CupertinoDialogAction(
-                                              child: Text('取消'),
-                                              onPressed: () {
-                                                Navigator.of(ctx).pop();
-                                              })
-                                        ],
-                                      );
+              child: Container(
+                height: double.maxFinite,
+                color: const Color(0xfff9f9f9),
+                child: CustomScrollView(shrinkWrap: true, slivers: [
+                  SliverToBoxAdapter(
+                      child: Container(
+                    child: Column(
+                      children: <Widget>[
+                        UserHeaderWidget(),
+                      ],
+                    ),
+                  )),
+                  SliverToBoxAdapter(
+                      child: Container(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12)),
+                          child: Column(
+                            children: <Widget>[
+                              OptionsSelectWidget(
+                                  title: '我的冰箱',
+                                  icon: Icons.phone,
+                                  onTap: () {
+                                    Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                            builder: (ctx) => BoxListWidget(
+                                                providerContext: context)))
+                                        .then((e) {
+                                      if (e is int) {
+                                        AppSharedState appState =
+                                            Provider.of<AppSharedState>(context,
+                                                listen: false);
+                                        appState.curBoxIndex = e;
+                                        appState
+                                            .freshBox(appState.curList[e].id);
+                                        appState.tabSwitch(1);
+                                      }
                                     });
-                              },
-                              child: Text('退出登录',
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: const Color(0xfff5635e)))),
+                                  }),
+                              OptionsSelectWidget(
+                                  title: '好友冰箱',
+                                  icon: Icons.alarm,
+                                  showSeprate: false,
+                                  onTap: () {
+                                    // Navigator.of(context).push(MaterialPageRoute(
+                                    //     builder: (ctx) => WIFIConnectWidget()));
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (ctx) =>
+                                                FriendBoxListWidget()));
+                                  }),
+                            ],
+                          ),
                         ),
-                      )
-                    ],
-                  ),
-                )),
-              ]),
+                        SizedBox(height: 16),
+                        Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12)),
+                          child: Column(
+                            children: <Widget>[
+                              OptionsSelectWidget(
+                                  title: '新手引导',
+                                  icon: Icons.my_location,
+                                  onTap: () {
+                                    Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (ctx) => MainPage(
+                                            url:
+                                                "http://106.13.105.43:8889/h5/help")));
+                                  }),
+                              OptionsSelectWidget(
+                                  title: '联系我们',
+                                  icon: Icons.alarm,
+                                  onTap: () {
+                                    Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (ctx) => MainPage(
+                                            url:
+                                                "http://106.13.105.43:8889/h5/about")));
+                                  }),
+                              OptionsSelectWidget(
+                                  title: '隐私政策',
+                                  icon: Icons.phone,
+                                  onTap: () {
+                                    Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (ctx) => MainPage(
+                                            url:
+                                                "http://106.13.105.43:8889/h5/privacy")));
+                                  },
+                                  showSeprate: false)
+                            ],
+                          ),
+                        ),
+                        Container(
+                          height: 100,
+                          child: Center(
+                            child: FlatButton(
+                                onPressed: () {
+                                  User.instance.clear();
+                                  showCupertinoDialog(
+                                      context: context,
+                                      builder: (ctx) {
+                                        return CupertinoAlertDialog(
+                                          title: Text('确定登出？'),
+                                          actions: <Widget>[
+                                            CupertinoDialogAction(
+                                                child: Text('确定'),
+                                                onPressed: () {
+                                                  Navigator.of(context)
+                                                      .pushAndRemoveUntil(
+                                                          CustomRoute.fade(
+                                                              GlobalLoginPage()),
+                                                          (e) => false);
+                                                }),
+                                            CupertinoDialogAction(
+                                                child: Text('取消'),
+                                                onPressed: () {
+                                                  Navigator.of(ctx).pop();
+                                                })
+                                          ],
+                                        );
+                                      });
+                                },
+                                child: Text('退出登录',
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        color: const Color(0xfff5635e)))),
+                          ),
+                        )
+                      ],
+                    ),
+                  )),
+                ]),
+              ),
             )));
   }
 }
@@ -208,8 +226,21 @@ class _UserHeaderWidgetState extends State<UserHeaderWidget> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text(userInfo.myBox.name,
-                    style: TextStyle(color: Colors.white)),
+                Row(
+                  children: <Widget>[
+                    Image.asset(
+                      'srouce/icotype/ico_type_${userInfo.myBox.type + 1}_n.png',
+                      width: 16,
+                      height: 16,
+                      color: Colors.white,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(userInfo.myBox.name,
+                        style: TextStyle(color: Colors.white)),
+                  ],
+                ),
                 Text(userInfo.myBox.health,
                     style: TextStyle(color: Colors.white))
               ],
@@ -388,13 +419,13 @@ class UserInfoState with ChangeNotifier {
 
 class MyBox {
   final String name;
-  final String type;
+  final int type;
   final String health;
 
-  MyBox({this.name = "", this.type = "", this.health = ""});
+  MyBox({this.name = "", this.type = 0, this.health = ""});
 
   MyBox.fromJson(Map json)
       : name = json['name'],
-        type = json['type'],
+        type = json['type'] is String ? int.parse(json['type']) : json['type'],
         health = json['health'];
 }

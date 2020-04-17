@@ -15,6 +15,7 @@ import 'Views/bottomBar/bingEBottomNaviBar.dart';
 import 'package:sirilike_flutter/model/event.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sirilike_flutter/model/quick_check.dart';
+import 'package:fluwx/fluwx.dart';
 
 const List barList = ["提醒", "冰箱", "统计", "我的"];
 
@@ -26,17 +27,28 @@ void main() {
     SystemUiOverlayStyle systemUiOverlayStyle =
         SystemUiOverlayStyle(statusBarColor: Colors.transparent);
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
-  } else {
-    SystemUiOverlayStyle light = SystemUiOverlayStyle(
-      // systemNavigationBarColor: Color(0xFF000000),
-      // systemNavigationBarDividerColor: null,
-      statusBarColor: Colors.lightGreen,
-      systemNavigationBarIconBrightness: Brightness.light,
-      statusBarIconBrightness: Brightness.light,
-      statusBarBrightness: Brightness.dark,
-    );
-    SystemChrome.setSystemUIOverlayStyle(light);
-  }
+  } 
+  // else {
+  //   SystemUiOverlayStyle light = SystemUiOverlayStyle(
+  //     // systemNavigationBarColor: Color(0xFF000000),
+  //     // systemNavigationBarDividerColor: null,
+  //     // statusBarColor: Colors.lightGreen,
+  //     // systemNavigationBarIconBrightness: Brightness.light,
+  //     // statusBarIconBrightness: Brightness.light,
+  //     // statusBarBrightness: Brightness.dark,
+  //   );
+  //   SystemChrome.setSystemUIOverlayStyle(light);
+  // }
+  registerWxApi(
+          appId: "wx5a52d3333de8086b",
+          universalLink: "https://bingbox.xiaomap.cn")
+      .then((succed) {
+    if (succed) {
+      print('微信初始化成功');
+    } else {
+      print('微信认证失败');
+    }
+  });
   //预取号
   QuickCheckManager.instance.reCheck();
   realRunApp();
