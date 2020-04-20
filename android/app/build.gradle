@@ -1,5 +1,11 @@
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
+
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file("key.properties")
+
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 if (localPropertiesFile.exists()) {
     localPropertiesFile.withReader('UTF-8') { reader ->
         localProperties.load(reader)
@@ -36,6 +42,35 @@ android {
         disable 'InvalidPackage'
     }
 
+//     signingConfigs {
+//         release {
+//             storeFile file(keystoreProperties['storeFile'])
+//             keyAlias keystoreProperties['keyAlias']
+//             storePassword keystoreProperties['storePassword']
+//             keyPassword keystoreProperties['keyPassword']
+//         }
+//         debug {
+//             storeFile file(keystoreProperties['storeFile'])
+//             keyAlias keystoreProperties['keyAlias']
+//             storePassword keystoreProperties['storePassword']
+//             keyPassword keystoreProperties['keyPassword']
+//         }
+//     }
+    signingConfigs {//签名配置
+        release {//发布版签名配置
+            storeFile file("/Users/zxt3310/Documents/keystore/bxkeystore.jks")//密钥文件路径
+            storePassword "bb100000"//密钥文件密码
+            keyAlias "bbox"//key别名
+            keyPassword "bb100000"//key密码
+        }
+        debug {//debug版签名配置
+            storeFile file("/Users/zxt3310/Documents/keystore/bxkeystore.jks")
+            storePassword "bb100000"//密钥文件密码
+            keyAlias "bbox"//key别名
+            keyPassword "bb100000"//key密码
+        }
+    }
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.xuange.bingbox"
@@ -50,6 +85,10 @@ android {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
+            signingConfig signingConfigs.release
+        }
+
+        debug {
             signingConfig signingConfigs.debug
         }
     }

@@ -20,7 +20,7 @@ class QuickCheckManager {
   Future<bool> initQuickCheck() async {
     //初始化校验
     Map res = await oneKeyLoginManager.init(
-      appId: "QLMrcjQI",
+      appId: Platform.isIOS?"QLMrcjQI":"4slI3tNb",
     );
     int code = res['code'];
     print(res['result']);

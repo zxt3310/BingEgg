@@ -18,8 +18,8 @@ class DontaiWidget extends StatelessWidget {
       appBar: AppBar(
           elevation: 0,
           automaticallyImplyLeading: false,
-          title:
-              Center(child: Text('云冰箱管家', style: TextStyle(color: Colors.white))),
+          title: Center(
+              child: Text('云冰箱管家', style: TextStyle(color: Colors.white))),
           brightness: Brightness.dark),
       backgroundColor: const Color(0xFFF9F9F9),
       body: DontaiBody(),
@@ -71,7 +71,6 @@ class _DontaiBodyState extends State<DontaiBody> {
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             Response res = snapshot.data;
-            print(res.request.headers);
             if (res.data['err'] != 0) {
               return Center(child: Text('请先登录'));
             }
@@ -118,7 +117,7 @@ Widget getUI(DynamicData data, BuildContext ctx) {
                 children: <Widget>[
                   Text(healthState.title,
                       style: TextStyle(
-                          fontSize: 34,
+                          fontSize: 31,
                           fontWeight: FontWeight.bold,
                           color: Colors.white)),
                 ],
@@ -340,42 +339,44 @@ Widget getUI(DynamicData data, BuildContext ctx) {
               ],
             )),
       ),
-      SliverFixedExtentList(
-          itemExtent: 150,
+      SliverList(
           delegate: SliverChildBuilderDelegate((ctx, idx) {
-            FriendAction action = actions[idx];
-            return Container(
-              margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(12)),
-              child: Padding(
-                padding: const EdgeInsets.all(15),
-                child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      ClipOval(
-                          child: FadeInImage.assetNetwork(
-                              placeholder: 'srouce/login_logo.png',
-                              image: action.avatar,
-                              width: 30,
-                              height: 30)),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            Text(action.name),
-                            Text(action.message, maxLines: 1),
-                            Wrap(children: _getActionsItem(action)),
-                          ],
-                        ),
-                      ),
-                      Text(_getActTimeStr(action.lastUpdate),
-                          style: TextStyle(fontSize: 10)),
-                    ]),
-              ),
-            );
-          }, childCount: data.actions.length > 5 ? 5 : data.actions.length)),
+        FriendAction action = actions[idx];
+        return Container(
+          margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
+          decoration: BoxDecoration(
+              color: Colors.white, borderRadius: BorderRadius.circular(12)),
+          child: Padding(
+            padding: const EdgeInsets.all(15),
+            child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  ClipOval(
+                      child: FadeInImage.assetNetwork(
+                          placeholder: 'srouce/login_logo.png',
+                          image: action.avatar,
+                          width: 30,
+                          height: 30)),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        Text(action.name,style: TextStyle(fontSize: 16),),
+                        SizedBox(height: 5),
+                        Text(action.message, maxLines: 1),
+                        SizedBox(height: 5),
+                        Wrap(children: _getActionsItem(action)),
+                      ],
+                    ),
+                  ),
+                  Text(_getActTimeStr(action.lastUpdate),
+                      style: TextStyle(fontSize: 10)),
+                ]),
+          ),
+        );
+      }, childCount: data.actions.length > 5 ? 5 : data.actions.length)),
       SliverToBoxAdapter(child: SizedBox(height: 60))
     ],
   );

@@ -1,12 +1,14 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sirilike_flutter/Views/myFridge/myFridge.dart';
 import 'package:sirilike_flutter/main.dart';
 import 'package:sirilike_flutter/model/mainModel.dart';
 import 'package:sirilike_flutter/model/network.dart';
 import 'boxAdd.dart';
+import 'package:simple_tooltip/simple_tooltip.dart';
 
 class BoxListWidget extends StatelessWidget {
   final BuildContext providerContext;
@@ -26,7 +28,7 @@ class BoxListWidget extends StatelessWidget {
         brightness: Brightness.dark,
         actions: <Widget>[
           FlatButton.icon(
-              onPressed: (){
+              onPressed: () {
                 body.fresh();
               },
               splashColor: Colors.lightGreen,
@@ -59,7 +61,7 @@ class BoxListBody extends StatefulWidget {
   @override
   _BoxListBodyState createState() => state;
 
-  void fresh(){
+  void fresh() {
     state.freshData();
   }
 }
@@ -89,6 +91,7 @@ class _BoxListBodyState extends State<BoxListBody> {
               if (len != 0 && idx < len) {
                 fridge = state.curList[idx];
               }
+              _ShareTipProvider tipState = _ShareTipProvider();
               return idx == state.curList.length
                   ? Container(
                       color: Colors.white,
@@ -103,280 +106,289 @@ class _BoxListBodyState extends State<BoxListBody> {
                             child: Text('添加新冰箱'),
                             onPressed: freshData),
                       ))
-                  : Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                  blurRadius: 6, color: const Color(0xffE0E0E0))
-                            ]),
-                        child: Column(
-                          children: <Widget>[
-                            //名称，未知，图标
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 5),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.max,
-                                children: <Widget>[
-                                  Container(
-                                    padding: const EdgeInsets.all(5),
-                                    width: ScreenUtil().setWidth(48),
-                                    height: ScreenUtil().setWidth(48),
-                                    margin: EdgeInsets.only(left: 10),
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(15),
-                                        border: Border.all(
-                                            width: 4,
-                                            color: const Color(0xfff2f2f2))),
-                                    child: Image.asset(
-                                      'srouce/icotype/ico_type_${fridge.boxtype+1}_p.png',
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(5.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          fridge.boxname,
-                                          style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold),
+                  : ChangeNotifierProvider<_ShareTipProvider>.value(
+                      value: tipState,
+                      child: GestureDetector(
+                        onTap: () {
+                          tipState.changeShow(false);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                      blurRadius: 6,
+                                      color: const Color(0xffE0E0E0))
+                                ]),
+                            child: Column(
+                              children: <Widget>[
+                                //名称，未知，图标
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 5),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: <Widget>[
+                                      Container(
+                                        padding: const EdgeInsets.all(5),
+                                        width: ScreenUtil().setWidth(48),
+                                        height: ScreenUtil().setWidth(48),
+                                        margin: EdgeInsets.only(left: 10),
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                            border: Border.all(
+                                                width: 4,
+                                                color:
+                                                    const Color(0xfff2f2f2))),
+                                        child: Image.asset(
+                                          'srouce/icotype/ico_type_${fridge.boxtype + 1}_p.png',
                                         ),
-                                        Row(
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(5.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: <Widget>[
-                                            Icon(Icons.location_on,
-                                                size: 16,
-                                                color: const Color(0xffC8C7CC)),
                                             Text(
-                                              fridge.addr,
+                                              fridge.boxname,
                                               style: TextStyle(
-                                                  fontSize: 13,
-                                                  color:
-                                                      const Color(0xff8A8A8F)),
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold),
                                             ),
+                                            Row(
+                                              children: <Widget>[
+                                                Icon(Icons.location_on,
+                                                    size: 16,
+                                                    color: const Color(
+                                                        0xffC8C7CC)),
+                                                Text(
+                                                  fridge.addr,
+                                                  style: TextStyle(
+                                                      fontSize: 13,
+                                                      color: const Color(
+                                                          0xff8A8A8F)),
+                                                ),
+                                              ],
+                                            )
                                           ],
+                                        ),
+                                      ),
+                                      Expanded(
+                                          child: Align(
+                                              alignment:
+                                                  AlignmentDirectional.topEnd,
+                                              child: PopupMenuButton(
+                                                  offset: Offset(0, 30),
+                                                  padding: EdgeInsets.zero,
+                                                  itemBuilder: (ctx) {
+                                                    return [
+                                                      PopupMenuItem(
+                                                          value: 0,
+                                                          child: Text('编辑')),
+                                                      PopupMenuItem(
+                                                          value: 1,
+                                                          child: Text('删除'))
+                                                    ];
+                                                  },
+                                                  onSelected: (e) {
+                                                    switch (e) {
+                                                      case 0:
+                                                        {
+                                                          Navigator.of(context)
+                                                              .push(MaterialPageRoute(
+                                                                  builder: (ctx) =>
+                                                                      BoxAddWidget(
+                                                                          fridge:
+                                                                              fridge),
+                                                                  fullscreenDialog:
+                                                                      true))
+                                                              .then((e) async {
+                                                            if (e) {
+                                                              await _getFridgeList();
+                                                              setState(() {});
+                                                            }
+                                                          });
+                                                        }
+                                                        break;
+                                                      default:
+                                                        {
+                                                          showCupertinoDialog(
+                                                              context: context,
+                                                              builder: (ctx) {
+                                                                return CupertinoAlertDialog(
+                                                                  content: Text(
+                                                                      '冰箱内食物也将一并删除'),
+                                                                  title: Text(
+                                                                      '确定要删除吗？'),
+                                                                  actions: <
+                                                                      Widget>[
+                                                                    CupertinoDialogAction(
+                                                                        child: Text(
+                                                                            '确定'),
+                                                                        onPressed:
+                                                                            () {
+                                                                          Navigator.of(ctx)
+                                                                              .pop();
+                                                                          _deleteFridge(
+                                                                              fridge.id,
+                                                                              idx);
+                                                                        }),
+                                                                    CupertinoDialogAction(
+                                                                        onPressed: () =>
+                                                                            Navigator.of(ctx)
+                                                                                .pop(),
+                                                                        child: Text(
+                                                                            '取消'))
+                                                                  ],
+                                                                );
+                                                              });
+                                                        }
+                                                    }
+                                                  })))
+                                    ],
+                                  ),
+                                ),
+                                // 分享
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(24),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(24),
+                                        border: Border.all(
+                                            width: 1,
+                                            color: const Color(0xffF2F2F2))),
+                                    child: Column(
+                                      children: <Widget>[
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 15, vertical: 5),
+                                          child: Row(
+                                            children: <Widget>[
+                                              Text('好友添加'),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              Expanded(
+                                                  child: Align(
+                                                alignment: AlignmentDirectional
+                                                    .centerStart,
+                                                child: ShareTipWidget(),
+                                              )),
+                                              CupertinoSwitch(
+                                                  activeColor:
+                                                      Colors.lightGreen,
+                                                  value: (fridge.sharecode !=
+                                                          null &&
+                                                      fridge.sharecode
+                                                          .isNotEmpty),
+                                                  onChanged: (e) {
+                                                    if (e) {
+                                                      _openShare(fridge.id);
+                                                    } else {
+                                                      _closeShare(fridge.id);
+                                                    }
+                                                  })
+                                            ],
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                          ),
+                                        ),
+                                        Offstage(
+                                          offstage: fridge.sharecode == null ||
+                                              fridge.sharecode.isEmpty,
+                                          child: Container(
+                                            padding: EdgeInsets.fromLTRB(
+                                                38, 15, 38, 11),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: <Widget>[
+                                                Text('分享码'),
+                                                Text(
+                                                  fridge.sharecode ?? "",
+                                                  style: TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                IconButton(
+                                                    icon: Icon(Icons.share,
+                                                        color:
+                                                            Colors.lightGreen),
+                                                    onPressed: () {
+                                                      Clipboard.setData(
+                                                          ClipboardData(
+                                                              text: fridge
+                                                                  .sharecode));
+                                                      BotToast.showText(
+                                                          text: '已复制到剪切板',
+                                                          align:
+                                                              Alignment(0, 0));
+                                                    })
+                                              ],
+                                            ),
+                                          ),
                                         )
                                       ],
                                     ),
                                   ),
-                                  Expanded(
-                                      child: Align(
-                                          alignment:
-                                              AlignmentDirectional.topEnd,
-                                          child: PopupMenuButton(
-                                              offset: Offset(0, 30),
-                                              padding: EdgeInsets.zero,
-                                              itemBuilder: (ctx) {
-                                                return [
-                                                  PopupMenuItem(
-                                                      value: 0,
-                                                      child: Text('编辑')),
-                                                  PopupMenuItem(
-                                                      value: 1,
-                                                      child: Text('删除'))
-                                                ];
-                                              },
-                                              onSelected: (e) {
-                                                switch (e) {
-                                                  case 0:
-                                                    {
-                                                      Navigator.of(context)
-                                                          .push(MaterialPageRoute(
-                                                              builder: (ctx) =>
-                                                                  BoxAddWidget(
-                                                                      fridge:
-                                                                          fridge),
-                                                              fullscreenDialog:
-                                                                  true))
-                                                          .then((e) async {
-                                                        if (e) {
-                                                          await _getFridgeList();
-                                                          setState(() {});
-                                                        }
-                                                      });
-                                                    }
-                                                    break;
-                                                  default:
-                                                    {
-                                                      showCupertinoDialog(
-                                                          context: context,
-                                                          builder: (ctx) {
-                                                            return CupertinoAlertDialog(
-                                                              content: Text(
-                                                                  '冰箱内食物也将一并删除'),
-                                                              title: Text(
-                                                                  '确定要删除吗？'),
-                                                              actions: <Widget>[
-                                                                CupertinoDialogAction(
-                                                                    child: Text(
-                                                                        '确定'),
-                                                                    onPressed:
-                                                                        () {
-                                                                      Navigator.of(
-                                                                              ctx)
-                                                                          .pop();
-                                                                      _deleteFridge(
-                                                                          fridge
-                                                                              .id,
-                                                                          idx);
-                                                                    }),
-                                                                CupertinoDialogAction(
-                                                                    onPressed: () =>
-                                                                        Navigator.of(ctx)
-                                                                            .pop(),
-                                                                    child: Text(
-                                                                        '取消'))
-                                                              ],
-                                                            );
-                                                          });
-                                                    }
-                                                }
-                                              })))
-                                ],
-                              ),
-                            ),
-                            // 分享
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(24),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(24),
-                                    border: Border.all(
-                                        width: 1,
-                                        color: const Color(0xffF2F2F2))),
-                                child: Column(
-                                  children: <Widget>[
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 5),
-                                      child: Row(
-                                        children: <Widget>[
-                                          Text('好友添加'),
-                                          SizedBox(
-                                            width: 5,
-                                          ),
-                                          Expanded(
-                                              child: Align(
-                                                  alignment:
-                                                      AlignmentDirectional
-                                                          .centerStart,
-                                                  child: Container(
-                                                    height: 16,
-                                                    width: 16,
-                                                    decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8),
-                                                        border: Border.all(
-                                                          color: const Color(
-                                                              0xffC8C7CC),
-                                                          width: 1,
-                                                        )),
-                                                    child: Center(
-                                                        child: Text(
-                                                      '?',
-                                                      style: TextStyle(
-                                                          fontSize: 12,
-                                                          color: const Color(
-                                                              0xffC8C7CC)),
-                                                    )),
-                                                  ))),
-                                          CupertinoSwitch(
-                                              activeColor: Colors.lightGreen,
-                                              value: (fridge.sharecode !=
-                                                      null &&
-                                                  fridge.sharecode.isNotEmpty),
-                                              onChanged: (e) {
-                                                if (e) {
-                                                  _openShare(fridge.id);
-                                                } else {
-                                                  _closeShare(fridge.id);
-                                                }
-                                              })
-                                        ],
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                      ),
-                                    ),
-                                    Offstage(
-                                      offstage: fridge.sharecode == null ||
-                                          fridge.sharecode.isEmpty,
-                                      child: Container(
-                                        padding:
-                                            EdgeInsets.fromLTRB(38, 15, 38, 11),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: <Widget>[
-                                            Text('分享码'),
-                                            Text(
-                                              fridge.sharecode ?? "",
-                                              style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            Icon(Icons.share,
-                                                color: Colors.lightGreen)
-                                          ],
-                                        ),
-                                      ),
-                                    )
-                                  ],
                                 ),
-                              ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                // 状态
+                                Container(
+                                  //padding: const EdgeInsets.all(8),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      _stateContain(
+                                          '物品数量', '${fridge.foodCount}'),
+                                      Container(
+                                          width: 1,
+                                          height: 50,
+                                          color: const Color(0xffF2F2F2)),
+                                      _stateContain('冰箱状态', fridge.state),
+                                      Container(
+                                          width: 1,
+                                          height: 50,
+                                          color: const Color(0xffF2F2F2)),
+                                      Container(
+                                          width: ScreenUtil().setWidth(100),
+                                          height: ScreenUtil().setWidth(80),
+                                          child: Center(
+                                            child: FlatButton(
+                                              child: Text(
+                                                '查看食材',
+                                                style: TextStyle(
+                                                    color: Colors.lightGreen),
+                                              ),
+                                              onPressed: () {
+                                                Navigator.of(context).pop(idx);
+                                              },
+                                            ),
+                                          ))
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            // 状态
-                            Container(
-                              //padding: const EdgeInsets.all(8),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  _stateContain('物品数量', '${fridge.foodCount}'),
-                                  Container(
-                                      width: 1,
-                                      height: 50,
-                                      color: const Color(0xffF2F2F2)),
-                                  _stateContain('冰箱状态', fridge.state),
-                                  Container(
-                                      width: 1,
-                                      height: 50,
-                                      color: const Color(0xffF2F2F2)),
-                                  Container(
-                                      width: ScreenUtil().setWidth(100),
-                                      height: ScreenUtil().setWidth(80),
-                                      child: Center(
-                                        child: FlatButton(
-                                          child: Text(
-                                            '查看食材',
-                                            style: TextStyle(
-                                                color: Colors.lightGreen),
-                                          ),
-                                          onPressed: (){
-                                            Navigator.of(context).pop(idx);
-                                          },
-                                        ),
-                                      ))
-                                ],
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                    );
+                      ));
             },
             itemCount: state.curList.length),
       ),
@@ -486,5 +498,73 @@ class _BoxListBodyState extends State<BoxListBody> {
     }
 
     setState(() {});
+  }
+}
+
+class ShareTipWidget extends StatefulWidget {
+  @override
+  _ShareTipWidgetState createState() => _ShareTipWidgetState();
+}
+
+class _ShareTipWidgetState extends State<ShareTipWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Selector<_ShareTipProvider, bool>(
+        selector: (ctx, _) => _.isShow,
+        shouldRebuild: (isShow, isHide) => isShow != isHide,
+        builder: (ctx, isShow, child) {
+          return GestureDetector(
+            onTap: () {
+              Provider.of<_ShareTipProvider>(context, listen: false)
+                  .changeShow(true);
+            },
+            child: SimpleTooltip(
+              tooltipTap: () {
+                Provider.of<_ShareTipProvider>(context, listen: false)
+                    .changeShow(false);
+              },
+              show: isShow,
+              borderColor: Colors.grey[400],
+              borderWidth: 0.5,
+              arrowTipDistance: 3,
+              arrowLength: 13,
+              arrowBaseWidth: 10,
+              backgroundColor: null,
+              ballonPadding: EdgeInsets.zero,
+              maxWidth: 150,
+              animationDuration: Duration(milliseconds: 0),
+              tooltipDirection: TooltipDirection.right,
+              content: Text('开启后将分享码发给朋友即可添加您的冰箱。',
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      decoration: TextDecoration.none)),
+              child: Container(
+                height: 16,
+                width: 16,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: const Color(0xffC8C7CC),
+                      width: 1,
+                    )),
+                child: Center(
+                    child: Text(
+                  '?',
+                  style:
+                      TextStyle(fontSize: 12, color: const Color(0xffC8C7CC)),
+                )),
+              ),
+            ),
+          );
+        });
+  }
+}
+
+class _ShareTipProvider with ChangeNotifier {
+  bool isShow = false;
+  changeShow(bool show) {
+    isShow = show;
+    notifyListeners();
   }
 }

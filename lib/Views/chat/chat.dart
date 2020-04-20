@@ -72,6 +72,8 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
   int chatId;
   //上次对话时间
   DateTime lastTime = DateTime.fromMillisecondsSinceEpoch(-30000);
+  //按下时间
+  DateTime tapDownTime;
 
   @override
   void initState() {
@@ -171,7 +173,8 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
       ChateData data = ChateData(
           chatId: chatId,
           type: 1,
-          timestamp: during.inSeconds>=30?formater.format(now.toLocal()):"",
+          timestamp:
+              during.inSeconds >= 30 ? formater.format(now.toLocal()) : "",
           content: str);
       ChatStateProvider state =
           Provider.of<ChatStateProvider>(context, listen: false);
@@ -208,7 +211,7 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
       'lan': 'zh',
     });
     File tts = File(path);
-    await FlutterSound().startPlayer(path).then((e) {
+    FlutterSound().startPlayer(path).then((e) {
       tts.deleteSync();
     });
   }
@@ -342,6 +345,10 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
                             color: Colors.white,
                           ),
                         ),
+                        Align(
+                          alignment: AlignmentDirectional.bottomCenter,
+                          child: Text('按住说话',style: TextStyle(fontSize: 11,color: Colors.white))
+                        ),
                         Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
@@ -356,13 +363,21 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
                                           color: Colors.white, fontSize: 20))),
                               GestureDetector(
                                 onTapDown: (e) {
+                                  tapDownTime = DateTime.now();
                                   popupRecordingToast();
                                 },
-                                onTapUp: (e) {
+                                onTapUp: (e) async{
+                                  Duration during = DateTime.now().difference(tapDownTime);
+                                  if (during.inSeconds<1){
+                                    File file = File(path);
+                                    if (await file.exists()) {
+                                      file.deleteSync();
+                                    }
+                                    _hideToast();
+                                    return;
+                                  }
                                   Future.delayed(Duration(milliseconds: 300),
-                                      () {
-                                    stop();
-                                  });
+                                      () => stop());
                                 },
                                 child: Container(
                                   padding: EdgeInsets.all(10),

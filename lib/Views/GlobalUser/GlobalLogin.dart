@@ -34,7 +34,7 @@ class GlobalLoginPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Flexible(child: _LoginUI()),
+              Flexible(flex: 2, child: _LoginUI()),
               Flexible(child: _ThirdPlatformLoginWidget())
             ],
           ),
@@ -230,7 +230,7 @@ class __MessageCheckWidgetState extends State<_MessageCheckWidget> {
 
   Future _startLogin() async {
     Dio req = NetManager.instance.dio;
-    String url = '/api/login?mobile=$phone&password=$checkCode';
+    String url = '/api/login?mobile=$phone&code=$checkCode';
     Response res = await req.get(url);
     int err = res.data['err'];
     if (err != 0) {
@@ -305,11 +305,11 @@ class __QuickCheckWidgetState extends State<_QuickCheckWidget> {
     //Android
     else {
       //配置授权样式
-      // oneKeyLoginManager.setAuthThemeConfig(
-      //     uiConfig: ShanyanAndroidUIConfiguration.getAndroidUIConfig());
+      oneKeyLoginManager.setAuthThemeConfig(
+          uiConfig: ShanyanAndroidUIConfiguration.getAndroidUIConfig());
       //拉起授权页
       oneKeyLoginManager.openLoginAuth(isFinish: true).then((e) {
-        print(e);
+        BotToast.showText(text: e.toString());
       });
       oneKeyLoginManager.setAuthPageOnClickListener((e) {
         authorRes = e.toMap();

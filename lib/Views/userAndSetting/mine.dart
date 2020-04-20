@@ -291,6 +291,7 @@ class _UserHeaderWidgetState extends State<UserHeaderWidget> {
       return;
     }
     var croppedFile = await ImageCropper.cropImage(
+      compressQuality: 10,
         sourcePath: image.path,
         aspectRatioPresets: [
           CropAspectRatioPreset.square,

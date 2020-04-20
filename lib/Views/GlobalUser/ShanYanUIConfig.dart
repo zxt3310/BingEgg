@@ -229,16 +229,70 @@ class ShanyanIOSUIConfiguration {
 
 class ShanyanAndroidUIConfiguration {
   static ShanYanUIConfig getAndroidUIConfig() {
-    ShanYanUIConfig shanYanUIConfig = ShanYanUIConfig();
-    shanYanUIConfig.setLogBtnText = "本机号一键登录";
-    shanYanUIConfig.setLogBtnHeight = 60;
-    shanYanUIConfig.setLogBtnTextSize = 15;
-    shanYanUIConfig.setLogBtnTextColor = "#ffffff";
+    // ShanYanUIConfig shanYanUIConfig = ShanYanUIConfig();
+    // shanYanUIConfig.setLogBtnText = "本机号一键登录";
+    // shanYanUIConfig.setLogBtnHeight = 60;
+    // shanYanUIConfig.setLogBtnTextSize = 15;
+    // shanYanUIConfig.setLogBtnTextColor = "#ffffff";
     
-    shanYanUIConfig.setAppPrivacyOne = ["云冰箱管家用户协议", "https://baidu.com/"];
-    shanYanUIConfig.setAppPrivacyTwo = ["云冰箱管家隐私协议", "http://106.13.105.43:8889/h5/privacy"];
-    //shanYanUIConfig.setAppPrivacyThree = ["协议3", "https://baidu.com/"];
-    shanYanUIConfig.setPrivacyText = ["登录即同意", "、", "、", "和", "授权"];
-    shanYanUIConfig.setDialogTheme = ["120", "150", "0", "0", "false"];
+    // shanYanUIConfig.setAppPrivacyOne = ["云冰箱管家用户协议", "https://baidu.com/"];
+    // shanYanUIConfig.setAppPrivacyTwo = ["云冰箱管家隐私协议", "http://106.13.105.43:8889/h5/privacy"];
+    // //shanYanUIConfig.setAppPrivacyThree = ["协议3", "https://baidu.com/"];
+    // shanYanUIConfig.setPrivacyText = ["登录即同意", "、", "、", "和", "授权"];
+    // shanYanUIConfig.setDialogTheme = ["120", "150", "0", "0", "false"];
+
+    // return shanYanUIConfig;
+
+    ShanYanUIConfig shanYanUIConfig = ShanYanUIConfig();
+      shanYanUIConfig.setLogBtnText = "免密登录";
+      //shanYanUIConfig.setAuthBGImgPath = "sy_login_test_bg";
+      //shanYanUIConfig.setAppPrivacyColor = [0xffffffff,0xff0085d0];
+      //shanYanUIConfig.setFullScreen = true;
+      shanYanUIConfig.setAppPrivacyOne = [
+        "闪验用户协议",
+        "https://api.253.com/api_doc/yin-si-zheng-ce/wei-hu-wang-luo-an-quan-sheng-ming.html"
+      ];
+      shanYanUIConfig.setAppPrivacyTwo = [
+        "闪验隐私政策",
+        "https://api.253.com/api_doc/yin-si-zheng-ce/ge-ren-xin-xi-bao-hu-sheng-ming.html"
+      ];
+      shanYanUIConfig.setAppPrivacyThree = [
+        "用户服务条款",
+        "https://api.253.com/api_doc/yin-si-zheng-ce/ge-ren-xin-xi-bao-hu-sheng-ming.html"
+      ];
+      shanYanUIConfig.setAppPrivacyColor=["#808080","#00cc00"];
+      shanYanUIConfig.setPrivacyText = ["登录即同意", "、", "、", "和", "并授权使用本机号码"];
+      //shanYanUIConfig.setLoadingView = "custom_loading_dialog";
+      List<ShanYanCustomWidgetLayout> shanYanCustomWidgetLayout = [];
+      String layout_name = "relative_item_view";
+      ShanYanCustomWidgetLayout relativeLayoutWidget = ShanYanCustomWidgetLayout(
+          layout_name, ShanYanCustomWidgetLayoutType.RelativeLayout);
+      relativeLayoutWidget.top = 300;
+      relativeLayoutWidget.widgetLayoutId = ["weixin", "qq", "weibo"];
+     
+
+      shanYanCustomWidgetLayout.add(relativeLayoutWidget);
+
+      List<ShanYanCustomWidget> shanyanCustomWidget = [];
+      final String btn_widgetId = "other_custom_button"; // 标识控件 id
+      ShanYanCustomWidget buttonWidget =
+      ShanYanCustomWidget(btn_widgetId, ShanYanCustomWidgetType.TextView);
+      buttonWidget.textContent = "其他方式登录 >";
+      buttonWidget.bottom = 200;
+      buttonWidget.width = 150;
+      buttonWidget.height = 40;
+      buttonWidget.backgroundColor ="#330000";
+      buttonWidget.isFinish = false;
+      //buttonWidget.btnNormalImageName = "";
+      //buttonWidget.btnPressedImageName = "";
+      buttonWidget.textAlignment = ShanYanCustomWidgetGravityType.center;
+      // 添加点击事件监听
+     
+      shanyanCustomWidget.add(buttonWidget);
+      // oneKeyLoginManager.setAuthThemeConfig(
+      //     uiConfig: shanYanUIConfig,
+      //     widgets: shanyanCustomWidget,
+      //     widgetLayout: shanYanCustomWidgetLayout);
+      return shanYanUIConfig;
   }
 }
