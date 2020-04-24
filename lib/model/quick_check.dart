@@ -18,6 +18,9 @@ class QuickCheckManager {
   }
 
   Future<bool> initQuickCheck() async {
+    if(Platform.isAndroid){
+      oneKeyLoginManager.setDebug(true);
+    }
     //初始化校验
     Map res = await oneKeyLoginManager.init(
       appId: Platform.isIOS?"QLMrcjQI":"4slI3tNb",

@@ -22,48 +22,55 @@ class _FriendActWidgetState extends State<FriendActWidget> {
         brightness: Brightness.dark,
         iconTheme: IconThemeData(color: Colors.white),
       ),
-      body: Container(
-          color: const Color(0xFFF9F9F9),
-          child: ListView.builder(
-              itemBuilder: (context, index) {
-                FriendAction action = widget.data[index];
-                return Container(
-                  margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(15),
-                    child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          ClipOval(
-                              child: FadeInImage.assetNetwork(
-                                  placeholder: 'srouce/login_logo.png',
-                                  image: action.avatar,
-                                  width: 30,
-                                  height: 30)),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: <Widget>[
-                                Text(action.name),
-                                SizedBox(height: 5),
-                                Text(action.message, maxLines: 1),
-                                SizedBox(height: 5),
-                                Wrap(children: _getActionsItem(action)),
-                              ],
-                            ),
-                          ),
-                          Text(_getActTimeStr(action.lastUpdate),
-                              style: TextStyle(fontSize: 10)),
-                        ]),
-                  ),
-                );
-              },
-              itemCount: widget.data.length)),
+      body: widget.data.length == 0
+          ? Container(
+              child: Center(
+                child: Text('暂无动态'),
+              ),
+            )
+          : Container(
+              color: const Color(0xFFF9F9F9),
+              child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    FriendAction action = widget.data[index];
+                    return Container(
+                      margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              ClipOval(
+                                  child: FadeInImage.assetNetwork(
+                                      placeholder: 'srouce/login_logo.png',
+                                      image: action.avatar,
+                                      width: 30,
+                                      height: 30)),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: <Widget>[
+                                    Text(action.name),
+                                    SizedBox(height: 5),
+                                    Text(action.message, maxLines: 1),
+                                    SizedBox(height: 5),
+                                    Wrap(children: _getActionsItem(action)),
+                                  ],
+                                ),
+                              ),
+                              Text(_getActTimeStr(action.lastUpdate),
+                                  style: TextStyle(fontSize: 10)),
+                            ]),
+                      ),
+                    );
+                  },
+                  itemCount: widget.data.length)),
     );
   }
 

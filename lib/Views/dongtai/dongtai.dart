@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sirilike_flutter/Views/myFridge/foodDetail.dart';
 import 'package:sirilike_flutter/Views/myFridge/myFridge.dart';
 import 'package:sirilike_flutter/main.dart';
@@ -339,44 +340,54 @@ Widget getUI(DynamicData data, BuildContext ctx) {
               ],
             )),
       ),
-      SliverList(
-          delegate: SliverChildBuilderDelegate((ctx, idx) {
-        FriendAction action = actions[idx];
-        return Container(
-          margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
-          decoration: BoxDecoration(
-              color: Colors.white, borderRadius: BorderRadius.circular(12)),
-          child: Padding(
-            padding: const EdgeInsets.all(15),
-            child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  ClipOval(
-                      child: FadeInImage.assetNetwork(
-                          placeholder: 'srouce/login_logo.png',
-                          image: action.avatar,
-                          width: 30,
-                          height: 30)),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: Column(
+      actions.length == 0
+          ? SliverToBoxAdapter(
+              child: Container(
+                  height: ScreenUtil().setHeight(150),
+                  child: Center(child: Text('暂无动态'))),
+            )
+          : SliverList(
+              delegate: SliverChildBuilderDelegate((ctx, idx) {
+              FriendAction action = actions[idx];
+              return Container(
+                margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
-                        Text(action.name,style: TextStyle(fontSize: 16),),
-                        SizedBox(height: 5),
-                        Text(action.message, maxLines: 1),
-                        SizedBox(height: 5),
-                        Wrap(children: _getActionsItem(action)),
-                      ],
-                    ),
-                  ),
-                  Text(_getActTimeStr(action.lastUpdate),
-                      style: TextStyle(fontSize: 10)),
-                ]),
-          ),
-        );
-      }, childCount: data.actions.length > 5 ? 5 : data.actions.length)),
+                        ClipOval(
+                            child: FadeInImage.assetNetwork(
+                                placeholder: 'srouce/login_logo.png',
+                                image: action.avatar,
+                                width: 30,
+                                height: 30)),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: <Widget>[
+                              Text(
+                                action.name,
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              SizedBox(height: 5),
+                              Text(action.message, maxLines: 1),
+                              SizedBox(height: 5),
+                              Wrap(children: _getActionsItem(action)),
+                            ],
+                          ),
+                        ),
+                        Text(_getActTimeStr(action.lastUpdate),
+                            style: TextStyle(fontSize: 10)),
+                      ]),
+                ),
+              );
+            }, childCount: data.actions.length > 5 ? 5 : data.actions.length)),
       SliverToBoxAdapter(child: SizedBox(height: 60))
     ],
   );

@@ -286,32 +286,37 @@ class _UserHeaderWidgetState extends State<UserHeaderWidget> {
     // ImageCache imageCache = PaintingBinding.instance.imageCache;
     // imageCache.clear();
 
-    var image = await ImagePicker.pickImage(source: source);
+    var image = await ImagePicker.pickImage(
+        source: source, maxHeight: 500, maxWidth: 500);
     if (image == null) {
       return;
     }
     var croppedFile = await ImageCropper.cropImage(
-      compressQuality: 10,
+        //compressQuality: 10,
         sourcePath: image.path,
-        aspectRatioPresets: [
-          CropAspectRatioPreset.square,
-          CropAspectRatioPreset.ratio3x2,
-          CropAspectRatioPreset.original,
-          CropAspectRatioPreset.ratio4x3,
-          CropAspectRatioPreset.ratio16x9
-        ],
+        aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+        // aspectRatioPresets: [
+        //   CropAspectRatioPreset.square,
+        //   CropAspectRatioPreset.ratio3x2,
+        //   CropAspectRatioPreset.original,
+        //   CropAspectRatioPreset.ratio4x3,
+        //   CropAspectRatioPreset.ratio16x9
+        // ],
         androidUiSettings: AndroidUiSettings(
             toolbarTitle: 'Cropper',
             toolbarColor: Colors.deepOrange,
             toolbarWidgetColor: Colors.white,
-            initAspectRatio: CropAspectRatioPreset.original,
+            initAspectRatio: CropAspectRatioPreset.square,
             lockAspectRatio: false),
         iosUiSettings: IOSUiSettings(
           minimumAspectRatio: 1.0,
+          resetAspectRatioEnabled: true
+          
         ));
     if (croppedFile != null) {
       FormData imgData = FormData.fromMap(
           {'avatar': await MultipartFile.fromFile(croppedFile.path)});
+      print(croppedFile.lengthSync());
       Response res =
           await NetManager.instance.dio.post('/api/user/edit', data: imgData);
       if (res.data['err'] == 0) {

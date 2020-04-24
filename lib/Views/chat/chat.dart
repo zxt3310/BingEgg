@@ -118,10 +118,11 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
       path = tempDir.path + '/tempVoice.wav';
       File file = File(path);
       if (await file.exists()) {
-        file.deleteSync();
+        file.deleteSync(recursive: true);
       }
     } catch (err) {
       print(err);
+      BotToast.showText(text: err.toString());
     }
   }
 
@@ -133,10 +134,14 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
 
   //开始录音
   Future start() async {
-    recorder = FlutterAudioRecorder(path,
-        audioFormat: AudioFormat.WAV, sampleRate: 16000);
-    await recorder.initialized;
-    await recorder.start();
+    try {
+      recorder = FlutterAudioRecorder(path,
+          audioFormat: AudioFormat.WAV, sampleRate: 16000);
+      await recorder.initialized;
+      await recorder.start();
+    } catch (e) {
+      BotToast.showText(text: e.toString());
+    }
   }
 
   //停止录音
@@ -158,7 +163,8 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
       'len': obj.lengthInBytes,
       'speech': voice
     });
-    file.deleteSync();
+    //标记
+    file.deleteSync(recursive: true);
 
     if (resp.data['err_no'] != 0) {
       provider.changeStr('未能识别');
@@ -212,7 +218,7 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
     });
     File tts = File(path);
     FlutterSound().startPlayer(path).then((e) {
-      tts.deleteSync();
+      tts.deleteSync(recursive: true);
     });
   }
 
@@ -346,9 +352,10 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
                           ),
                         ),
                         Align(
-                          alignment: AlignmentDirectional.bottomCenter,
-                          child: Text('按住说话',style: TextStyle(fontSize: 11,color: Colors.white))
-                        ),
+                            alignment: AlignmentDirectional.bottomCenter,
+                            child: Text('按住说话',
+                                style: TextStyle(
+                                    fontSize: 11, color: Colors.white))),
                         Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
@@ -366,9 +373,24 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
                                   tapDownTime = DateTime.now();
                                   popupRecordingToast();
                                 },
-                                onTapUp: (e) async{
-                                  Duration during = DateTime.now().difference(tapDownTime);
-                                  if (during.inSeconds<1){
+                                onTapUp: (e) async {
+                                  Duration during =
+                                      DateTime.now().difference(tapDownTime);
+                                  if (during.inSeconds < 1) {
+                                    File file = File(path);
+                                    if (await file.exists()) {
+                                      file.deleteSync();
+                                    }
+                                    _hideToast();
+                                    return;
+                                  }
+                                  Future.delayed(Duration(milliseconds: 300),
+                                      () => stop());
+                                },
+                                onTapCancel: () async{
+                                   Duration during =
+                                      DateTime.now().difference(tapDownTime);
+                                  if (during.inSeconds < 1) {
                                     File file = File(path);
                                     if (await file.exists()) {
                                       file.deleteSync();
@@ -416,6 +438,7 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
     toastKey = UniqueKey();
     BotToast.showEnhancedWidget(
         key: toastKey,
+        allowClick: false,
         toastBuilder: (context) {
           return ChangeNotifierProvider<ToastStateProvider>(
               create: (context) {

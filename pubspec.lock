@@ -120,6 +120,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.1"
+  fake_analytics:
+    dependency: "direct main"
+    description:
+      name: fake_analytics
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0"
   file:
     dependency: transitive
     description:
@@ -341,9 +348,11 @@ packages:
   shanyan:
     dependency: "direct main"
     description:
-      name: shanyan
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: shanyan
+      ref: HEAD
+      resolved-ref: a1426959bea63c7bbc6dc66a735948502e007035
+      url: "https://github.com/253CL/CLShanYan_Flutter.git"
+    source: git
     version: "2.3.0"
   shared_preferences:
     dependency: "direct main"

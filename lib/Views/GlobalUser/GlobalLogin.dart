@@ -20,23 +20,28 @@ class GlobalLoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<LoginPageState>(
       create: (context) => LoginPageState(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('登录', style: TextStyle(color: Colors.white)),
-          brightness: Brightness.dark,
-          centerTitle: true,
-          iconTheme: IconThemeData(color: Colors.white),
-          elevation: 0,
-        ),
-        resizeToAvoidBottomInset: false,
-        backgroundColor: const Color(0xffF9F9F9),
-        body: Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Flexible(flex: 2, child: _LoginUI()),
-              Flexible(child: _ThirdPlatformLoginWidget())
-            ],
+      child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text('登录', style: TextStyle(color: Colors.white)),
+            brightness: Brightness.dark,
+            centerTitle: true,
+            iconTheme: IconThemeData(color: Colors.white),
+            elevation: 0,
+          ),
+          resizeToAvoidBottomInset: false,
+          backgroundColor: const Color(0xffF9F9F9),
+          body: Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Flexible(flex: 2, child: _LoginUI()),
+                Flexible(child: _ThirdPlatformLoginWidget())
+              ],
+            ),
           ),
         ),
       ),
@@ -307,12 +312,13 @@ class __QuickCheckWidgetState extends State<_QuickCheckWidget> {
       //配置授权样式
       oneKeyLoginManager.setAuthThemeConfig(
           uiConfig: ShanyanAndroidUIConfiguration.getAndroidUIConfig());
+      //授权页登录按钮监听
+      oneKeyLoginManager.setAuthPageOnClickListener((e) {
+        authorRes = e.toMap();
+      });
       //拉起授权页
       oneKeyLoginManager.openLoginAuth(isFinish: true).then((e) {
         BotToast.showText(text: e.toString());
-      });
-      oneKeyLoginManager.setAuthPageOnClickListener((e) {
-        authorRes = e.toMap();
       });
     }
   }
@@ -383,6 +389,7 @@ class __CheckCodeBtnState extends State<_CheckCodeBtn> {
   }
 
   void _sendMsg() async {
+    BotToast.showLoading(duration: Duration(milliseconds: 1500),allowClick: false);
     LoginPageState state = Provider.of<LoginPageState>(context, listen: false);
     print(state.phoneNo);
     Response res = await NetManager.instance.dio
@@ -391,6 +398,7 @@ class __CheckCodeBtnState extends State<_CheckCodeBtn> {
       BotToast.showText(text: '短信发送失败');
       return;
     }
+    BotToast.showText(text: '发送成功');
     //锁死发送按钮
     isLocking = true;
     curCount = count + 1;
@@ -427,21 +435,35 @@ class _ThirdPlatformLoginWidget extends StatefulWidget {
 class __ThirdPlatformLoginWidgetState extends State<_ThirdPlatformLoginWidget> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        children: <Widget>[
-          Text('------------ 其他登录方式 ------------'),
-          SizedBox(
-            height: 10,
-          ),
-          FlatButton(
-              padding: EdgeInsets.zero,
-              child: Image.asset('srouce/wechat.png', width: 60, height: 60),
-              onPressed: authorWithWeixin)
-        ],
-      ),
-    );
+    return FutureBuilder<bool>(
+        future: _checkWxInstalled(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done &&
+              snapshot.data) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: <Widget>[
+                  Text('------------ 其他登录方式 ------------'),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  FlatButton(
+                      padding: EdgeInsets.zero,
+                      child: Image.asset('srouce/wechat.png',
+                          width: 60, height: 60),
+                      onPressed: authorWithWeixin)
+                ],
+              ),
+            );
+          } else {
+            return Container(color: Colors.white);
+          }
+        });
+  }
+
+  Future<bool> _checkWxInstalled() async {
+    return isWeChatInstalled;
   }
 
   authorWithWeixin() async {

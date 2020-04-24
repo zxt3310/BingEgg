@@ -74,15 +74,15 @@ class ShanyanIOSUIConfiguration {
         "clNavigationBackBtnImage": "assets/Img/close-white.png", //返回按钮图片
         "clNavBackBtnAlimentRight": false, //返回按钮居右,设置自定义导航栏返回按钮时，以自定义为准
 
-        "clLogoImage": "srouce/草莓.png", //logo图片
+        "clLogoImage": "srouce/logo.png", //logo图片
 
         "clLoginBtnText": "本机号一键登录", //一键登录按钮文字
         "clLoginBtnTextColor": [1, 1, 1, 1.0], //rgba
-        "clLoginBtnBgColor": [0.2, 0.8, 0.2, 1.0], //rgba
+        "clLoginBtnBgColor": [0.44, 0.69, 0.28, 1.0], //rgba
         "clLoginBtnTextFont": 15 * screenScale,
         "clLoginBtnCornerRadius": 20,
-        "clLoginBtnBorderWidth": 0.5,
-        "clLoginBtnBorderColor": [0.1, 0.8, 0.1, 1.0], //rgba
+        "clLoginBtnBorderWidth": 7.5,
+        //"clLoginBtnBorderColor": [0.1, 0.8, 0.1, 1.0], //rgba
 
         "clPhoneNumberFont": 20.0 * screenScale,
 

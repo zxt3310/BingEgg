@@ -7,6 +7,10 @@ PODS:
     - Flutter
   - esptouch_flutter (0.0.1):
     - Flutter
+  - fake_analytics (0.0.1):
+    - FakeTalkingdataAnalytics (~> 4.0.33)
+    - Flutter
+  - FakeTalkingdataAnalytics (4.0.33)
   - Flutter (1.0.0)
   - flutter_audio_recorder (0.5.4):
     - Flutter
@@ -59,7 +63,8 @@ DEPENDENCIES:
   - connectivity (from `.symlinks/plugins/connectivity/ios`)
   - connectivity_macos (from `.symlinks/plugins/connectivity_macos/ios`)
   - esptouch_flutter (from `.symlinks/plugins/esptouch_flutter/ios`)
-  - Flutter (from `.symlinks/flutter/ios`)
+  - fake_analytics (from `.symlinks/plugins/fake_analytics/ios`)
+  - Flutter (from `.symlinks/flutter/ios-release`)
   - flutter_audio_recorder (from `.symlinks/plugins/flutter_audio_recorder/ios`)
   - flutter_sound (from `.symlinks/plugins/flutter_sound/ios`)
   - fluwx (from `.symlinks/plugins/fluwx/ios`)
@@ -82,6 +87,7 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - CL_ShanYanSDK
+    - FakeTalkingdataAnalytics
     - FMDB
     - Reachability
     - TOCropViewController
@@ -94,8 +100,10 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/connectivity_macos/ios"
   esptouch_flutter:
     :path: ".symlinks/plugins/esptouch_flutter/ios"
+  fake_analytics:
+    :path: ".symlinks/plugins/fake_analytics/ios"
   Flutter:
-    :path: ".symlinks/flutter/ios"
+    :path: ".symlinks/flutter/ios-release"
   flutter_audio_recorder:
     :path: ".symlinks/plugins/flutter_audio_recorder/ios"
   flutter_sound:
@@ -138,6 +146,8 @@ SPEC CHECKSUMS:
   connectivity: 6e94255659cc86dcbef1d452ad3e0491bb1b3e75
   connectivity_macos: e2e9731b6b22dda39eb1b128f6969d574460e191
   esptouch_flutter: e73da8791abdc4aa4a24ccda75f9505e1aa05474
+  fake_analytics: a1c8bc45832c950cf9b31737dc047c247f11f772
+  FakeTalkingdataAnalytics: f0fd5746f2b1c057c146da84e29e2b78929e24c7
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_audio_recorder: eb998d4e75e59b39d9e3ca1818a5e0f3a82f5836
   flutter_sound: 0e8163ceac1e00eb6d894e2ae4641ba726a2c479
