@@ -376,7 +376,7 @@ Widget getUI(DynamicData data, BuildContext ctx) {
                                 style: TextStyle(fontSize: 16),
                               ),
                               SizedBox(height: 5),
-                              Text(action.message, maxLines: 1),
+                              Text(action.message),
                               SizedBox(height: 5),
                               Wrap(children: _getActionsItem(action)),
                             ],
@@ -423,7 +423,7 @@ String _getActTimeStr(String timeStr) {
 
 List<Widget> _getDailyText(List list) {
   return List.generate(list.length, (idx) {
-    return Text(list[idx], maxLines: 1, style: TextStyle(fontSize: 11));
+    return Text(list[idx], maxLines: 1, style: TextStyle(fontSize: 11.5));
   });
 }
 

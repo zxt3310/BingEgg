@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:shanyan/shanyan.dart';
 import 'package:sirilike_flutter/Views/GlobalUser/ShanYanUIConfig.dart';
@@ -13,6 +14,7 @@ import 'package:sirilike_flutter/model/network.dart';
 import 'package:sirilike_flutter/model/quick_check.dart';
 import 'package:sirilike_flutter/model/user.dart';
 import 'package:fluwx/fluwx.dart';
+import 'package:sirilike_flutter/webpage.dart';
 
 class GlobalLoginPage extends StatelessWidget {
   const GlobalLoginPage({Key key}) : super(key: key);
@@ -25,21 +27,89 @@ class GlobalLoginPage extends StatelessWidget {
           FocusScope.of(context).requestFocus(FocusNode());
         },
         child: Scaffold(
-          appBar: AppBar(
-            title: Text('登录', style: TextStyle(color: Colors.white)),
-            brightness: Brightness.dark,
-            centerTitle: true,
-            iconTheme: IconThemeData(color: Colors.white),
-            elevation: 0,
-          ),
+          // appBar: AppBar(
+          //   title: Text('登录', style: TextStyle(color: Colors.white)),
+          //   brightness: Brightness.dark,
+          //   centerTitle: true,
+          //   iconTheme: IconThemeData(color: Colors.white),
+          //   elevation: 0,
+          // ),
           resizeToAvoidBottomInset: false,
           backgroundColor: const Color(0xffF9F9F9),
           body: Container(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                Flexible(flex: 2, child: _LoginUI()),
-                Flexible(child: _ThirdPlatformLoginWidget())
+                Flexible(flex: 3,
+                    child: Container(
+                  color: Colors.lightGreen,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.asset('srouce/logo.png',
+                            width: 70, height: 70, fit: BoxFit.fill),
+                      ),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('云冰箱管家',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18)),
+                          SizedBox(
+                            height: 28,
+                          ),
+                          Text('你的冰箱食材金牌管家',
+                              style: TextStyle(color: Colors.white,fontSize: 15)),
+                        ],
+                      )
+                    ],
+                  ),
+                )),
+                Flexible(flex: 6, child: _LoginUI()),
+                Flexible(flex: 2, child: _ThirdPlatformLoginWidget()),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  height: 40,
+                  child: Center(
+                    child: RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                            text: '登录即同意',
+                            style: TextStyle(
+                                color: Colors.grey[500], fontSize: 12),
+                            children: [
+                              TextSpan(
+                                  text: '《云冰箱管家用户协议》',
+                                  style: TextStyle(color: Colors.blue),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      Navigator.of(context).push(MaterialPageRoute(
+                                          builder: (ctx) => MainPage(
+                                              url:
+                                                  'http://106.13.105.43:8889/h5/agreement')));
+                                    }),
+                              TextSpan(
+                                text: '和',
+                              ),
+                              TextSpan(
+                                  text: '《隐私政策》',
+                                  style: TextStyle(color: Colors.blue),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      Navigator.of(context).push(MaterialPageRoute(
+                                          builder: (ctx) => MainPage(
+                                              url:
+                                                  'http://106.13.105.43:8889/h5/privacy')));
+                                    }),
+                            ])),
+                  ),
+                )
               ],
             ),
           ),
@@ -79,7 +149,6 @@ class __LoginUIState extends State<_LoginUI> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
-                          //测试 反向判断 ！
                           isQuick && snapshot.data
                               ? _QuickCheckWidget()
                               : _MessageCheckWidget(),
@@ -215,8 +284,11 @@ class __MessageCheckWidgetState extends State<_MessageCheckWidget> {
                     formkey.currentState.save();
                     _startLogin().then((e) {
                       if (e is String) {
-                        Navigator.of(context).pushAndRemoveUntil(
-                            CustomRoute.fade(MyHomePage()), (e) => false);
+                        // Navigator.of(context).pushAndRemoveUntil(
+                        //     CustomRoute.fade(MyHomePage()), (e) => false);
+
+                        Navigator.of(context)
+                            .pushReplacement(CustomRoute.fade(MyHomePage()));
                       }
 
                       if (e is Map) {
@@ -262,6 +334,8 @@ class _QuickCheckWidget extends StatefulWidget {
 }
 
 class __QuickCheckWidgetState extends State<_QuickCheckWidget> {
+  var androidCallBack;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -312,41 +386,69 @@ class __QuickCheckWidgetState extends State<_QuickCheckWidget> {
       //配置授权样式
       oneKeyLoginManager.setAuthThemeConfig(
           uiConfig: ShanyanAndroidUIConfiguration.getAndroidUIConfig());
+
+      androidCallBack = (AuthPageOnClickEvent e) {
+        Map authorRes = e.toMap();
+        _startLoginWithWxcode(authorRes);
+      };
+
       //授权页登录按钮监听
-      oneKeyLoginManager.setAuthPageOnClickListener((e) {
-        authorRes = e.toMap();
-      });
+      oneKeyLoginManager.setAuthPageOnClickListener(androidCallBack);
       //拉起授权页
       oneKeyLoginManager.openLoginAuth(isFinish: true).then((e) {
-        BotToast.showText(text: e.toString());
+        //BotToast.showText(text: e.toString());
       });
     }
   }
 
   _startLoginWithWxcode(Map authorRes) async {
+    print('一键登录');
     OneKeyLoginManager oneKeyLoginManager =
         QuickCheckManager.instance.oneKeyLoginManager;
     if (authorRes['code'] == 1000) {
-      Map token = json.decode(authorRes['result']);
+      Map token;
+      try {
+        token = json.decode(authorRes['result']);
+        // BotToast.showText(text: token['token']);
+      } catch (e) {
+        BotToast.showText(text: e.toString());
+      }
+
       Dio req = NetManager.instance.dio;
-      String url = '/api/login?token=${token['token']}';
+      String url =
+          '/api/login?platform=${Platform.isIOS ? 'ios' : 'androidÏ'}&token=${token['token']}';
 
       Response loginres = await req.get(url);
+
       int err = loginres.data['err'];
       if (err != 0) {
         oneKeyLoginManager.finishAuthControllerCompletion();
         BotToast.showText(text: '登录超时，请重试或更换登录方式');
         return;
       } else {
-        String phone = loginres.data['data']['mobile'];
-        String avatar = loginres.data['data']['avatar'];
-        String token = loginres.headers.map['authorization'].first;
-        await User.instance.save(phone, "", token, avatar);
+        try {
+          String phone = loginres.data['data']['mobile'] ?? "";
+          String avatar = loginres.data['data']['avatar'] ?? "";
+          String token = loginres.headers.map['authorization'].first;
+          await User.instance.save(phone, "", token, avatar);
+        } catch (e) {
+          BotToast.showText(text: e.toString(), duration: Duration(seconds: 6));
+        }
+      }
+
+      if (androidCallBack != null) {
+        bool isRemove =
+            oneKeyLoginManager.removeAuthPageOnClickListener(androidCallBack);
+        if (isRemove) {
+          //BotToast.showText(text: '安卓监听事件已移除');
+        }
       }
 
       Navigator.of(context)
           .pushAndRemoveUntil(CustomRoute.fade(MyHomePage()), (e) => false);
       oneKeyLoginManager.finishAuthControllerCompletion();
+    } else {
+      BotToast.showText(text: '授权失败' + authorRes.toString());
     }
   }
 
@@ -389,7 +491,9 @@ class __CheckCodeBtnState extends State<_CheckCodeBtn> {
   }
 
   void _sendMsg() async {
-    BotToast.showLoading(duration: Duration(milliseconds: 1500),allowClick: false);
+    print('发送短信');
+    BotToast.showLoading(
+        duration: Duration(milliseconds: 1500), allowClick: false);
     LoginPageState state = Provider.of<LoginPageState>(context, listen: false);
     print(state.phoneNo);
     Response res = await NetManager.instance.dio
@@ -433,6 +537,16 @@ class _ThirdPlatformLoginWidget extends StatefulWidget {
 }
 
 class __ThirdPlatformLoginWidgetState extends State<_ThirdPlatformLoginWidget> {
+  StreamSubscription wxListen;
+
+  @override
+  void dispose() {
+    if (wxListen != null) {
+      wxListen.cancel();
+    }
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<bool>(
@@ -444,7 +558,7 @@ class __ThirdPlatformLoginWidgetState extends State<_ThirdPlatformLoginWidget> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: <Widget>[
-                  Text('------------ 其他登录方式 ------------'),
+                  Text('或使用微信登录',style: TextStyle(color: Colors.grey[400]),),
                   SizedBox(
                     height: 10,
                   ),
@@ -452,12 +566,14 @@ class __ThirdPlatformLoginWidgetState extends State<_ThirdPlatformLoginWidget> {
                       padding: EdgeInsets.zero,
                       child: Image.asset('srouce/wechat.png',
                           width: 60, height: 60),
-                      onPressed: authorWithWeixin)
+                      onPressed: () {
+                        authorWithWeixin();
+                      })
                 ],
               ),
             );
           } else {
-            return Container(color: Colors.white);
+            return Container();
           }
         });
   }
@@ -467,27 +583,25 @@ class __ThirdPlatformLoginWidgetState extends State<_ThirdPlatformLoginWidget> {
   }
 
   authorWithWeixin() async {
-    BotToast.showLoading();
+    print('微信登录  微信登录');
     bool isSucc = await sendWeChatAuth(
         scope: "snsapi_userinfo", state: "sirilikeFlutter_login_state");
     if (isSucc == null || !isSucc) {
       BotToast.showText(text: "无法打开微信");
-      BotToast.closeAllLoading();
       return;
     }
 
-    weChatResponseEventHandler.listen((e) {
+    wxListen = weChatResponseEventHandler.listen((e) {
       if (e is WeChatAuthResponse) {
         if (e.errCode == -4) {
-          BotToast.closeAllLoading();
           BotToast.showText(text: "取消授权");
           return;
         }
         if (e.errCode != 0) {
-          BotToast.closeAllLoading();
           BotToast.showText(text: e.errStr);
           return;
         }
+        BotToast.showLoading();
         Future.delayed(Duration(seconds: 2)).then((res) {
           _startLogin(e.code);
         });
@@ -509,8 +623,9 @@ class __ThirdPlatformLoginWidgetState extends State<_ThirdPlatformLoginWidget> {
       String token = res.headers.map['authorization'].first;
       await _saveUser(token, name, avatar);
       BotToast.closeAllLoading();
-      Navigator.of(context)
-          .pushAndRemoveUntil(CustomRoute.fade(MyHomePage()), (e) => false);
+      // Navigator.of(context)
+      //     .pushAndRemoveUntil(CustomRoute.fade(MyHomePage()), (e) => false);
+      Navigator.of(context).pushReplacement(CustomRoute.fade(MyHomePage()));
     }
   }
 
@@ -536,6 +651,13 @@ class LoginPageState with ChangeNotifier {
   void getCheckCode(String code) {
     checkCode = code;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    print('登录页状态对象释放');
+
+    super.dispose();
   }
 }
 

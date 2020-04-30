@@ -10,6 +10,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'package:flutter_sound/flutter_sound.dart';
+import 'package:sirilike_flutter/webpage.dart';
 import '../../model/network.dart';
 import 'package:intl/intl.dart';
 
@@ -344,13 +345,13 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
                   child: Stack(
                       alignment: AlignmentDirectional.center,
                       children: <Widget>[
-                        Align(
-                          alignment: AlignmentDirectional.topStart,
-                          child: Icon(
-                            Icons.keyboard,
-                            color: Colors.white,
-                          ),
-                        ),
+                        // Align(
+                        //   alignment: AlignmentDirectional.topStart,
+                        //   child: Icon(
+                        //     Icons.keyboard,
+                        //     color: Colors.white,
+                        //   ),
+                        // ),
                         Align(
                             alignment: AlignmentDirectional.bottomCenter,
                             child: Text('按住说话',
@@ -364,52 +365,50 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
                                   shape: CircleBorder(
                                       side: BorderSide(
                                           width: 1, color: Colors.white)),
-                                  onPressed: null,
+                                  onPressed: () {
+                                    Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (ctx) => MainPage(
+                                            url:
+                                                'http://106.13.105.43:8889/h5/help#voice')));
+                                  },
                                   child: Text('?',
                                       style: TextStyle(
                                           color: Colors.white, fontSize: 20))),
                               GestureDetector(
-                                onTapDown: (e) {
-                                  tapDownTime = DateTime.now();
-                                  popupRecordingToast();
-                                },
-                                onTapUp: (e) async {
-                                  Duration during =
-                                      DateTime.now().difference(tapDownTime);
-                                  if (during.inSeconds < 1) {
-                                    File file = File(path);
-                                    if (await file.exists()) {
-                                      file.deleteSync();
+                                  onTapDown: (e) {
+                                    tapDownTime = DateTime.now();
+                                    popupRecordingToast();
+                                  },
+                                  onTapUp: (e) async {
+                                    Duration during =
+                                        DateTime.now().difference(tapDownTime);
+                                    if (during.inSeconds < 1) {
+                                      File file = File(path);
+                                      if (await file.exists()) {
+                                        file.deleteSync();
+                                      }
+                                      _hideToast();
+                                      return;
                                     }
-                                    _hideToast();
-                                    return;
-                                  }
-                                  Future.delayed(Duration(milliseconds: 300),
-                                      () => stop());
-                                },
-                                onTapCancel: () async{
-                                   Duration during =
-                                      DateTime.now().difference(tapDownTime);
-                                  if (during.inSeconds < 1) {
-                                    File file = File(path);
-                                    if (await file.exists()) {
-                                      file.deleteSync();
+                                    Future.delayed(Duration(milliseconds: 300),
+                                        () => stop());
+                                  },
+                                  onTapCancel: () async {
+                                    Duration during =
+                                        DateTime.now().difference(tapDownTime);
+                                    if (during.inSeconds < 1) {
+                                      File file = File(path);
+                                      if (await file.exists()) {
+                                        file.deleteSync();
+                                      }
+                                      _hideToast();
+                                      return;
                                     }
-                                    _hideToast();
-                                    return;
-                                  }
-                                  Future.delayed(Duration(milliseconds: 300),
-                                      () => stop());
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.all(10),
-                                  child: Icon(Icons.mic,
-                                      size: 40, color: Colors.white),
-                                  decoration: BoxDecoration(
-                                      color: Colors.black,
-                                      borderRadius: BorderRadius.circular(30)),
-                                ),
-                              ),
+                                    Future.delayed(Duration(milliseconds: 300),
+                                        () => stop());
+                                  },
+                                  child: Image.asset("srouce/an_yuyin_p.png",
+                                      width: 70, height: 70)),
                               FlatButton(
                                   padding: EdgeInsets.all(4),
                                   shape: CircleBorder(

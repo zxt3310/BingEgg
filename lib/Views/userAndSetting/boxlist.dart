@@ -423,11 +423,11 @@ class _BoxListBodyState extends State<BoxListBody> {
     });
   }
 
-  _changeDefault(int boxid) async {
-    await _setDefaultFridge(boxid);
-    await _getFridgeList();
-    setState(() {});
-  }
+  // _changeDefault(int boxid) async {
+  //   await _setDefaultFridge(boxid);
+  //   await _getFridgeList();
+  //   setState(() {});
+  // }
 
   _getFridgeList() async {
     NetManager manager = NetManager.instance;
@@ -447,14 +447,14 @@ class _BoxListBodyState extends State<BoxListBody> {
     print(curProvider.curList);
   }
 
-  _setDefaultFridge(int boxid) async {
-    NetManager manager = NetManager.instance;
-    Response res = await manager.dio.get('/api/user-box/default?boxid=$boxid');
-    if (res.data['err'] != 0) {
-      print('set default Error');
-      return;
-    }
-  }
+  // _setDefaultFridge(int boxid) async {
+  //   NetManager manager = NetManager.instance;
+  //   Response res = await manager.dio.get('/api/user-box/default?boxid=$boxid');
+  //   if (res.data['err'] != 0) {
+  //     print('set default Error');
+  //     return;
+  //   }
+  // }
 
   _openShare(int boxid) async {
     NetManager manager = NetManager.instance;

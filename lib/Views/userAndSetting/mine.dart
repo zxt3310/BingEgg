@@ -52,7 +52,7 @@ class UserCenterWidget extends StatelessWidget {
                             children: <Widget>[
                               OptionsSelectWidget(
                                   title: '我的冰箱',
-                                  icon: Icons.phone,
+                                  icon: Icons.view_list,
                                   onTap: () {
                                     Navigator.of(context)
                                         .push(MaterialPageRoute(
@@ -72,7 +72,7 @@ class UserCenterWidget extends StatelessWidget {
                                   }),
                               OptionsSelectWidget(
                                   title: '好友冰箱',
-                                  icon: Icons.alarm,
+                                  icon: Icons.near_me,
                                   showSeprate: false,
                                   onTap: () {
                                     // Navigator.of(context).push(MaterialPageRoute(
@@ -94,7 +94,7 @@ class UserCenterWidget extends StatelessWidget {
                             children: <Widget>[
                               OptionsSelectWidget(
                                   title: '新手引导',
-                                  icon: Icons.my_location,
+                                  icon: Icons.camera_front,
                                   onTap: () {
                                     Navigator.of(context).push(MaterialPageRoute(
                                         builder: (ctx) => MainPage(
@@ -103,7 +103,7 @@ class UserCenterWidget extends StatelessWidget {
                                   }),
                               OptionsSelectWidget(
                                   title: '联系我们',
-                                  icon: Icons.alarm,
+                                  icon: Icons.call,
                                   onTap: () {
                                     Navigator.of(context).push(MaterialPageRoute(
                                         builder: (ctx) => MainPage(
@@ -112,7 +112,7 @@ class UserCenterWidget extends StatelessWidget {
                                   }),
                               OptionsSelectWidget(
                                   title: '隐私政策',
-                                  icon: Icons.phone,
+                                  icon: Icons.description,
                                   onTap: () {
                                     Navigator.of(context).push(MaterialPageRoute(
                                         builder: (ctx) => MainPage(
@@ -124,7 +124,7 @@ class UserCenterWidget extends StatelessWidget {
                           ),
                         ),
                         Container(
-                          height: 100,
+                          height: 70,
                           child: Center(
                             child: FlatButton(
                                 onPressed: () {
@@ -158,7 +158,7 @@ class UserCenterWidget extends StatelessWidget {
                                         fontSize: 12,
                                         color: const Color(0xfff5635e)))),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   )),

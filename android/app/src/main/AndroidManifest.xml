@@ -18,8 +18,8 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="sirilike_flutter"
-        android:icon="@mipmap/ic_launcher"
+        android:label="云冰箱管家"
+        android:icon="@mipmap/logo"
         android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"

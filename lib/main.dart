@@ -1,9 +1,13 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info/package_info.dart';
 import 'package:sirilike_flutter/Views/GlobalUser/GlobalLogin.dart';
 import 'package:sirilike_flutter/Views/statistics/foodStatistics.dart';
 import 'package:sirilike_flutter/model/mainModel.dart';
+import 'package:sirilike_flutter/model/network.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'model/user.dart';
 import 'Views/myFridge/myFridge.dart';
 import 'Views/userAndSetting/mine.dart';
@@ -17,7 +21,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sirilike_flutter/model/quick_check.dart';
 import 'package:fluwx/fluwx.dart';
 
-const List barList = ["提醒", "冰箱", "统计", "我的"];
+const List barList = ["首页", "冰箱", "统计", "我的"];
 
 void main() {
   //在加载app前 载入所有插件
@@ -27,7 +31,7 @@ void main() {
     SystemUiOverlayStyle systemUiOverlayStyle =
         SystemUiOverlayStyle(statusBarColor: Colors.transparent);
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
-  } 
+  }
   // else {
   //   SystemUiOverlayStyle light = SystemUiOverlayStyle(
   //     // systemNavigationBarColor: Color(0xFF000000),
@@ -95,6 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
+    _requestUpdate(this.context);
     appSharedState = AppSharedState();
     controller = PageController();
     items = List.generate(barList.length, (idx) {
@@ -166,6 +171,55 @@ class _MyHomePageState extends State<MyHomePage> {
     print('home page dealloc');
     super.dispose();
   }
+}
+
+//检查更新
+_requestUpdate(BuildContext ctx) async {
+  PackageInfo info = await PackageInfo.fromPlatform();
+  NetManager.instance.dio
+      .get(
+          '/api/up2date?platform=${Platform.isIOS ? 'ios' : 'android'}&verion=${info.version}')
+      .then((e) {
+    if (e.data['err'] == 0) {
+      if (e.data['data'] != null) {
+        if (Platform.isIOS) {
+          showCupertinoDialog(
+              context: ctx,
+              builder: (contxt) {
+                return CupertinoAlertDialog(
+                  title: Text('发现更新'),
+                  content: Text('新版本：${e.data['data']['whatsnew']}'),
+                  actions: <Widget>[
+                    CupertinoDialogAction(
+                        child: Text('知道了'),
+                        onPressed: () {
+                          Navigator.of(contxt).pop();
+                        }),
+                  ],
+                );
+              });
+        } else {
+          showDialog(
+              context: ctx,
+              child: AlertDialog(
+                title: Text('发现更新'),
+                content: Text('新版本：${e.data['data']['whatsnew']}'),
+                actions: <Widget>[
+                  FlatButton(onPressed: () {
+                    Navigator.of(ctx).pop();
+                    launch(e.data['data']['link']);
+                  }, child: Text('去升级')),
+                  FlatButton(
+                      onPressed: () {
+                        Navigator.of(ctx).pop();
+                      },
+                      child: Text('取消')),
+                ],
+              ));
+        }
+      }
+    }
+  });
 }
 
 class AppSharedState with ChangeNotifier {
