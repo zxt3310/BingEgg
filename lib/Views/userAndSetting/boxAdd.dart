@@ -45,10 +45,12 @@ class __AddBodyState extends State<_AddBody> {
   TextEditingController nameCtl = TextEditingController();
   TextEditingController addrCtl = TextEditingController();
   //FocusNode addrFocurs = FocusNode();
+  Map addrMap = {};
   @override
   void initState() {
     nameCtl.text = widget.fridge.boxname;
     addrCtl.text = widget.fridge.addr;
+    addrMap = {'lat':widget.fridge.gpslat,'lng':widget.fridge.gpslng};
     super.initState();
   }
 
@@ -121,8 +123,9 @@ class __AddBodyState extends State<_AddBody> {
                         .push(MaterialPageRoute(
                             builder: (ctx) => BoxAddrWidget()))
                         .then((e) {
-                      if (e is String) {
-                        addrCtl.text = e;
+                      if (e is Map) {
+                        addrCtl.text = e['addr'];
+                        addrMap = e;
                       }
                     });
                   },
@@ -161,8 +164,14 @@ class __AddBodyState extends State<_AddBody> {
 
   _addNewFridge(BuildContext ctx, String name, String addr) async {
     int boxtype = Provider.of<BoxState>(ctx, listen: false).curTypeIdx;
-    Response res = await NetManager.instance.dio.post("/api/user-box/add",
-        data: {"name": name, "gpsaddr": addr, "type": boxtype});
+    Response res =
+        await NetManager.instance.dio.post("/api/user-box/add", data: {
+      "name": name,
+      "gpsaddr": addr,
+      "type": boxtype,
+      "gpslat": addrMap['lat'],
+      "gpslng": addrMap['lng']
+    });
     if (res.data["err"] != 0) {
       BotToast.showText(text: '添加失败，请重试');
       return;
@@ -174,13 +183,15 @@ class __AddBodyState extends State<_AddBody> {
 
   _editFridge(BuildContext ctx, String name, String addr) async {
     int boxtype = Provider.of<BoxState>(ctx, listen: false).curTypeIdx;
-    Response res = await NetManager.instance.dio.post("/api/user-box/edit",
-        data: {
-          "id": widget.fridge.id,
-          "name": name,
-          "gpsaddr": addr,
-          "type": boxtype
-        });
+    Response res =
+        await NetManager.instance.dio.post("/api/user-box/edit", data: {
+      "id": widget.fridge.id,
+      "name": name,
+      "gpsaddr": addr,
+      "type": boxtype,
+      "gpslat": addrMap['lat'],
+      "gpslng": addrMap['lng']
+    });
     if (res.data["err"] != 0) {
       BotToast.showText(text: '修改失败，请重试');
       return;

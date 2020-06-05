@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomRoute extends PageRouteBuilder {
   final Widget widget;
+  
   CustomRoute(this.widget)
       : super(
             opaque: false,
@@ -29,8 +30,9 @@ class CustomRoute extends PageRouteBuilder {
               );
             });
 
-  CustomRoute.fade(this.widget)
+  CustomRoute.fade(this.widget,RouteSettings settings)
       : super(
+            settings:settings,
             maintainState: true,
             transitionDuration: Duration(milliseconds: 300),
             pageBuilder: (

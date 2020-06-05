@@ -13,8 +13,9 @@ import 'package:sirilike_flutter/model/customRoute.dart';
 import 'package:sirilike_flutter/model/network.dart';
 import 'package:sirilike_flutter/model/quick_check.dart';
 import 'package:sirilike_flutter/model/user.dart';
-import 'package:fluwx/fluwx.dart';
+import 'package:fluwx_no_pay/fluwx_no_pay.dart';
 import 'package:sirilike_flutter/webpage.dart';
+import 'package:umeng_analytics_plugin/umeng_analytics_plugin.dart';
 
 class GlobalLoginPage extends StatelessWidget {
   const GlobalLoginPage({Key key}) : super(key: key);
@@ -40,37 +41,39 @@ class GlobalLoginPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                Flexible(flex: 3,
+                Flexible(
+                    flex: 3,
                     child: Container(
-                  color: Colors.lightGreen,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: Image.asset('srouce/logo.png',
-                            width: 70, height: 70, fit: BoxFit.fill),
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Column(
+                      color: Colors.lightGreen,
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('云冰箱管家',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 18)),
-                          SizedBox(
-                            height: 28,
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Image.asset('srouce/logo.png',
+                                width: 70, height: 70, fit: BoxFit.fill),
                           ),
-                          Text('你的冰箱食材金牌管家',
-                              style: TextStyle(color: Colors.white,fontSize: 15)),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text('云冰箱管家',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 18)),
+                              SizedBox(
+                                height: 28,
+                              ),
+                              Text('你的冰箱食材金牌管家',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 15)),
+                            ],
+                          )
                         ],
-                      )
-                    ],
-                  ),
-                )),
+                      ),
+                    )),
                 Flexible(flex: 6, child: _LoginUI()),
                 Flexible(flex: 2, child: _ThirdPlatformLoginWidget()),
                 Container(
@@ -90,6 +93,7 @@ class GlobalLoginPage extends StatelessWidget {
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
                                       Navigator.of(context).push(MaterialPageRoute(
+                                          settings: RouteSettings(name: '用户协议'),
                                           builder: (ctx) => MainPage(
                                               url:
                                                   'http://106.13.105.43:8889/h5/agreement')));
@@ -103,6 +107,7 @@ class GlobalLoginPage extends StatelessWidget {
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
                                       Navigator.of(context).push(MaterialPageRoute(
+                                          settings: RouteSettings(name: '隐私政策'),
                                           builder: (ctx) => MainPage(
                                               url:
                                                   'http://106.13.105.43:8889/h5/privacy')));
@@ -287,8 +292,8 @@ class __MessageCheckWidgetState extends State<_MessageCheckWidget> {
                         // Navigator.of(context).pushAndRemoveUntil(
                         //     CustomRoute.fade(MyHomePage()), (e) => false);
 
-                        Navigator.of(context)
-                            .pushReplacement(CustomRoute.fade(MyHomePage()));
+                        Navigator.of(context).pushReplacement(CustomRoute.fade(
+                            MyHomePage(), RouteSettings(name: '主页')));
                       }
 
                       if (e is Map) {
@@ -369,6 +374,7 @@ class __QuickCheckWidgetState extends State<_QuickCheckWidget> {
           ShanyanIOSUIConfiguration.getIosUIConfig());
       //拉起授权页
       oneKeyLoginManager.openLoginAuthListener().then((e) {
+        UmengAnalyticsPlugin.event("1",label: "拉起授权");
         print(e);
       });
       //自定义组件回调
@@ -397,12 +403,13 @@ class __QuickCheckWidgetState extends State<_QuickCheckWidget> {
       //拉起授权页
       oneKeyLoginManager.openLoginAuth(isFinish: true).then((e) {
         //BotToast.showText(text: e.toString());
+        UmengAnalyticsPlugin.event("1",label: "拉起授权");
       });
     }
   }
 
   _startLoginWithWxcode(Map authorRes) async {
-    print('一键登录');
+    UmengAnalyticsPlugin.event("1",label: "一键登录");
     OneKeyLoginManager oneKeyLoginManager =
         QuickCheckManager.instance.oneKeyLoginManager;
     if (authorRes['code'] == 1000) {
@@ -444,8 +451,9 @@ class __QuickCheckWidgetState extends State<_QuickCheckWidget> {
         }
       }
 
-      Navigator.of(context)
-          .pushAndRemoveUntil(CustomRoute.fade(MyHomePage()), (e) => false);
+      Navigator.of(context).pushAndRemoveUntil(
+          CustomRoute.fade(MyHomePage(), RouteSettings(name: '主页')),
+          (e) => false);
       oneKeyLoginManager.finishAuthControllerCompletion();
     } else {
       BotToast.showText(text: '授权失败' + authorRes.toString());
@@ -500,9 +508,11 @@ class __CheckCodeBtnState extends State<_CheckCodeBtn> {
         .post('/api/login-sms/send', data: {"mobile": state.phoneNo});
     if (res.data["err"] != 0) {
       BotToast.showText(text: '短信发送失败');
+      UmengAnalyticsPlugin.event("3",label: "发送失败");
       return;
     }
     BotToast.showText(text: '发送成功');
+    UmengAnalyticsPlugin.event("3",label: "发送成功");
     //锁死发送按钮
     isLocking = true;
     curCount = count + 1;
@@ -558,7 +568,10 @@ class __ThirdPlatformLoginWidgetState extends State<_ThirdPlatformLoginWidget> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: <Widget>[
-                  Text('或使用微信登录',style: TextStyle(color: Colors.grey[400]),),
+                  Text(
+                    '或使用微信登录',
+                    style: TextStyle(color: Colors.grey[400]),
+                  ),
                   SizedBox(
                     height: 10,
                   ),
@@ -584,6 +597,7 @@ class __ThirdPlatformLoginWidgetState extends State<_ThirdPlatformLoginWidget> {
 
   authorWithWeixin() async {
     print('微信登录  微信登录');
+    UmengAnalyticsPlugin.event("1",label: "微信登录");
     bool isSucc = await sendWeChatAuth(
         scope: "snsapi_userinfo", state: "sirilikeFlutter_login_state");
     if (isSucc == null || !isSucc) {
@@ -610,6 +624,7 @@ class __ThirdPlatformLoginWidgetState extends State<_ThirdPlatformLoginWidget> {
   }
 
   _startLogin(String code) async {
+    UmengAnalyticsPlugin.event("1",label: "验证码登录");
     Dio req = NetManager.instance.dio;
     String url = '/api/login?wxcode=$code';
     Response res = await req.get(url);
@@ -625,7 +640,8 @@ class __ThirdPlatformLoginWidgetState extends State<_ThirdPlatformLoginWidget> {
       BotToast.closeAllLoading();
       // Navigator.of(context)
       //     .pushAndRemoveUntil(CustomRoute.fade(MyHomePage()), (e) => false);
-      Navigator.of(context).pushReplacement(CustomRoute.fade(MyHomePage()));
+      Navigator.of(context).pushReplacement(
+          CustomRoute.fade(MyHomePage(), RouteSettings(name: '主页')));
     }
   }
 

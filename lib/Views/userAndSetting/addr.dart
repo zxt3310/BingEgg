@@ -39,9 +39,9 @@ class _BoxAddrWidgetState extends State<BoxAddrWidget> {
                           borderSide:
                               BorderSide(width: 2, color: Colors.lightGreen)),
                       border: OutlineInputBorder()),
-                      onChanged: (e){
-                        addrSearchStr = e;
-                      },
+                  onChanged: (e) {
+                    addrSearchStr = e;
+                  },
                 )),
                 SizedBox(width: 10),
                 FlatButton(
@@ -77,7 +77,7 @@ class _BoxAddrWidgetState extends State<BoxAddrWidget> {
                     if (places == null) {
                       return Container(child: Center(child: Text('无法获取附近地点')));
                     }
-                    if (places.length == 0){
+                    if (places.length == 0) {
                       return Container(child: Center(child: Text('没有找到附近的小区')));
                     }
                     return ListView.builder(
@@ -87,7 +87,11 @@ class _BoxAddrWidgetState extends State<BoxAddrWidget> {
                           padding:
                               EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                           onPressed: () {
-                            Navigator.of(context).pop(place.name);
+                            Navigator.of(context).pop({
+                              'addr': place.name,
+                              'lat': place.lat??0.0,
+                              'lng': place.lng??0.0
+                            });
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -163,8 +167,8 @@ class _BoxAddrWidgetState extends State<BoxAddrWidget> {
     }
     print('lat: ${curLocate.latitude}  lng:${curLocate.longitude}');
 
-    Response res = await NetManager.instance.dio
-        .get('/api/location/nearby-blocks?lat=${curLocate.latitude}&lng=${curLocate.longitude}');
+    Response res = await NetManager.instance.dio.get(
+        '/api/location/nearby-blocks?lat=${curLocate.latitude}&lng=${curLocate.longitude}');
     if (res.data['err'] != 0) {
       return null;
     }

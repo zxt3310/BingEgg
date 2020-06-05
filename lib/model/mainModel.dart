@@ -1,3 +1,4 @@
+
 class FoodMaterial {
   final int id;
   final int itemId;
@@ -67,9 +68,9 @@ class FoodMaterial {
       days = hours ~/ 24;
       if (days > 0) {
         return '$days天后过期';
-      } else if(hours>0) {
+      } else if (hours > 0) {
         return '$hours小时后过期';
-      }else{
+      } else {
         return "已过期";
       }
     } else {
@@ -92,6 +93,8 @@ class Fridge {
   final int foodCount;
   final String addr;
   final String state;
+  final double gpslat;
+  final double gpslng;
   Fridge(
       {this.id,
       this.boxname = "",
@@ -102,6 +105,8 @@ class Fridge {
       this.addr = "",
       this.foodCount = 0,
       this.state = "",
+      this.gpslat = 0,
+      this.gpslng = 0,
       this.isdefault = false});
 
   Fridge.fromJson(Map<String, dynamic> json)
@@ -116,7 +121,9 @@ class Fridge {
         addr = json['addr'] ?? "",
         state = json['health_status'] ?? "",
         foodCount = json['inventory_count'] ?? 0,
-        isdefault = json['is_default'] == 0 ? false : true;
+        isdefault = json['is_default'] == 0 ? false : true,
+        gpslat = json['gps_lat'] ?? 0.0,
+        gpslng = json['gps_lng'] ?? 0.0;
 }
 
 class Cookbooks {
@@ -256,3 +263,4 @@ class QuantityStr {
     return quantity.toStringAsFixed(0);
   }
 }
+

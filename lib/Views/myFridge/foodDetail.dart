@@ -221,6 +221,7 @@ class _FoodDetailWidgetState extends State<FoodDetailWidget> {
                         ))),
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
+                    settings: RouteSettings(name: '菜谱页'),
                       builder: (context) => MainPage(url: book.webUrl)));
                 });
           }, childCount: data.cookbooks.length),

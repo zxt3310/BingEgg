@@ -56,6 +56,8 @@ class UserCenterWidget extends StatelessWidget {
                                   onTap: () {
                                     Navigator.of(context)
                                         .push(MaterialPageRoute(
+                                          settings:
+                                                RouteSettings(name: '我的冰箱列表'),
                                             builder: (ctx) => BoxListWidget(
                                                 providerContext: context)))
                                         .then((e) {
@@ -79,6 +81,8 @@ class UserCenterWidget extends StatelessWidget {
                                     //     builder: (ctx) => WIFIConnectWidget()));
                                     Navigator.of(context).push(
                                         MaterialPageRoute(
+                                            settings:
+                                                RouteSettings(name: '朋友冰箱列表'),
                                             builder: (ctx) =>
                                                 FriendBoxListWidget()));
                                   }),
@@ -97,6 +101,7 @@ class UserCenterWidget extends StatelessWidget {
                                   icon: Icons.camera_front,
                                   onTap: () {
                                     Navigator.of(context).push(MaterialPageRoute(
+                                        settings: RouteSettings(name: '帮助页'),
                                         builder: (ctx) => MainPage(
                                             url:
                                                 "http://106.13.105.43:8889/h5/help")));
@@ -106,6 +111,7 @@ class UserCenterWidget extends StatelessWidget {
                                   icon: Icons.call,
                                   onTap: () {
                                     Navigator.of(context).push(MaterialPageRoute(
+                                        settings: RouteSettings(name: '联系我们'),
                                         builder: (ctx) => MainPage(
                                             url:
                                                 "http://106.13.105.43:8889/h5/about")));
@@ -115,6 +121,7 @@ class UserCenterWidget extends StatelessWidget {
                                   icon: Icons.description,
                                   onTap: () {
                                     Navigator.of(context).push(MaterialPageRoute(
+                                        settings: RouteSettings(name: '隐私政策'),
                                         builder: (ctx) => MainPage(
                                             url:
                                                 "http://106.13.105.43:8889/h5/privacy")));
@@ -141,7 +148,9 @@ class UserCenterWidget extends StatelessWidget {
                                                   Navigator.of(context)
                                                       .pushAndRemoveUntil(
                                                           CustomRoute.fade(
-                                                              GlobalLoginPage()),
+                                                              GlobalLoginPage(),
+                                                              RouteSettings(
+                                                                  name: '登录页')),
                                                           (e) => false);
                                                 }),
                                             CupertinoDialogAction(
@@ -309,10 +318,7 @@ class _UserHeaderWidgetState extends State<UserHeaderWidget> {
             initAspectRatio: CropAspectRatioPreset.square,
             lockAspectRatio: false),
         iosUiSettings: IOSUiSettings(
-          minimumAspectRatio: 1.0,
-          resetAspectRatioEnabled: true
-          
-        ));
+            minimumAspectRatio: 1.0, resetAspectRatioEnabled: true));
     if (croppedFile != null) {
       FormData imgData = FormData.fromMap(
           {'avatar': await MultipartFile.fromFile(croppedFile.path)});

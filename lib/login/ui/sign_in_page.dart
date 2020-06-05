@@ -288,7 +288,7 @@ class _SignInPageState extends State<SignInPage> {
           _startLogin().then((e) {
             if (e is String) {
               _saveUser(e).then((e) => Navigator.of(context).pushAndRemoveUntil(
-                  CustomRoute.fade(MyHomePage()), (e) => false));
+                  CustomRoute.fade(MyHomePage(),RouteSettings(name:'登录')), (e) => false));
             } else {
               String error = e['errmsg'];
               Scaffold.of(context)

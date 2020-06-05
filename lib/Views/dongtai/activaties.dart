@@ -88,7 +88,7 @@ class _FriendActWidgetState extends State<FriendActWidget> {
                   return Text('loading...');
                 },
                 errorWidget: (ctx, str, obj) {
-                  return Text('faild');
+                  return Image.asset('srouce/place.png',width: 38,height: 38,);
                 },
                 imageUrl:
                     "http://106.13.105.43:8889/static/images/item-pics/item-${item.itemId}.jpg")),

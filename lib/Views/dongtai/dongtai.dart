@@ -275,6 +275,7 @@ Widget getUI(DynamicData data, BuildContext ctx) {
                               ))),
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
+                            settings: RouteSettings(name: '推荐菜单页'),
                             builder: (context) => MainPage(url: ads.url)));
                       });
                 },
@@ -441,7 +442,11 @@ List<Widget> _getActionsItem(FriendAction action) {
                 return Text('loading...');
               },
               errorWidget: (ctx, str, obj) {
-                return Text('faild');
+                return Image.asset(
+                  'srouce/place.png',
+                  width: 38,
+                  height: 38,
+                );
               },
               imageUrl:
                   "http://106.13.105.43:8889/static/images/item-pics/item-${item.itemId}.jpg")),

@@ -11,7 +11,7 @@ description: A new Flutter project.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.1+1
+version: 1.0.1+4
 
 environment:
   sdk: ">=2.6.0 <3.0.0"
@@ -49,18 +49,18 @@ dependencies:
   #状态管理
   provider: 4.0.4
   #下拉菜单
-  gzx_dropdown_menu : ^1.0.3
+  # gzx_dropdown_menu : ^1.0.3
   #toast
   bot_toast: ^2.2.1
   #图像采集器 剪辑
   image_picker : 0.6.2+2
   image_cropper: 1.1.2
   #esptouch
-  esptouch_flutter: 0.2.1
+  # esptouch_flutter: 0.2.1
   # ios13 获取wifi 需要定位权限
   location_permissions: ^2.0.5
   #检索wifi
-  connectivity: ^0.4.8+2
+  # connectivity: ^0.4.8+2
   #小红点
   badges: 1.1.1
   #网络图片
@@ -73,11 +73,13 @@ dependencies:
   # 定位
   location: 2.5.4
   # 微信登录
-  fluwx: 2.0.8+1
+  fluwx_no_pay: 2.0.4
   # 提示气泡
   simple_tooltip: 0.1.3
   # 百度统计
-  fake_analytics:
+  # fake_analytics:
+  # 友盟统计
+  umeng_analytics_plugin:
 
 dev_dependencies:
   flutter_test:

@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:bot_toast/bot_toast.dart';
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -32,15 +31,21 @@ class _ChatWidgetState extends State<ChatWidget> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => state,
-      child: Scaffold(
-          appBar: AppBar(
+      child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        child: Scaffold(
+            appBar: AppBar(
               brightness: Brightness.dark,
+              iconTheme: IconThemeData(color: Colors.white),
               title: Text(
                 '存/取',
                 style: TextStyle(color: Colors.white),
               ),
-              automaticallyImplyLeading: false),
-          body: ChatBodyWidget(widget.curBoxId)),
+            ),
+            body: ChatBodyWidget(widget.curBoxId)),
+      ),
     );
   }
 
@@ -60,6 +65,8 @@ class ChatBodyWidget extends StatefulWidget {
 
 class _ChatBodyWidgetState extends State<ChatBodyWidget> {
   ScrollController controller = ScrollController();
+  TextEditingController textController = TextEditingController();
+  FocusNode focusNode = FocusNode();
   int curBoxId = 3;
   //录音机
   FlutterAudioRecorder recorder;
@@ -75,7 +82,7 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
   DateTime lastTime = DateTime.fromMillisecondsSinceEpoch(-30000);
   //按下时间
   DateTime tapDownTime;
-
+  DateFormat formater = DateFormat('HH:mm');
   @override
   void initState() {
     super.initState();
@@ -147,7 +154,6 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
 
   //停止录音
   Future stop() async {
-    var formater = DateFormat('HH:mm');
     provider.changeStr('识别中...');
     var resRecorder = await recorder.stop();
     File file = File(resRecorder.path);
@@ -172,26 +178,75 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
       _hideToast();
       return;
     } else {
-      DateTime now = DateTime.now();
-      Duration during = now.difference(lastTime);
-      lastTime = now;
+      // DateTime now = DateTime.now();
+      // Duration during = now.difference(lastTime);
+      // lastTime = now;
 
-      String str = resp.data['result'][0];
-      ChateData data = ChateData(
-          chatId: chatId,
-          type: 1,
-          timestamp:
-              during.inSeconds >= 30 ? formater.format(now.toLocal()) : "",
-          content: str);
-      ChatStateProvider state =
-          Provider.of<ChatStateProvider>(context, listen: false);
-      addChat(state, data);
-      _hideToast();
+      // String str = resp.data['result'][0];
+      // ChateData data = ChateData(
+      //     chatId: chatId,
+      //     type: 1,
+      //     timestamp:
+      //         during.inSeconds >= 30 ? formater.format(now.toLocal()) : "",
+      //     content: str);
+      // ChatStateProvider state =
+      //     Provider.of<ChatStateProvider>(context, listen: false);
+      // addChat(state, data);
+      // _hideToast();
     }
+    String words = resp.data['result'][0];
+    _sendToServer(words);
+    // String chatStr = chatId == null ? '' : '&chat_id=$chatId';
+    // Response resNew = await NetManager.instance.dio.get(
+    //     '/api/voice-result/analyze?words=${resp.data['result'][0]}&boxid=${widget.curBoxId}$chatStr');
+    // if (resNew.data['err'] != 0 || resNew.data['data'] == null) {
+    //   BotToast.showText(text: '请求失败,请重试');
+    //   _hideToast();
+    //   return;
+    // }
 
+    // chatId = resNew.data['data']['chat_id'];
+    // String str = resNew.data['data']['words'];
+    // ChateData data = ChateData(
+    //     chatId: chatId,
+    //     type: 0,
+    //     timestamp: formater.format(DateTime.now().toLocal()),
+    //     content: str);
+    // ChatStateProvider state =
+    //     Provider.of<ChatStateProvider>(context, listen: false);
+    // addChat(state, data);
+
+    // await dio
+    //     .download('http://tsn.baidu.com/text2audio', path, queryParameters: {
+    //   'tex': resNew.data['data']['words'],
+    //   'tok': token,
+    //   'cuid': '11223123123',
+    //   'ctp': 1,
+    //   'lan': 'zh',
+    // });
+    // File tts = File(path);
+    // FlutterSound().startPlayer(path).then((e) {
+    //   tts.deleteSync(recursive: true);
+    // });
+  }
+
+  _sendToServer(String words) async {
+    DateTime now = DateTime.now();
+    Duration during = now.difference(lastTime);
+    lastTime = now;
+
+    ChateData cliData = ChateData(
+        chatId: chatId,
+        type: 1,
+        timestamp: during.inSeconds >= 30 ? formater.format(now.toLocal()) : "",
+        content: words);
+    ChatStateProvider state =
+        Provider.of<ChatStateProvider>(context, listen: false);
+    addChat(state, cliData);
+    _hideToast();
     String chatStr = chatId == null ? '' : '&chat_id=$chatId';
     Response resNew = await NetManager.instance.dio.get(
-        '/api/voice-result/analyze?words=${resp.data['result'][0]}&boxid=${widget.curBoxId}$chatStr');
+        '/api/voice-result/analyze?words=$words&boxid=${widget.curBoxId}$chatStr');
     if (resNew.data['err'] != 0 || resNew.data['data'] == null) {
       BotToast.showText(text: '请求失败,请重试');
       _hideToast();
@@ -200,14 +255,14 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
 
     chatId = resNew.data['data']['chat_id'];
     String str = resNew.data['data']['words'];
-    ChateData data = ChateData(
+    ChateData serverData = ChateData(
         chatId: chatId,
         type: 0,
         timestamp: formater.format(DateTime.now().toLocal()),
         content: str);
-    ChatStateProvider state =
-        Provider.of<ChatStateProvider>(context, listen: false);
-    addChat(state, data);
+    // ChatStateProvider state =
+    //     Provider.of<ChatStateProvider>(context, listen: false);
+    addChat(state, serverData);
 
     await dio
         .download('http://tsn.baidu.com/text2audio', path, queryParameters: {
@@ -230,6 +285,8 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
     // });
   }
 
+  bool isVoice = true;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -243,7 +300,7 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
               Expanded(
                 child: Stack(children: [
                   Offstage(
-                      offstage: state.chatList.length > 3,
+                      offstage: state.chatList.length > 2,
                       child: Align(
                         alignment: AlignmentDirectional.bottomCenter,
                         child: Column(
@@ -338,89 +395,158 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
                   )
                 ]),
               ),
-              Container(
-                  height: 135,
-                  padding: EdgeInsets.all(20),
+              Offstage(
+                offstage: isVoice,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   color: Colors.lightGreen,
-                  child: Stack(
-                      alignment: AlignmentDirectional.center,
-                      children: <Widget>[
-                        // Align(
-                        //   alignment: AlignmentDirectional.topStart,
-                        //   child: Icon(
-                        //     Icons.keyboard,
-                        //     color: Colors.white,
-                        //   ),
-                        // ),
-                        Align(
-                            alignment: AlignmentDirectional.bottomCenter,
-                            child: Text('按住说话',
-                                style: TextStyle(
-                                    fontSize: 11, color: Colors.white))),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              FlatButton(
-                                  padding: EdgeInsets.all(9),
-                                  shape: CircleBorder(
-                                      side: BorderSide(
-                                          width: 1, color: Colors.white)),
-                                  onPressed: () {
-                                    Navigator.of(context).push(MaterialPageRoute(
-                                        builder: (ctx) => MainPage(
-                                            url:
-                                                'http://106.13.105.43:8889/h5/help#voice')));
-                                  },
-                                  child: Text('?',
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 20))),
-                              GestureDetector(
-                                  onTapDown: (e) {
-                                    tapDownTime = DateTime.now();
-                                    popupRecordingToast();
-                                  },
-                                  onTapUp: (e) async {
-                                    Duration during =
-                                        DateTime.now().difference(tapDownTime);
-                                    if (during.inSeconds < 1) {
-                                      File file = File(path);
-                                      if (await file.exists()) {
-                                        file.deleteSync();
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 2, color: Colors.white),
+                            borderRadius: BorderRadius.circular(20)),
+                        child: IconButton(
+                            constraints: BoxConstraints.tight(Size(35, 35)),
+                            icon:
+                                Icon(Icons.mic, color: Colors.white, size: 20),
+                            onPressed: () {
+                              setState(() {
+                                isVoice = true;
+                              });
+                            }),
+                      ),
+                      Expanded(
+                          child: Container(
+                        padding: EdgeInsets.all(10),
+                        child: TextField(
+                            style: TextStyle(color: Colors.white),
+                            cursorColor: Colors.white,
+                            focusNode: focusNode,
+                            controller: textController,
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 0),
+                              enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.white, width: 2)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.white, width: 2)),
+                            ),
+                            textInputAction: TextInputAction.send,
+                            onSubmitted: (str) {
+                              _sendToServer(str);
+                              textController.clear();
+                              focusNode.requestFocus();
+                            }),
+                      ))
+                    ],
+                  ),
+                ),
+              ),
+              Offstage(
+                offstage: !isVoice,
+                child: Container(
+                    height: 135,
+                    padding: EdgeInsets.all(10),
+                    color: Colors.lightGreen,
+                    child: Stack(
+                        alignment: AlignmentDirectional.center,
+                        children: <Widget>[
+                          Align(
+                              alignment: AlignmentDirectional.topStart,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        width: 2, color: Colors.white),
+                                    borderRadius: BorderRadius.circular(20)),
+                                child: IconButton(
+                                    constraints:
+                                        BoxConstraints.tight(Size(35, 35)),
+                                    icon: Icon(Icons.keyboard,
+                                        color: Colors.white, size: 20),
+                                    onPressed: () {
+                                      setState(() {
+                                        isVoice = false;
+                                      });
+                                    }),
+                              )),
+                          Align(
+                              alignment: AlignmentDirectional.bottomCenter,
+                              child: Text('按住说话',
+                                  style: TextStyle(
+                                      fontSize: 11, color: Colors.white))),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                FlatButton(
+                                    padding: EdgeInsets.all(9),
+                                    shape: CircleBorder(
+                                        side: BorderSide(
+                                            width: 1, color: Colors.white)),
+                                    onPressed: () {
+                                      Navigator.of(context).push(MaterialPageRoute(
+                                          settings: RouteSettings(name:'帮助页(语音)'),
+                                          builder: (ctx) => MainPage(
+                                              url:
+                                                  'http://106.13.105.43:8889/h5/help#voice')));
+                                    },
+                                    child: Text('?',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20))),
+                                GestureDetector(
+                                    onTapDown: (e) {
+                                      tapDownTime = DateTime.now();
+                                      popupRecordingToast();
+                                    },
+                                    onTapUp: (e) async {
+                                      Duration during = DateTime.now()
+                                          .difference(tapDownTime);
+                                      if (during.inSeconds < 1) {
+                                        File file = File(path);
+                                        if (await file.exists()) {
+                                          file.deleteSync();
+                                        }
+                                        _hideToast();
+                                        return;
                                       }
-                                      _hideToast();
-                                      return;
-                                    }
-                                    Future.delayed(Duration(milliseconds: 300),
-                                        () => stop());
-                                  },
-                                  onTapCancel: () async {
-                                    Duration during =
-                                        DateTime.now().difference(tapDownTime);
-                                    if (during.inSeconds < 1) {
-                                      File file = File(path);
-                                      if (await file.exists()) {
-                                        file.deleteSync();
+                                      Future.delayed(
+                                          Duration(milliseconds: 300),
+                                          () => stop());
+                                    },
+                                    onTapCancel: () async {
+                                      Duration during = DateTime.now()
+                                          .difference(tapDownTime);
+                                      if (during.inSeconds < 1) {
+                                        File file = File(path);
+                                        if (await file.exists()) {
+                                          file.deleteSync();
+                                        }
+                                        _hideToast();
+                                        return;
                                       }
-                                      _hideToast();
-                                      return;
-                                    }
-                                    Future.delayed(Duration(milliseconds: 300),
-                                        () => stop());
-                                  },
-                                  child: Image.asset("srouce/an_yuyin_p.png",
-                                      width: 70, height: 70)),
-                              FlatButton(
-                                  padding: EdgeInsets.all(4),
-                                  shape: CircleBorder(
-                                      side: BorderSide(
-                                          width: 1, color: Colors.white)),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Icon(Icons.close,
-                                      color: Colors.white, size: 20)),
-                            ]),
-                      ]))
+                                      Future.delayed(
+                                          Duration(milliseconds: 300),
+                                          () => stop());
+                                    },
+                                    child: Image.asset("srouce/an_yuyin_p.png",
+                                        width: 70, height: 70)),
+                                FlatButton(
+                                    padding: EdgeInsets.all(4),
+                                    shape: CircleBorder(
+                                        side: BorderSide(
+                                            width: 1, color: Colors.white)),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Icon(Icons.close,
+                                        color: Colors.white, size: 20)),
+                              ]),
+                        ])),
+              )
             ]);
       }),
     );
@@ -500,17 +626,18 @@ class ChatStateProvider with ChangeNotifier {
 }
 
 class ChateData {
-  final int chatId;
-  final int type;
-  final String timestamp;
-  final String content;
-
   ChateData({this.chatId, this.type, this.timestamp, this.content});
+
+  final int chatId;
+  final String content;
+  final String timestamp;
+  final int type;
 }
 
 class ToastStateProvider with ChangeNotifier {
-  String stateStr;
   ToastStateProvider({this.stateStr});
+
+  String stateStr;
 
   changeStr(String str) {
     stateStr = str;

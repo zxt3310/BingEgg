@@ -252,6 +252,7 @@ class _BoxListBodyState extends State<BoxListBody> {
                                               onPressed: () {
                                                 Navigator.of(context).push(
                                                     MaterialPageRoute(
+                                                      settings: RouteSettings(name: '朋友冰箱食材页'),
                                                         builder: (ctx) =>
                                                             FriendBoxItemsWidget(
                                                                 boxName: fridge

@@ -132,6 +132,7 @@ class _FoodListWidgetState extends State<FoodListWidget>
                             )),
                         onTap: () {
                           Navigator.of(context).push(MaterialPageRoute(
+                            settings: RouteSettings(name: '食材详情页'),
                               builder: (ctx) => FoodDetailWidget(food: obj)));
                         },
                       ))),
