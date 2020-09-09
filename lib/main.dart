@@ -55,7 +55,7 @@ void realRunApp() async {
       androidKey: "5ea6e240dbc2ec07fc259e1a",
       iosKey: "5ea6e2b4dbc2ec07fc259e1e");
   runApp(MyApp());
-  UmengAnalyticsPlugin.event("0",label: "启动");
+  UmengAnalyticsPlugin.event("App",label: "启动");
 }
 
 class MyApp extends StatelessWidget {
@@ -225,7 +225,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     itemSize: 25,
                     onTap: (idx) {
                       appSharedState.tabSwitch(idx);
-                      UmengAnalyticsPlugin.event("2",label: "TAB切换$idx");
+                      UmengAnalyticsPlugin.event("TAB导航",label: "切换tab$idx");
                     },
                     centerDock: GestureDetector(
                         child: Image.asset('srouce/bottom/nva_add.png',

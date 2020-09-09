@@ -56,7 +56,7 @@ class UserCenterWidget extends StatelessWidget {
                                   onTap: () {
                                     Navigator.of(context)
                                         .push(MaterialPageRoute(
-                                          settings:
+                                            settings:
                                                 RouteSettings(name: '我的冰箱列表'),
                                             builder: (ctx) => BoxListWidget(
                                                 providerContext: context)))

@@ -374,7 +374,7 @@ class __QuickCheckWidgetState extends State<_QuickCheckWidget> {
           ShanyanIOSUIConfiguration.getIosUIConfig());
       //拉起授权页
       oneKeyLoginManager.openLoginAuthListener().then((e) {
-        UmengAnalyticsPlugin.event("1",label: "拉起授权");
+        UmengAnalyticsPlugin.event("登录",label: "拉起授权");
         print(e);
       });
       //自定义组件回调
@@ -403,13 +403,13 @@ class __QuickCheckWidgetState extends State<_QuickCheckWidget> {
       //拉起授权页
       oneKeyLoginManager.openLoginAuth(isFinish: true).then((e) {
         //BotToast.showText(text: e.toString());
-        UmengAnalyticsPlugin.event("1",label: "拉起授权");
+        UmengAnalyticsPlugin.event("登录",label: "拉起授权");
       });
     }
   }
 
   _startLoginWithWxcode(Map authorRes) async {
-    UmengAnalyticsPlugin.event("1",label: "一键登录");
+    UmengAnalyticsPlugin.event("登录",label: "一键登录");
     OneKeyLoginManager oneKeyLoginManager =
         QuickCheckManager.instance.oneKeyLoginManager;
     if (authorRes['code'] == 1000) {
@@ -508,11 +508,11 @@ class __CheckCodeBtnState extends State<_CheckCodeBtn> {
         .post('/api/login-sms/send', data: {"mobile": state.phoneNo});
     if (res.data["err"] != 0) {
       BotToast.showText(text: '短信发送失败');
-      UmengAnalyticsPlugin.event("3",label: "发送失败");
+      UmengAnalyticsPlugin.event("登录",label: "短信发送失败");
       return;
     }
     BotToast.showText(text: '发送成功');
-    UmengAnalyticsPlugin.event("3",label: "发送成功");
+    UmengAnalyticsPlugin.event("登录",label: "短信发送成功");
     //锁死发送按钮
     isLocking = true;
     curCount = count + 1;
@@ -597,7 +597,7 @@ class __ThirdPlatformLoginWidgetState extends State<_ThirdPlatformLoginWidget> {
 
   authorWithWeixin() async {
     print('微信登录  微信登录');
-    UmengAnalyticsPlugin.event("1",label: "微信登录");
+    UmengAnalyticsPlugin.event("登录",label: "微信登录");
     bool isSucc = await sendWeChatAuth(
         scope: "snsapi_userinfo", state: "sirilikeFlutter_login_state");
     if (isSucc == null || !isSucc) {
@@ -624,7 +624,7 @@ class __ThirdPlatformLoginWidgetState extends State<_ThirdPlatformLoginWidget> {
   }
 
   _startLogin(String code) async {
-    UmengAnalyticsPlugin.event("1",label: "验证码登录");
+    UmengAnalyticsPlugin.event("登录",label: "验证码登录");
     Dio req = NetManager.instance.dio;
     String url = '/api/login?wxcode=$code';
     Response res = await req.get(url);

@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:sirilike_flutter/webpage.dart';
+import 'package:umeng_analytics_plugin/umeng_analytics_plugin.dart';
 import '../../model/network.dart';
 import 'package:intl/intl.dart';
 
@@ -440,6 +441,7 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
                               _sendToServer(str);
                               textController.clear();
                               focusNode.requestFocus();
+                              UmengAnalyticsPlugin.event("存取",label: "文字录入");
                             }),
                       ))
                     ],
@@ -488,7 +490,8 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
                                             width: 1, color: Colors.white)),
                                     onPressed: () {
                                       Navigator.of(context).push(MaterialPageRoute(
-                                          settings: RouteSettings(name:'帮助页(语音)'),
+                                          settings:
+                                              RouteSettings(name: '帮助页(语音)'),
                                           builder: (ctx) => MainPage(
                                               url:
                                                   'http://106.13.105.43:8889/h5/help#voice')));
@@ -516,6 +519,7 @@ class _ChatBodyWidgetState extends State<ChatBodyWidget> {
                                       Future.delayed(
                                           Duration(milliseconds: 300),
                                           () => stop());
+                                      UmengAnalyticsPlugin.event("存取",label: "语音录入");
                                     },
                                     onTapCancel: () async {
                                       Duration during = DateTime.now()
